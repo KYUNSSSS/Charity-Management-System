@@ -4,7 +4,7 @@
  */
 package boundary;
 import entity.Donee;
-import java.util.*;
+import java.util.Scanner;
 
 /**
  *
@@ -38,12 +38,12 @@ public class DoneeManagementUI {
     System.out.println("\nList of Products:\n" + outputStr);
   }
    
-   public Donee inputProductDetails() {
-    String productCode = inputProductCode();
-    String productName = inputProductName();
-    int quantity = inputQuantity();
-    System.out.println();
-    return new Product(productCode, productName, quantity);
-  }
+//   public Donee inputProductDetails() {
+//    String productCode = inputProductCode();
+//    String productName = inputProductName();
+//    int quantity = inputQuantity();
+//    System.out.println();
+//    return new Product(productCode, productName, quantity);
+//  }
 
 }
