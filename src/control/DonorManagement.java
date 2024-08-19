@@ -4,8 +4,11 @@
  */
 package control;
 
-import entity.Donor;
-import java.util.Scanner;
+import adt.*;
+import entity.*;
+import boundary.DonorManagementUI;
+import dao.DonorDAO;
+import utility.MessageUI;
 
 /**
  *
@@ -13,28 +16,79 @@ import java.util.Scanner;
  */
 public class DonorManagement {
 
-    Scanner scanner = new Scanner(System.in);
+    private ListInterface<Donor> donorList = new LinkedList<>();
+    private DonorDAO donorDAO = new DonorDAO();
+    private DonorManagementUI donorUI = new DonorManagementUI();
 
-    public int getMenuChoice() {
-        int choice = scanner.nextInt();
-        try {
-            System.out.println("\n******DONOR MANAGEMENT******");
-            System.out.println("1. Add New Donor");
-            System.out.println("2. Remove Donor");
-            System.out.println("3. Update Donor Details");
-            System.out.println("4. Search Donor Details");
-            System.out.println("5. List Donors Donations"); //List donors with all the donations made
-            System.out.println("6. Filter Donors"); //Filter donors based on criteria
-            System.out.println("7. Categorise Donors"); //Categorize donors(e.g., government, private, public)
-            System.out.println("8. Generate Summary Report");
-            System.out.println("0. Quit");
-            System.out.print("Enter choice(0-8): ");
-            
-            scanner.nextLine();
-            System.out.println();
-        } catch (Exception ex) {
-            System.err.println("Invalid Choice. Please re-enter.");
+    public DonorManagement() {
+        donorList = donorDAO.retrieveFromFile();
+    }
+
+    public void runDonorManagement() {
+        int choice = 0;
+        do {
+            choice = donorUI.getMenuChoice();
+            switch (choice) {
+                case 0:
+                    MessageUI.displayExitMessage();
+                    break;
+                case 1:
+                    addNewDonor();
+                    donorUI.listAllDonors(getAllDonors());
+                    break;
+                case 2:
+                    // removeDonor();
+                    donorDAO.retrieveFromFile();
+                    break;
+                case 3:
+                    // updateDoneeDetails();
+                    // donorUI.listAllDonors(getAllDonors());
+                    break;
+                case 4:
+                    // searchDoneeDetails();
+                    // donorUI.listAllDonors(getAllDonors());
+                    break;
+                case 5:
+                    // listDonorWithDonations();
+                    // donorUI.listAllDonors(getAllDonors());
+                    break;
+                case 6:
+                    // filterDonee();
+                    // donorUI.listAllDonors(getAllDonors());
+                    break;
+                case 7:
+                    // categoriseDonor();
+                    // donorUI.listAllDonors(getAllDonors());
+                    break;
+                case 8:
+                    // generateReport();
+                    break;
+                default:
+                    MessageUI.displayInvalidChoiceMessage();
+            }
+        } while (choice != 0);
+    }
+
+    public void addNewDonor() {
+        Donor newDonor = donorUI.inputDonorDetails();
+        donorList.add(newDonor);
+        donorDAO.saveToFile(donorList);
+    }
+
+    public String getAllDonors() {
+        String outputStr = "";
+        for (int i = 1; i <= donorList.getNumberOfEntries(); i++) {
+            outputStr += donorList.getEntry(i) + "\n";
         }
-        return choice;
+        return outputStr;
+    }
+
+    public void displayDonors() {
+        donorUI.listAllDonors(getAllDonors());
+    }
+
+    public static void main(String[] args) {
+        DonorManagement DonorManagement = new DonorManagement();
+        DonorManagement.runDonorManagement();
     }
 }
