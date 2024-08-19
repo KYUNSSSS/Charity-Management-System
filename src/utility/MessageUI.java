@@ -8,7 +8,7 @@ public class MessageUI {
   
   
   public static void displayInvalidChoiceMessage() {
-    System.out.println("\nInvalid choice");
+    System.err.println("\nInvalid choice");
   }
 
   public static void displayExitMessage() {
