@@ -4,27 +4,34 @@
  */
 package entity;
 
-// cannot use list and arraylist
+import adt.ListInterface;
+import adt.LinkedList;
+import java.io.Serializable;
+import java.util.Objects;
 
 /**
  *
  * @author xuan
  */
-public class Donor {
+public class Donor implements Serializable {
+
     private String donorID;
     private String name;
-    private String contact;
+    private int contactNo;
+    private String email;
     private String type; //government, private, public
-//    private List<Donation> donations;
+//    private ListInterface<Donation> donations;
+    private double donations; // one donor can have more than one donations
 
-    public Donor(String donorID, String name, String contact, String type) {
+    public Donor(String donorID, String name, int contactNo, String email, String type, double donations) {
         this.donorID = donorID;
         this.name = name;
-        this.contact = contact;
+        this.contactNo = contactNo;
+        this.email = email;
         this.type = type;
-//        this.donations = new ArrayList<>();
+        this.donations = donations;
     }
-
+    
     public String getDonorID() {
         return donorID;
     }
@@ -41,12 +48,20 @@ public class Donor {
         this.name = name;
     }
 
-    public String getContact() {
-        return contact;
+    public int getContactNo() {
+        return contactNo;
     }
 
-    public void setContact(String contact) {
-        this.contact = contact;
+    public void setContactNo(int contactNo) {
+        this.contactNo = contactNo;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getType() {
@@ -56,23 +71,44 @@ public class Donor {
     public void setType(String type) {
         this.type = type;
     }
-    
+
 //    public void addDonation(Donation donation) {
 //        donations.add(donation);
 //    }
-//
+
 //    public void removeDonation(Donation donation) {
 //        donations.remove(donation);
 //    }
 //
-//    public List<Donation> getDonations() {
+//    public ListInterface<Donation> getDonations() {
 //        return donations;
 //    }
 
-    @Override
-    public String toString() {
-        return String.format("%5s, %15s, %15s, %15s", donorID, name, contact, type);
+    public double getDonations() {
+        return donations;
+    }
+
+    public void setDonations(double donations) {
+        this.donations = donations;
     }
     
-    
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Donor other = (Donor) obj;
+        return Objects.equals(this.donorID, other.donorID);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%5s, %15s, %15d, %15s, %10s, %15d", donorID, name, contactNo, email, type, donations);
+    }
 }
