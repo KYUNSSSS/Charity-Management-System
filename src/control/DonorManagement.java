@@ -37,31 +37,31 @@ public class DonorManagement {
                     donorUI.listAllDonors(getAllDonors());
                     break;
                 case 2:
-                    // removeDonor();
-                    donorDAO.retrieveFromFile();
+                    removeDonor();
+                    donorUI.listAllDonors(getAllDonors());
                     break;
                 case 3:
-                    // updateDoneeDetails();
-                    // donorUI.listAllDonors(getAllDonors());
+                    updateDonorDetails();
+                    donorUI.listAllDonors(getAllDonors());
                     break;
                 case 4:
-                    // searchDoneeDetails();
-                    // donorUI.listAllDonors(getAllDonors());
+                    searchDonorDetails();
+                    donorUI.listAllDonors(getAllDonors());
                     break;
                 case 5:
-                    // listDonorWithDonations();
-                    // donorUI.listAllDonors(getAllDonors());
+                    listDonorWithDonations();
+                    donorUI.listAllDonors(getAllDonors());
                     break;
                 case 6:
-                    // filterDonee();
-                    // donorUI.listAllDonors(getAllDonors());
+                    filterDonor();
+                    donorUI.listAllDonors(getAllDonors());
                     break;
                 case 7:
-                    // categoriseDonor();
-                    // donorUI.listAllDonors(getAllDonors());
+                    categoriseDonor();
+                    donorUI.listAllDonors(getAllDonors());
                     break;
                 case 8:
-                    // generateReport();
+                    generateReport();
                     break;
                 default:
                     MessageUI.displayInvalidChoiceMessage();
@@ -72,7 +72,7 @@ public class DonorManagement {
     public void addNewDonor() {
         Donor newDonor = donorUI.inputDonorDetails();
         donorList.add(newDonor);
-        donorDAO.saveToFile(donorList);
+        donorDAO.saveToFile(getAllDonors());
     }
 
     public String getAllDonors() {
@@ -85,6 +85,97 @@ public class DonorManagement {
 
     public void displayDonors() {
         donorUI.listAllDonors(getAllDonors());
+    }
+
+    // Remove a donor by donorID
+    public void removeDonor() {
+        String donorID = donorUI.inputDonorID();
+        boolean donorFound = false;
+        for (int i = 1; i <= donorList.getNumberOfEntries(); i++) {
+            if (donorList.getEntry(i).getDonorID().equals(donorID)) {
+                donorList.remove(i);
+                donorFound = true;
+                break;
+            }
+        }
+        if (donorFound) {
+            donorDAO.saveToFile(getAllDonors());
+        } else {
+            System.err.println("Donor ID not found.");
+        }
+    }
+
+    // Update donor details referring to the donorID
+    public void updateDonorDetails() {
+        String donorID = donorUI.inputDonorID();
+        Donor updatedDonor = donorUI.inputDonorDetails();
+        boolean donorFound = false;
+        for (int i = 1; i <= donorList.getNumberOfEntries(); i++) {
+            if (donorList.getEntry(i).getDonorID().equals(donorID)) {
+                if (validateDonor(updatedDonor)) {
+                    donorList.replace(i, updatedDonor);
+                    donorFound = true;
+                } else {
+                    System.err.println("Invalid donor details.");
+                    return;
+                }
+                break;
+            }
+        }
+        if (donorFound) {
+            donorDAO.saveToFile(getAllDonors());
+        } else {
+            System.err.println("Donor ID not found.");
+        }
+    }
+
+    public Donor searchDonorDetails() {
+        String donorID = donorUI.inputDonorID();
+        for (int i = 1; i <= donorList.getNumberOfEntries(); i++) {
+            if (donorList.getEntry(i).getDonorID().equals(donorID)) {
+                return donorList.getEntry(i);
+            }
+        }
+        System.err.println("Donor ID not found.");
+        return null;
+    }
+
+    public void listDonorWithDonations() {
+
+    }
+
+    // Filter donor by type
+    public String filterDonor() {
+        String donorType = donorUI.inputDonorType();
+        String outputStr = "";
+        for (int i = 1; i <= donorList.getNumberOfEntries(); i++) {
+            Donor donor = donorList.getEntry(i);
+            if (donor.getType().equalsIgnoreCase(donorType)) {
+                outputStr += donorList.getEntry(i) + "\n";
+            }
+        }
+        return outputStr;
+    }
+
+    public void categoriseDonor() {
+
+    }
+
+    public void generateReport() {
+
+    }
+
+    private boolean validateDonor(Donor donor) {
+        if (donor.getName() == null || donor.getName().isEmpty()) {
+            return false;
+        }
+        if (donor.getDonorID() == null || donor.getDonorID().isEmpty()) {
+            return false;
+        }
+        if (donor.getType() == null || donor.getType().isEmpty()) {
+            return false;
+        }
+        return true;
     }
 
     public static void main(String[] args) {
