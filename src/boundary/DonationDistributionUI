@@ -1,0 +1,75 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package boundary;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import entity.DonationDistribution;
+import java.util.Scanner;
+
+/**
+ *
+ * @author SCSM11
+ */
+public class DonationDistributionUI {
+    Scanner scanner = new Scanner(System.in);
+    
+    public int getMenuChoice() {
+        System.out.println("\n****** DONATION DISTRIBUTION SYSTEM ******");
+        System.out.println("1. Add New Donation Distribution");
+        System.out.println("2. Update Donation Distribution Details");
+        System.out.println("3. Remove Donation Distribution");
+        System.out.println("4. Monitor Distributed Items");
+        System.out.println("5. Generate Summary Report");
+        System.out.println("0. Quit");
+        System.out.print("Enter your choice (0-5): ");
+        int choice = scanner.nextInt();
+        scanner.nextLine(); 
+        System.out.println();
+        return choice;
+    }
+    
+    public String inputDistributionID() {
+        System.out.print("Enter Distribution ID: ");
+        return scanner.nextLine();
+    }
+    
+    public int inputQuantity(){
+        System.out.println("Enter item quantity: ");
+        return scanner.nextInt();
+    }
+    
+    public String inputDonationCategories(){
+        System.out.println("Enter the item category: ");
+        return scanner.nextLine();
+    }
+    
+    public String inputStatus() {
+        System.out.print("Enter Distribution Status (Pending, Delivered, etc.): ");
+        return scanner.nextLine();
+    }
+    
+    public LocalDate inputDistributionDate(){
+        System.out.println("Enter Distribution Date (YYYY-MM-DD): ");
+        String date = scanner.nextLine();
+        return LocalDate.parse(date);
+    }
+    
+    public String inputLocation() {
+        System.out.print("Enter Distribution Location: ");
+        return scanner.nextLine();
+    }
+
+   public DonationDistribution inputDistributionDetails() {
+       String id = inputDistributionID();
+       int quantity = inputQuantity();
+       String category = inputDonationCategories();
+       String status = inputStatus();
+       LocalDate distributionDate = inputDistributionDate();
+       String location = inputLocation();
+       
+       System.out.println();
+       return new DonationDistribution(id, quantity, category, status, distributionDate, location);
+    }
+}
