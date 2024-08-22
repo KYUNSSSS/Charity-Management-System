@@ -77,21 +77,20 @@ public class DonorManagementUI {
         return amount;
     }
 
-//    public LocalDate inputDonationDate() {
-//        System.out.print("Enter the date (YYYY-MM-DD): ");
-//        String inputDate = scanner.nextLine();
-//
-//        // Define the desired date format
-//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-//        LocalDate date = LocalDate.parse(inputDate, formatter);
-//    try {
-//        
-//        System.out.println("You entered: " + date);
-//    } catch (Exception e) {
-//        System.out.println("Invalid date format. Please use YYYY-MM-DD.");
-//    }
-//        return date;
-//    }
+    public LocalDate inputDonationDate() { // can change to direct get System date
+        System.out.print("Enter the date (YYYY-MM-DD): ");
+        String inputDate = scanner.nextLine();
+
+        // Define the desired date format
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate date = LocalDate.parse(inputDate, formatter);
+    try {
+        System.out.println("You entered: " + date);
+    } catch (Exception e) {
+        System.out.println("Invalid date format. Please use YYYY-MM-DD.");
+    }
+        return date;
+    }
 
     public Donor inputDonorDetails() {
         String id = inputDonorID();
@@ -100,8 +99,9 @@ public class DonorManagementUI {
         int phone = inputPhoneNum();
         String email = inputDonorEmail();
         double donation = inputDonationAmount();
-//        LocalDate date = inputDonationDate();
+        LocalDate date = inputDonationDate();
         System.out.println();
-        return new Donor(id, name, phone, email, type, donation);
+        return new Donor(id, name, phone, email, type, donation, date);
     }
+    
 }
