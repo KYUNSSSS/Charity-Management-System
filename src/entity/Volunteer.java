@@ -17,7 +17,6 @@ public class Volunteer implements Serializable{
   private String volunteerName;
   private int volunteerPhoneNum;
   private String volunteerEmail;
-  private LocalDate volunteerDate;
 
   public Volunteer() {
   }
@@ -62,14 +61,6 @@ public class Volunteer implements Serializable{
         this.volunteerEmail = volunteerEmail;
     }
 
-    public LocalDate getVolunteerDate() {
-        return volunteerDate;
-    }
-
-    public void setVolunteerDate(LocalDate volunteerDate) {
-        this.volunteerDate = volunteerDate;
-    } 
-
 //  @Override
 //  public int hashCode() {
 //    int hash = 3;
@@ -96,7 +87,7 @@ public class Volunteer implements Serializable{
 //
     @Override
     public String toString() {
-        return String.format("%s, %s, %s, %d, %s, %s", volunteerID, volunteerType, volunteerName, volunteerPhoneNum, volunteerEmail, volunteerDate);
+        return String.format("%s, %s, %s, %d, %s", volunteerID, volunteerType, volunteerName, volunteerPhoneNum, volunteerEmail);
     }
 }
 
