@@ -29,6 +29,11 @@ public class Donee implements Serializable{
         this.donationAmount = donationAmount;
         this.donationDate = donationDate;
     }
+
+    public Donee(String doneeID) {
+        this.doneeID = doneeID;
+    }
+    
   
 
     public String getDoneeID() {
@@ -117,5 +122,7 @@ public class Donee implements Serializable{
   public String toString() {
     return String.format("%s, %s, %s,%d,%s,%f,%s", doneeID, doneeType,doneeName, doneePhoneNum,doneeEmail,donationAmount,donationDate);
   }
+  
+  
 
 }
