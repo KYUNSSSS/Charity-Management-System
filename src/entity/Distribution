@@ -18,18 +18,14 @@ public class Distribution implements Serializable{
     private int quantity;
     private String status;
     private LocalDate distributionDate; 
-    private String location;
-    private String doneeID;
 
-    public Distribution(String distributionID, String itemName, String category, int quantity, String status, LocalDate distributionDate, String location, String doneeID) {
+    public Distribution(String distributionID, String itemName, String category, int quantity, String status, LocalDate distributionDate) {
         this.distributionID = distributionID;
         this.itemName = itemName;
         this.category = category;
         this.quantity = quantity;
         this.status = status;
         this.distributionDate = distributionDate;
-        this.location = location;
-        this.doneeID = doneeID;
     }
 
     public String getDistributionID() {
@@ -80,26 +76,11 @@ public class Distribution implements Serializable{
         this.distributionDate = distributionDate;
     }
 
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
-    }
-
-    public String getDoneeID() {
-        return doneeID;
-    }
-
-    public void setDoneeID(String doneeID) {
-        this.doneeID = doneeID;
-    }
-
    @Override
     public String toString() {
-        return String.format("%5s, %15s, %15s, %15d, %15s, %15d, %15s, %s", distributionID , itemName, category, quantity, status, distributionDate, location, doneeID);
+        return String.format("%5s, %15s, %15s, %15d, %15s, %15d", distributionID , itemName, category, quantity, status, distributionDate);
     }
     
 }
+
 
