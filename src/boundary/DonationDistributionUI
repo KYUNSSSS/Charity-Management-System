@@ -5,7 +5,7 @@
 package boundary;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import entity.DonationDistribution;
+import entity.Distribution;
 import java.util.Scanner;
 
 /**
@@ -35,16 +35,21 @@ public class DonationDistributionUI {
         return scanner.nextLine();
     }
     
+    public String inputItemName(){
+        System.out.println("Enter Item Name: ");
+        return scanner.nextLine();
+    }
+    
+    public String inputDonationCategories(){
+        System.out.println("Enter Item Category: ");
+        return scanner.nextLine();
+    }
+    
     public int inputQuantity(){
         System.out.println("Enter item quantity: ");
         return scanner.nextInt();
     }
-    
-    public String inputDonationCategories(){
-        System.out.println("Enter the item category: ");
-        return scanner.nextLine();
-    }
-    
+
     public String inputStatus() {
         System.out.print("Enter Distribution Status (Pending, Delivered, etc.): ");
         return scanner.nextLine();
@@ -60,16 +65,24 @@ public class DonationDistributionUI {
         System.out.print("Enter Distribution Location: ");
         return scanner.nextLine();
     }
+    
+    public String inputDoneeID(){
+        System.out.println("Enter Donee ID: ");
+        return scanner.nextLine();
+    }
 
-   public DonationDistribution inputDistributionDetails() {
+   public Distribution inputDistributionDetails() {
        String id = inputDistributionID();
-       int quantity = inputQuantity();
+       String itemName = inputItemName();
        String category = inputDonationCategories();
+       int quantity = inputQuantity();
        String status = inputStatus();
        LocalDate distributionDate = inputDistributionDate();
        String location = inputLocation();
+       String doneeID = inputDoneeID();
        
        System.out.println();
-       return new DonationDistribution(id, quantity, category, status, distributionDate, location);
+       return new Distribution(id, itemName, category, quantity, status, distributionDate, location, doneeID);
     }
 }
+
