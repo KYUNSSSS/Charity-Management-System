@@ -11,21 +11,25 @@ import java.time.LocalDate;
  *
  * @author SCSM11
  */
-public class DonationDistribution implements Serializable{
+public class Distribution implements Serializable{
     private String distributionID;
-    private int quantity;
+    private String itemName;
     private String category;
+    private int quantity;
     private String status;
     private LocalDate distributionDate; 
     private String location;
+    private String doneeID;
 
-    public DonationDistribution(String distributionID, int quantity, String category, String status, LocalDate distributionDate, String location) {
+    public Distribution(String distributionID, String itemName, String category, int quantity, String status, LocalDate distributionDate, String location, String doneeID) {
         this.distributionID = distributionID;
-        this.quantity = quantity;
+        this.itemName = itemName;
         this.category = category;
+        this.quantity = quantity;
         this.status = status;
         this.distributionDate = distributionDate;
         this.location = location;
+        this.doneeID = doneeID;
     }
 
     public String getDistributionID() {
@@ -36,12 +40,12 @@ public class DonationDistribution implements Serializable{
         this.distributionID = distributionID;
     }
 
-    public int getQuantity() {
-        return quantity;
+    public String getItemName() {
+        return itemName;
     }
 
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
+    public void setItemName(String itemName) {
+        this.itemName = itemName;
     }
 
     public String getCategory() {
@@ -50,6 +54,14 @@ public class DonationDistribution implements Serializable{
 
     public void setCategory(String category) {
         this.category = category;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
     }
 
     public String getStatus() {
@@ -75,10 +87,19 @@ public class DonationDistribution implements Serializable{
     public void setLocation(String location) {
         this.location = location;
     }
-    
+
+    public String getDoneeID() {
+        return doneeID;
+    }
+
+    public void setDoneeID(String doneeID) {
+        this.doneeID = doneeID;
+    }
+
    @Override
     public String toString() {
-        return String.format("%5s, %5s, %15d, %15d, %15d, %15d", distributionID , quantity, category, status, distributionDate, location);
+        return String.format("%5s, %15s, %15s, %15d, %15s, %15d, %15s, %s", distributionID , itemName, category, quantity, status, distributionDate, location, doneeID);
     }
     
 }
+
