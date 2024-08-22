@@ -30,6 +30,10 @@ public class DonationDistributionUI {
         return choice;
     }
     
+    public void listAllDistribute(String outputStr) {
+        System.out.println("\nList of Donation Distribution:\n" + outputStr);
+    }
+    
     public String inputDistributionID() {
         System.out.print("Enter Distribution ID: ");
         return scanner.nextLine();
@@ -49,7 +53,7 @@ public class DonationDistributionUI {
         System.out.println("Enter item quantity: ");
         return scanner.nextInt();
     }
-
+    
     public String inputStatus() {
         System.out.print("Enter Distribution Status (Pending, Delivered, etc.): ");
         return scanner.nextLine();
@@ -60,16 +64,6 @@ public class DonationDistributionUI {
         String date = scanner.nextLine();
         return LocalDate.parse(date);
     }
-    
-    public String inputLocation() {
-        System.out.print("Enter Distribution Location: ");
-        return scanner.nextLine();
-    }
-    
-    public String inputDoneeID(){
-        System.out.println("Enter Donee ID: ");
-        return scanner.nextLine();
-    }
 
    public Distribution inputDistributionDetails() {
        String id = inputDistributionID();
@@ -78,11 +72,10 @@ public class DonationDistributionUI {
        int quantity = inputQuantity();
        String status = inputStatus();
        LocalDate distributionDate = inputDistributionDate();
-       String location = inputLocation();
-       String doneeID = inputDoneeID();
        
        System.out.println();
-       return new Distribution(id, itemName, category, quantity, status, distributionDate, location, doneeID);
+       return new Distribution(id, itemName, category, quantity, status, distributionDate);
     }
 }
+
 
