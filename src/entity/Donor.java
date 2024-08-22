@@ -4,9 +4,8 @@
  */
 package entity;
 
-import adt.ListInterface;
-import adt.LinkedList;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Objects;
 
 /**
@@ -22,14 +21,16 @@ public class Donor implements Serializable {
     private String type; //government, private, public
 //    private ListInterface<Donation> donations;
     private double donations; // one donor can have more than one donations
+    private LocalDate donationDate;
 
-    public Donor(String donorID, String name, int contactNo, String email, String type, double donations) {
+    public Donor(String donorID, String name, int contactNo, String email, String type, double donations, LocalDate donationDate) {
         this.donorID = donorID;
         this.name = name;
         this.contactNo = contactNo;
         this.email = email;
         this.type = type;
         this.donations = donations;
+        this.donationDate = donationDate;
     }
     
     public String getDonorID() {
@@ -91,7 +92,15 @@ public class Donor implements Serializable {
     public void setDonations(double donations) {
         this.donations = donations;
     }
-    
+
+    public LocalDate getDonationDate() {
+        return donationDate;
+    }
+
+    public void setDonationDate(LocalDate donationDate) {
+        this.donationDate = donationDate;
+    }
+           
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -109,6 +118,6 @@ public class Donor implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("%5s, %15s, %15d, %15s, %10s, %15d", donorID, name, contactNo, email, type, donations);
+        return String.format("%5s, %15s, %15d, %15s, %10s, %15s, %10s", donorID, name, contactNo, email, type, donations, donationDate);
     }
 }
