@@ -83,6 +83,14 @@ public class DonorManagement {
         return outputStr;
     }
 
+    public String getAllDonors(ListInterface<Donor> donorList) {
+        String outputStr = "";
+        for (int i = 1; i <= donorList.getNumberOfEntries(); i++) {
+            outputStr += donorList.getEntry(i) + "\n";
+        }
+        return outputStr;
+    }
+
     public void displayDonors() {
         donorUI.listAllDonors(getAllDonors());
     }
@@ -157,12 +165,84 @@ public class DonorManagement {
         return outputStr;
     }
 
-    public void categoriseDonor() {
+    private void categoriseDonor() {
+        // LinkedLists to hold categorized donors
+        ListInterface<Donor> governmentDonors = new LinkedList<>();
+        ListInterface<Donor> privateDonors = new LinkedList<>();
+        ListInterface<Donor> publicDonors = new LinkedList<>();
 
+        // Categorize donors
+        for (int i = 1; i <= donorList.getNumberOfEntries(); i++) {
+            Donor donor = donorList.getEntry(i);
+            String donorType = donor.getType().toLowerCase(); // Convert to lower case for consistent comparison
+
+            switch (donorType) {
+                case "government":
+                    governmentDonors.add(donor);
+                    break;
+                case "private":
+                    privateDonors.add(donor);
+                    break;
+                case "public":
+                    publicDonors.add(donor);
+                    break;
+                default:
+                    System.err.println("Unknown donor type: " + donorType);
+                    break;
+            }
+        }
+
+        // Display categorized donors
+        System.out.println("Categorized Donors by Type:");
+        System.out.println("Government Donors:");
+        System.out.println(getAllDonors(governmentDonors));
+
+        System.out.println("Private Donors:");
+        System.out.println(getAllDonors(privateDonors));
+
+        System.out.println("Public Donors:");
+        System.out.println(getAllDonors(publicDonors));
     }
 
     public void generateReport() {
+        ListInterface<Donor> donors = donorList;
+        
+        LinkedList<Donor> governmentList = new LinkedList<>();
+        LinkedList<Donor> publicList = new LinkedList<>();
+        LinkedList<Donor> privateList = new LinkedList<>();
 
+        // Iterate through the donor list
+        for (int i = 1; i <= donors.getNumberOfEntries(); i++) {
+            Donor donor = donors.getEntry(i);
+            if (donor.getType().equalsIgnoreCase("Government")) {
+                governmentList.add(donor);
+            } else if (donor.getType().equalsIgnoreCase("Public")) {
+                publicList.add(donor);
+            } else if (donor.getType().equalsIgnoreCase("Private")) {
+                privateList.add(donor);
+            }
+        }
+
+        // Print the report
+        System.out.println("Government Donors:");
+        printDonors(governmentList);
+
+        System.out.println("Public Donors:");
+        printDonors(publicList);
+
+        System.out.println("Private Donors:");
+        printDonors(privateList);
+    }
+
+    // Helper method to print donor information
+    private void printDonors(LinkedList<Donor> list) {
+        if (list.getNumberOfEntries() == 0) {
+            System.out.println("No donors in this category.");
+            return;
+        }
+        for (int i = 0; i < list.getNumberOfEntries(); i++) {
+            System.out.println(list.getEntry(i));
+        }
     }
 
     private boolean validateDonor(Donor donor) {
