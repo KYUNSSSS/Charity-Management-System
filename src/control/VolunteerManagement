@@ -29,34 +29,36 @@ public class VolunteerManagement {
         do {
             choice = volunteerUI.getMenuChoice();
             switch(choice) {
-              case 0:
-                MessageUI.displayExitMessage();
-                break;
-              case 1:
-                addNewVolunteer();
-                volunteerUI.listAllVolunteers(getAllVolunteer());
-                break;
-              case 2:
-                updateVolunteerDetails();
-                volunteerUI.listAllVolunteers(getAllVolunteer());
-                break;
-               case 3:
-               searchVolunteerDetails();
-               //volunteerUI.listAllVolunteer(getAllDonee());
-                break;
-               case 4:
-               // volunteerUI.listAllVolunteer(getAllDonee());
-                break;
-               case 5:
-                filterVolunteer();
-               // volunteerUI.listAllVolunteer(getAllDonee());
-                break;
+                case 0:
+                    MessageUI.displayExitMessage();
+                    break;
+                case 1:
+                    addNewVolunteer();
+                    volunteerUI.listAllVolunteers(getAllVolunteer());
+                    break;
+                case 2:
+                    removeVolunteer();
+                    volunteerUI.listAllVolunteers(getAllVolunteer());
+                    break;
+                case 3:
+                    searchVolunteerDetails();
+                    break;
+                case 4:
+//                    assignVolunteer();
+                    break;
+                case 5:
+//                     searchEventVolunteer();
+                    break;
                 case 6:
-                removeDonee();
-                volunteerUI.listAllVolunteer(getAllVolunteer());
-                break;
-              default:
-                MessageUI.displayInvalidChoiceMessage();
+                    volunteerUI.listAllVolunteers(getAllVolunteer());
+                    break;
+                case 7:
+                    filterVolunteers();
+                    break;
+                case 8:
+//                    generateReport();
+                default:
+                    MessageUI.displayInvalidChoiceMessage();
             } 
         } while (choice != 0);
       }
@@ -71,7 +73,8 @@ public class VolunteerManagement {
         String volunteerID = volunteerUI.inputVolunteerID();
         boolean result = removeVolunteerById(volunteerID);
     }
-    public boolean removeVolunteerById(String doneeID) {
+    
+    public boolean removeVolunteerById(String volunteerID) {
         boolean removed = false;
 
         for (int i = 1; i <= volunteerList.getNumberOfEntries(); i++) {
@@ -103,7 +106,7 @@ public class VolunteerManagement {
         }
     }
     
-    public Volunteer searchVolunteerByID(String doneeID) {
+    public Volunteer searchVolunteerByID(String volunteerID) {
         for (int i = 1; i <= volunteerList.getNumberOfEntries(); i++) {
             Volunteer volunteer = volunteerList.getEntry(i);
             if (volunteer.getVolunteerID().equals(volunteerID)) {
