@@ -36,33 +36,54 @@ public class DonationDistributionUI {
     
     public String inputDistributionID() {
         System.out.print("Enter Distribution ID: ");
-        return scanner.nextLine();
+        String id = scanner.nextLine();
+        return id;
     }
     
     public String inputItemName(){
-        System.out.println("Enter Item Name: ");
-        return scanner.nextLine();
+        System.out.print("Enter Item Name: ");
+        String itemName = scanner.nextLine();
+        return itemName;
     }
     
     public String inputDonationCategories(){
-        System.out.println("Enter Item Category: ");
-        return scanner.nextLine();
+        System.out.print("Enter Item Category: ");
+        String category = scanner.nextLine();
+        return category;
     }
     
     public int inputQuantity(){
-        System.out.println("Enter item quantity: ");
-        return scanner.nextInt();
+        System.out.print("Enter item quantity: ");
+        int quantity = scanner.nextInt();
+        scanner.nextLine();
+        return quantity;
     }
     
     public String inputStatus() {
-        System.out.print("Enter Distribution Status (Pending, Delivered, etc.): ");
-        return scanner.nextLine();
+        System.out.print("Enter Distribution Status (Pending, Delivered, Received): ");
+        String status = scanner.nextLine();
+        return status;
     }
     
     public LocalDate inputDistributionDate(){
-        System.out.println("Enter Distribution Date (YYYY-MM-DD): ");
-        String date = scanner.nextLine();
-        return LocalDate.parse(date);
+        System.out.print("Enter Distbution Date (YYYY-MM-DD): ");
+        String distributeDate = scanner.nextLine();
+
+        // Define the desired date format
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate date = LocalDate.parse(distributeDate, formatter);
+    try {
+        System.out.println("You entered: " + date);
+    } catch (Exception e) {
+        System.out.println("Invalid date format. Please use YYYY-MM-DD.");
+    }
+        return date;
+    }
+    
+    public String inputDoneeID(){
+        System.out.print("Enter Donee ID: ");
+        String doneeId = scanner.nextLine();
+        return doneeId;
     }
 
    public Distribution inputDistributionDetails() {
@@ -72,9 +93,10 @@ public class DonationDistributionUI {
        int quantity = inputQuantity();
        String status = inputStatus();
        LocalDate distributionDate = inputDistributionDate();
+       String doneeID = inputDoneeID();
        
        System.out.println();
-       return new Distribution(id, itemName, category, quantity, status, distributionDate);
+       return new Distribution(id, itemName, category, quantity, status, distributionDate, doneeID);
     }
 }
 
