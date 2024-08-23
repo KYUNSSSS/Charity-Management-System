@@ -12,29 +12,27 @@ import java.io.*;
  * @author SCSM11
  */
 public class DistributionDAO implements Serializable { 
-     private String fileName = "donationDistribution.dat"; // File for storing data
+     private String fileName = "DonationDistribution.txt"; // File for storing data
 
     // Save DonationDistribution objects to file
-    public void saveToFile(ListInterface<Distribution> distributionList) {
-        File file = new File(fileName);
-        try {
-            ObjectOutputStream ooStream = new ObjectOutputStream(new FileOutputStream(file));
-            ooStream.writeObject(distributionList); // Write the custom linked list to file
-            ooStream.close();
-        } catch (FileNotFoundException ex) {
-            System.out.println("\nFile not found");
+    public void saveToFile(String distributeList) {
+    File file = new File(fileName);
+     try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
+            writer.write(distributeList);
+            System.out.println("String saved successfully.");
         } catch (IOException ex) {
-            System.out.println("\nCannot save to file");
+            System.out.println("Error saving string to file: " + ex.getMessage());
+            ex.printStackTrace();
         }
-    }
+  }
 
     // Retrieve DonationDistribution objects from file
     public ListInterface<Distribution> retrieveFromFile() {
         File file = new File(fileName);
-        ListInterface<Distribution> distributionList = new LinkedList<>();
+        ListInterface<Distribution> distributeList = new LinkedList<>();
         try {
             ObjectInputStream oiStream = new ObjectInputStream(new FileInputStream(file));
-            distributionList = (LinkedList<Distribution>) (oiStream.readObject());
+            distributeList = (LinkedList<Distribution>) (oiStream.readObject());
             oiStream.close();
         } catch (FileNotFoundException ex) {
             System.out.println("\nNo such file.");
@@ -43,7 +41,8 @@ public class DistributionDAO implements Serializable {
         } catch (ClassNotFoundException ex) {
             System.out.println("\nClass not found.");
         } finally {
-            return distributionList;
+            return distributeList;
         }
     }
 }
+
