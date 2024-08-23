@@ -16,14 +16,14 @@ import utility.MessageUI;
  */
 public class DonationDistribution {
     private ListInterface<Donee> doneeList = new LinkedList<>();
-    private ListInterface<Distribution> distributionList = new LinkedList<>();
+    private DoneeDAO doneeDAO = new DoneeDAO(); 
+    private ListInterface<Distribution> distributeList = new LinkedList<>();
     private DistributionDAO distributeDAO = new DistributionDAO();
     private DonationDistributionUI distributeUI = new DonationDistributionUI();
-    private DoneeDAO doneeDAO = new DoneeDAO(); 
     
     public DonationDistribution(){
         doneeList = doneeDAO.retrieveFromFile();
-        distributionList = distributeDAO.retrieveFromFile();
+        distributeList = distributeDAO.retrieveFromFile();
         
 ////        for (Donee donee : doneeList) {
 //            String doneeID = donee.getDoneeID(); 
@@ -66,6 +66,9 @@ public class DonationDistribution {
     }
     
     public void addNewDistribute(){
+        Distribution newDistribute = distributeUI.inputDistributionDetails();
+        distributeList.add(newDistribute);
+        distributeDAO.saveToFile(getAllDistribute());
     }
     
     public void removeDistribute(){
@@ -76,8 +79,8 @@ public class DonationDistribution {
     
     public String getAllDistribute() {
         String outputStr = "";
-        for (int i = 1; i <= distributionList.getNumberOfEntries(); i++) {
-            outputStr += distributionList.getEntry(i) + "\n";
+        for (int i = 1; i <= distributeList.getNumberOfEntries(); i++) {
+            outputStr += distributeList.getEntry(i) + "\n";
         }
         return outputStr;
     }
