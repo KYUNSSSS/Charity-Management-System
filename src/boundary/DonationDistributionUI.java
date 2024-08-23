@@ -99,5 +99,3 @@ public class DonationDistributionUI {
        return new Distribution(id, itemName, category, quantity, status, distributionDate, doneeID);
     }
 }
-
-
