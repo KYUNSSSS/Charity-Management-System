@@ -167,37 +167,86 @@ public class DonationDistributionUI {
     public static String formatHeader(String title) {
         StringBuilder header = new StringBuilder();
         header.append(title).append("\n");
-        header.append("===================================================================================================\n");
-        header.append(String.format("%-20s%-15s%-15s%-20s%-20s\n", "Item", "Category", "Quantity", "Status", "Distribution Date"));
-        header.append("===================================================================================================\n");
+        header.append("========================================================================================================\n");
+        header.append(String.format("%-20s%-15s%-15s%-15s%-20s%-20s\n", "Item", "Category", "Quantity", "Amount", "Status", "Distribution Date"));
+        header.append("========================================================================================================\n");
         return header.toString();
     }
 
+//    public Distribution inputDistributionDetails() {
+//       String id = inputDistributionID();
+//       String itemName = inputItemName();
+//       String category = inputDonationCategories();
+//       int quantity = inputQuantity();
+//       String doneeID = inputDoneeID();
+//       String status = inputStatus();
+//       LocalDate distributionDate = inputDistributionDate();
+//       
+//       System.out.println();
+//       return new Distribution(id, itemName, category, quantity, doneeID, status, distributionDate);
+//    }
+    
     public Distribution inputDistributionDetails() {
-       String id = inputDistributionID();
-       String itemName = inputItemName();
-       String category = inputDonationCategories();
-       int quantity = inputQuantity();
-       String doneeID = inputDoneeID();
-       String status = inputStatus();
-       LocalDate distributionDate = inputDistributionDate();
-       
-       System.out.println();
-       return new Distribution(id, itemName, category, quantity, doneeID, status, distributionDate);
-    }
-   
-    public void displaySummaryReport(int totalPending, int totalDelivered, int totalReceived, int highestQuantity, String highestStatus, String highestCategory) {
-        StringBuilder report = new StringBuilder();
+        String id = inputDistributionID();
+        String itemName = inputItemName();
+        String category = inputDonationCategories();
 
+        // Declare variables for quantity and amount
+        int quantity = 0;
+        double amount = 0.0;
+        
+        if (category.equalsIgnoreCase("cash")) {
+            amount = inputAmount(); 
+            quantity = 0; 
+        } else {
+            quantity = inputQuantity(); 
+            amount = 0; 
+        }
+
+        String doneeID = inputDoneeID();
+        String status = inputStatus();
+        LocalDate distributionDate = inputDistributionDate();
+
+        System.out.println();
+        return new Distribution(id, itemName, category, quantity, amount, doneeID, status, distributionDate); 
+    }
+
+    public double inputAmount() {
+        double amount = -1;
+        boolean isValid = false;
+
+        while (!isValid) {
+            System.out.print("Enter Amount: ");
+            try {
+                amount = scanner.nextDouble();
+                scanner.nextLine(); // Consume the newline character
+                if (amount > 0) { // Ensure amount is a positive number
+                    isValid = true;
+                } else {
+                    System.out.println("\nInvalid Input. Please enter a valid amount.");
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("\nInvalid Input. Please enter a valid amount.");
+                scanner.next(); // Clear the invalid input
+            }
+        }
+        return amount;
+    }
+
+    public void displaySummaryReport(int totalPendingItems, int totalDeliveredItems, int totalReceivedItems, double totalPendingCash, double totalDeliveredCash, double totalReceivedCash, double totalReceivedAmount, int totalItemsDistributed, int highestQuantity, String highestCategory) {
+        StringBuilder report = new StringBuilder();
         report.append("============= Distribution Summary Report =============\n");
-        report.append("Total Quantity of Pending Distributions: ").append(totalPending).append("\n");
-        report.append("Total Quantity of Delivered Distributions: ").append(totalDelivered).append("\n");
-        report.append("Total Quantity of Received Distributions: ").append(totalReceived).append("\n");
-//        report.append("---------------------------------------------\n");
-        report.append("\nHighest Quantity Status: ").append(highestStatus).append("\n");
+        report.append("Total Pending Distribution Items: ").append(totalPendingItems).append("\n");
+        report.append("Total Delivered Distribution Items: ").append(totalDeliveredItems).append("\n");
+        report.append("Total Received Distribution Items: ").append(totalReceivedItems).append("\n");
+        report.append("\nTotal Cash Pending: RM ").append(String.format("%.2f", totalPendingCash)).append("\n");
+        report.append("Total Cash Delivered: RM ").append(String.format("%.2f", totalDeliveredCash)).append("\n");
+        report.append("Total Cash Received: RM ").append(String.format("%.2f", totalReceivedCash)).append("\n");
+        report.append("\nTotal Amount Received: RM ").append(String.format("%.2f", totalReceivedAmount)).append("\n");
+        report.append("Total Items Distributed: ").append(totalItemsDistributed).append("\n");
         report.append("Category with Highest Quantity: ").append(highestCategory).append(" (").append(highestQuantity).append(" items)").append("\n");
         report.append("=======================================================\n");
-
         System.out.println(report.toString());
     }
 }
+
