@@ -19,16 +19,18 @@ public class Donor implements Serializable {
     private int contactNo;
     private String email;
     private String type; //government, private, public
+    private String entityType; //Organisation, individual
 //    private ListInterface<Donation> donations;
     private double donations; // one donor can have more than one donations
     private LocalDate donationDate;
 
-    public Donor(String donorID, String name, int contactNo, String email, String type, double donations, LocalDate donationDate) {
+    public Donor(String donorID, String name, int contactNo, String email, String type, String entityType, double donations, LocalDate donationDate) {
         this.donorID = donorID;
         this.name = name;
         this.contactNo = contactNo;
         this.email = email;
         this.type = type;
+        this.entityType = entityType;
         this.donations = donations;
         this.donationDate = donationDate;
     }
@@ -73,6 +75,14 @@ public class Donor implements Serializable {
         this.type = type;
     }
 
+    public String getEntityType() {
+        return entityType;
+    }
+
+    public void setEntityType(String entityType) {
+        this.entityType = entityType;
+    }
+        
 //    public void addDonation(Donation donation) {
 //        donations.add(donation);
 //    }
@@ -118,6 +128,6 @@ public class Donor implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("%5s, %15s, %15d, %15s, %10s, %15s, %10s", donorID, name, contactNo, email, type, donations, donationDate);
+        return String.format("%-10s, %-15s, %-15d, %-15s, %-10s, %-15s, %-15s, %-10s", donorID, name, contactNo, email, type, entityType, donations, donationDate);
     }
 }
