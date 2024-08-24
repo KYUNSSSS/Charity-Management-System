@@ -27,24 +27,6 @@ public class DistributionDAO implements Serializable {
             ex.printStackTrace();
         }
     }
-
-//    public ListInterface<Distribution> retrieveFromFile() {
-//        File file = new File(fileName);
-//        ListInterface<Distribution> distributeList = new LinkedList<>();
-//        try {
-//            ObjectInputStream oiStream = new ObjectInputStream(new FileInputStream(file));
-//            distributeList = (LinkedList<Distribution>) (oiStream.readObject());
-//            oiStream.close();
-//        } catch (FileNotFoundException ex) {
-//            System.out.println("\nNo such file.");
-//        } catch (IOException ex) {
-//            System.out.println("\nCannot read from file.");
-//        } catch (ClassNotFoundException ex) {
-//            System.out.println("\nClass not found.");
-//        } finally {
-//            return distributeList;
-//        }
-//    }
     
     public ListInterface<Distribution> retrieveFromFile() {
         LinkedList<Distribution> distributeList = new LinkedList<>();
@@ -56,19 +38,20 @@ public class DistributionDAO implements Serializable {
                 // Split the line by commas
                 String[] parts = line.split(",");
 
-                if (parts.length == 7) { // Adjust the length according to the Distribution fields
+                if (parts.length == 8) { // Adjust the length according to the Distribution fields
                     try {
                         // Parse the data
                         String distributionID = parts[0].trim();
                         String itemName = parts[1].trim();
                         String category = parts[2].trim();
                         int quantity = Integer.parseInt(parts[3].trim()); // Correctly parse quantity as int
-                        String doneeID = parts[4].trim();
-                        String status = parts[5].trim();
-                        LocalDate distributionDate = LocalDate.parse(parts[6].trim(), dateFormatter);
+                        double amount = Double.parseDouble(parts[4].trim());
+                        String doneeID = parts[5].trim();
+                        String status = parts[6].trim();
+                        LocalDate distributionDate = LocalDate.parse(parts[7].trim(), dateFormatter);
 
                         // Create a Distribution object and add it to the list
-                        Distribution distribution = new Distribution(distributionID, itemName, category, quantity, doneeID, status, distributionDate);
+                        Distribution distribution = new Distribution(distributionID, itemName, category, quantity, amount, doneeID, status, distributionDate);
                         distributeList.add(distribution);
                     } catch (NumberFormatException e) {
                         System.out.println("Skipping line due to number format error: " + line);
