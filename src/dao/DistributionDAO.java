@@ -2,93 +2,87 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package entity;
-
-import java.io.Serializable;
+package dao;
+import adt.*;
+import entity.Distribution;
+import java.io.*;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 /**
  *
  * @author SCSM11
  */
-public class Distribution implements Serializable{
-    private String distributionID;
-    private String itemName;
-    private String category;
-    private int quantity;
-    private String doneeID;
-    private String status;
-    private LocalDate distributionDate; 
-
-    public Distribution(String distributionID, String itemName, String category, int quantity, String doneeID, String status, LocalDate distributionDate) {
-        this.distributionID = distributionID;
-        this.itemName = itemName;
-        this.category = category;
-        this.quantity = quantity;
-        this.doneeID = doneeID;
-        this.status = status;
-        this.distributionDate = distributionDate;
+public class DistributionDAO implements Serializable { 
+    private String fileName = "DonationDistribution.txt"; // File for storing data
+     
+    // Save DonationDistribution objects to file
+    public void saveToFile(String distributeList) {
+        File file = new File(fileName);
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
+            writer.write(distributeList);
+            System.out.println("String saved successfully.");
+        } catch (IOException ex) {
+            System.out.println("Error saving string to file: " + ex.getMessage());
+            ex.printStackTrace();
+        }
     }
 
-    public String getDistributionID() {
-        return distributionID;
-    }
-
-    public void setDistributionID(String distributionID) {
-        this.distributionID = distributionID;
-    }
-
-    public String getItemName() {
-        return itemName;
-    }
-
-    public void setItemName(String itemName) {
-        this.itemName = itemName;
-    }
-
-    public String getCategory() {
-        return category;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public LocalDate getDistributionDate() {
-        return distributionDate;
-    }
-
-    public void setDistributionDate(LocalDate distributionDate) {
-        this.distributionDate = distributionDate;
-    }
-
-    public String getDoneeID() {
-        return doneeID;
-    }
-
-    public void setDoneeID(String doneeID) {
-        this.doneeID = doneeID;
-    }
-
-   @Override
-    public String toString() {
-        return String.format("%5s, %s, %s, %d, %s, %s, %s", distributionID , itemName, category, quantity, doneeID, status, distributionDate);
-    }
+//    public ListInterface<Distribution> retrieveFromFile() {
+//        File file = new File(fileName);
+//        ListInterface<Distribution> distributeList = new LinkedList<>();
+//        try {
+//            ObjectInputStream oiStream = new ObjectInputStream(new FileInputStream(file));
+//            distributeList = (LinkedList<Distribution>) (oiStream.readObject());
+//            oiStream.close();
+//        } catch (FileNotFoundException ex) {
+//            System.out.println("\nNo such file.");
+//        } catch (IOException ex) {
+//            System.out.println("\nCannot read from file.");
+//        } catch (ClassNotFoundException ex) {
+//            System.out.println("\nClass not found.");
+//        } finally {
+//            return distributeList;
+//        }
+//    }
     
+    public ListInterface<Distribution> retrieveFromFile() {
+        LinkedList<Distribution> distributeList = new LinkedList<>();
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                // Split the line by commas
+                String[] parts = line.split(",");
+
+                if (parts.length == 7) { // Adjust the length according to the Distribution fields
+                    try {
+                        // Parse the data
+                        String distributionID = parts[0].trim();
+                        String itemName = parts[1].trim();
+                        String category = parts[2].trim();
+                        int quantity = Integer.parseInt(parts[3].trim()); // Correctly parse quantity as int
+                        String doneeID = parts[4].trim();
+                        String status = parts[5].trim();
+                        LocalDate distributionDate = LocalDate.parse(parts[6].trim(), dateFormatter);
+
+                        // Create a Distribution object and add it to the list
+                        Distribution distribution = new Distribution(distributionID, itemName, category, quantity, doneeID, status, distributionDate);
+                        distributeList.add(distribution);
+                    } catch (NumberFormatException e) {
+                        System.out.println("Skipping line due to number format error: " + line);
+                    }
+                } else {
+                    System.out.println("Skipping invalid line: " + line);
+                }
+            }
+        } catch (IOException ex) {
+            System.out.println("Error reading from file: " + ex.getMessage());
+            ex.printStackTrace();
+        }
+
+        return distributeList;
+    }
 }
+
