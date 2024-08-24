@@ -46,11 +46,12 @@ public class DonorDAO implements Serializable {
                     int donorPhoneNum = Integer.parseInt(parts[2].trim());
                     String donorEmail = parts[3].trim();
                     String donorType = parts[4].trim();
-                    double donationAmount = Double.parseDouble(parts[5].trim());
-                    LocalDate donationDate = LocalDate.parse(parts[6].trim(), dateFormatter);
+                    String donorEntity = parts[5].trim();
+                    double donationAmount = Double.parseDouble(parts[6].trim());
+                    LocalDate donationDate = LocalDate.parse(parts[7].trim(), dateFormatter);
 
                     // Create a Donee object and add it to the list
-                    Donor donor = new Donor(donorID, donorName, donorPhoneNum, donorEmail, donorType, donationAmount, donationDate);
+                    Donor donor = new Donor(donorID, donorName, donorPhoneNum, donorEmail, donorType, donorEntity, donationAmount, donationDate);
                     donorList.add(donor);
                 } else {
                     System.out.println("Skipping invalid line: " + line);
@@ -63,35 +64,4 @@ public class DonorDAO implements Serializable {
 
         return donorList;
     }
-    
-//    public void saveToFile(ListInterface<Donor> donorList) {
-//        File file = new File(fileName);
-//        try {
-//            ObjectOutputStream ooStream = new ObjectOutputStream(new FileOutputStream(file));
-//            ooStream.writeObject(donorList);
-//            ooStream.close();
-//        } catch (FileNotFoundException ex) {
-//            System.out.println("\nFile not found");
-//        } catch (IOException ex) {
-//            System.out.println("\nCannot save to file");
-//        }
-//    }
-//
-//    public ListInterface<Donor> retrieveFromFile() {
-//        File file = new File(fileName);
-//        ListInterface<Donor> donorList = new LinkedList<>();
-//        try {
-//            ObjectInputStream oiStream = new ObjectInputStream(new FileInputStream(file));
-//            donorList = (LinkedList<Donor>) (oiStream.readObject());
-//            oiStream.close();
-//        } catch (FileNotFoundException ex) {
-//            System.out.println("\nNo such file.");
-//        } catch (IOException ex) {
-//            System.out.println("\nCannot read from file.");
-//        } catch (ClassNotFoundException ex) {
-//            System.out.println("\nClass not found.");
-//        } finally {
-//            return donorList;
-//        }
-//    }
 }
