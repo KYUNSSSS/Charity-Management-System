@@ -2,281 +2,93 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package control;
-import adt.*;
-import entity.*;
-import boundary.*;
-import dao.DistributionDAO;
-import dao.DoneeDAO;
-import utility.MessageUI;
+package entity;
+
+import java.io.Serializable;
 import java.time.LocalDate;
 
 /**
  *
  * @author SCSM11
  */
-public class DonationDistribution {
-    private ListInterface<Donee> doneeList = new LinkedList<>();
-    private DoneeDAO doneeDAO = new DoneeDAO(); 
-    private ListInterface<Distribution> distributeList = new LinkedList<>();
-    private DistributionDAO distributeDAO = new DistributionDAO();
-    private DonationDistributionUI distributeUI = new DonationDistributionUI();
-    
-    public DonationDistribution(){
-        doneeList = doneeDAO.retrieveFromFile();
-        distributeList = distributeDAO.retrieveFromFile();
-        
-////        for (Donee donee : doneeList) {
-//            String doneeID = donee.getDoneeID(); 
-////            String doneeLocation = donee.getLocation(); 
-//            System.out.println("Donee ID: " + doneeID);
-////            System.out.println("Donee Location: " + doneeLocation);
-//        }
-    }
-    public void runDonationDistribution() {
-        int choice = 0;
-        do {
-            choice = distributeUI.getMenuChoice();
-            switch (choice) {
-                case 0:
-                    MessageUI.displayExitMessage();
-                    break;
-                case 1:
-                    addNewDistribute();
-                    distributeUI.listAllDistribute(getAllDistribute());
-                    break;
-                case 2:
-                    updateDistribute();
-                    //distributeDAO.retrieveFromFile();
-                    break;
-                case 3:
-                    removeDistribute();
-                    distributeUI.listAllDistribute(getAllDistribute());
-                    break;
-                case 4:
-                    trackDistribute();
-                    //distributeUI.listAllDistribute(getAllDistribute());
-                    break;
-                case 5:
-                    generateReport();
-                    break;
-                default:
-                    MessageUI.displayInvalidChoiceMessage();
-            }
-        } while (choice != 0);
-    }
-    
-    public void addNewDistribute(){
-        Distribution newDistribute = distributeUI.inputDistributionDetails();
-        distributeList.add(newDistribute);
-        distributeDAO.saveToFile(getAllDistribute());
-    }
-    
-    public void removeDistribute() {
-        String distributionID = distributeUI.inputDistributionID();
-        boolean isRemoved = false;
+public class Distribution implements Serializable{
+    private String distributionID;
+    private String itemName;
+    private String category;
+    private int quantity;
+    private String doneeID;
+    private String status;
+    private LocalDate distributionDate; 
 
-        for (int i = 1; i <= distributeList.getNumberOfEntries(); i++) {
-            Distribution currentDistribution = distributeList.getEntry(i);
-
-            if (currentDistribution.getDistributionID().equals(distributionID)) {
-                distributeList.remove(i); 
-                isRemoved = true;
-                break; 
-            }
-        }
-
-        if (isRemoved) {
-            distributeDAO.saveToFile(getAllDistribute());
-            System.out.println("Distribution removed successfully.");
-        }else {
-            System.out.println("Distribution ID not found.");
-        }
+    public Distribution(String distributionID, String itemName, String category, int quantity, String doneeID, String status, LocalDate distributionDate) {
+        this.distributionID = distributionID;
+        this.itemName = itemName;
+        this.category = category;
+        this.quantity = quantity;
+        this.doneeID = doneeID;
+        this.status = status;
+        this.distributionDate = distributionDate;
     }
-    
-    public void updateDistribute() {
-        String distributionID = distributeUI.inputDistributionID();
-        int index = findDistributionIndexById(distributionID);
-        if (index != -1) {
-            Distribution updatedDistribute = distributeUI.inputDistributionDetails();
-            distributeList.replace(index, updatedDistribute);
-            distributeDAO.saveToFile(getAllDistribute());
 
-            System.out.println("Distribution with ID " + distributionID + " has been updated successfully.");
-        }else {
-            System.out.println("Distribution with ID " + distributionID + " not found.");
-        }
+    public String getDistributionID() {
+        return distributionID;
+    }
+
+    public void setDistributionID(String distributionID) {
+        this.distributionID = distributionID;
+    }
+
+    public String getItemName() {
+        return itemName;
+    }
+
+    public void setItemName(String itemName) {
+        this.itemName = itemName;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public LocalDate getDistributionDate() {
+        return distributionDate;
+    }
+
+    public void setDistributionDate(LocalDate distributionDate) {
+        this.distributionDate = distributionDate;
+    }
+
+    public String getDoneeID() {
+        return doneeID;
+    }
+
+    public void setDoneeID(String doneeID) {
+        this.doneeID = doneeID;
+    }
+
+   @Override
+    public String toString() {
+        return String.format("%5s, %s, %s, %d, %s, %s, %s", distributionID , itemName, category, quantity, doneeID, status, distributionDate);
     }
     
-    private int findDistributionIndexById(String distributionID) {
-        for (int i = 1; i <= distributeList.getNumberOfEntries(); i++) {
-            Distribution currentDistribute = distributeList.getEntry(i);
-            if (currentDistribute.getDistributionID().equalsIgnoreCase(distributionID)) {
-                return i; 
-            }
-        }
-        return -1; 
-    }
-    
-    public void trackDistribute() {
-        int choices = 0;
-        do {
-            choices = distributeUI.getTrackMenuChoice();
-            switch (choices) {
-                case 0:
-                    MessageUI.displayExitMessage();
-                    break;
-                case 1:
-                    trackByDoneeID();
-                    break;
-                case 2:
-                    trackByDistributionDate();
-                    break;
-                case 3:
-                    trackByCategory();
-                    break;
-                case 4:
-                    trackByStatus();
-                    break;
-                case 5:
-                    generateReport();
-                    break;
-                default:
-                    MessageUI.displayInvalidChoiceMessage();
-            }
-        } while (choices != 0); 
-        
-    }
-    
-    private void trackByCriteria(String criteria, String type) {
-        StringBuilder result = new StringBuilder();
-        String title = "";
-
-        switch (type) {
-            case "DoneeID":
-                title = "Donation Details for Donee ID: " + criteria;
-                break;
-            case "DistributionDate":
-                title = "Donation Details for Distribution Date: " + criteria;
-                break;
-            case "Category":
-                title = "Donation Details for Category: " + criteria;
-                break;
-            case "Status":
-                title = "Donation Details for Status: " + criteria;
-                break;
-            default:
-                System.out.println("Unknown type.");
-                return;
-        }
-      
-        result.append(DonationDistributionUI.formatHeader(title));
-        
-        for (int i = 1; i <= distributeList.getNumberOfEntries(); i++) {
-            Distribution dist = distributeList.getEntry(i);
-
-            boolean match = false;
-            switch (type) {
-                case "DoneeID":
-                    match = dist.getDoneeID().equalsIgnoreCase(criteria);
-                    break;
-                case "DistributionDate":
-                    match = dist.getDistributionDate().isEqual(LocalDate.parse(criteria));
-                    break;
-                case "Category":
-                    match = dist.getCategory().equalsIgnoreCase(criteria);
-                    break;
-                case "Status":
-                    match = dist.getStatus().equalsIgnoreCase(criteria);
-                    break;
-            }
-
-            if (match) {
-                result.append(String.format("%-20s%-15s%-15d%-20s%-20s\n",
-                        dist.getItemName(),
-                        dist.getCategory(),
-                        dist.getQuantity(),
-                        dist.getStatus(),
-                        dist.getDistributionDate()));
-            }
-        }
-
-        result.append("===================================================================================================\n");
-
-        // If no matching records are found, inform the user
-        if (result.length() == 0) {
-            result.append("No matching records found.\n");
-        }
-
-        // Display the final formatted result
-        distributeUI.listAllDistribute(result.toString());
-    }
-
-
-    private void trackByDoneeID() {
-        String doneeID = distributeUI.inputDoneeID();
-        trackByCriteria(doneeID, "DoneeID");
-    }
-
-    private void trackByDistributionDate() {
-        LocalDate date = distributeUI.inputDistributionDate();
-        trackByCriteria(date.toString(), "DistributionDate");
-    }
-
-    private void trackByCategory() {
-        String category = distributeUI.inputDonationCategories();
-        trackByCriteria(category, "Category");
-    }
-
-    private void trackByStatus() {
-        String status = distributeUI.inputStatus();
-        trackByCriteria(status, "Status");
-    }
-    
-    public void generateReport() {
-        int totalPending = 0;
-        int totalDelivered = 0;
-        int totalReceived = 0;
-        int highestQuantity = 0;
-        String highestStatus = "";
-        String highestCategory = "";
-
-        for (int i = 1; i <= distributeList.getNumberOfEntries(); i++) {
-            Distribution dist = distributeList.getEntry(i);
-
-            switch (dist.getStatus().toLowerCase()) {
-                case "pending":
-                    totalPending += dist.getQuantity();
-                    break;
-                case "delivered":
-                    totalDelivered += dist.getQuantity();
-                    break;
-                case "received":
-                    totalReceived += dist.getQuantity();
-                    break;
-            }
-
-            if (dist.getQuantity() > highestQuantity) {
-                highestQuantity = dist.getQuantity();
-                highestStatus = dist.getStatus();
-                highestCategory = dist.getCategory();
-            }
-        }
-
-        distributeUI.displaySummaryReport(totalPending, totalDelivered, totalReceived, highestQuantity, highestStatus, highestCategory);
-    }
-
-    public String getAllDistribute() {
-        String outputStr = "";
-        for (int i = 1; i <= distributeList.getNumberOfEntries(); i++) {
-            outputStr += distributeList.getEntry(i) + "\n";
-        }
-        return outputStr;
-    }
-
-    public static void main(String[] args) {
-        DonationDistribution distribute = new DonationDistribution();
-        distribute.runDonationDistribution();
-  }
 }
-
