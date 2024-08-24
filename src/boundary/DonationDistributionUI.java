@@ -242,11 +242,12 @@ public class DonationDistributionUI {
         report.append("\nTotal Cash Pending: RM ").append(String.format("%.2f", totalPendingCash)).append("\n");
         report.append("Total Cash Delivered: RM ").append(String.format("%.2f", totalDeliveredCash)).append("\n");
         report.append("Total Cash Received: RM ").append(String.format("%.2f", totalReceivedCash)).append("\n");
-        report.append("\nTotal Amount Received: RM ").append(String.format("%.2f", totalReceivedAmount)).append("\n");
+        report.append("\nTotal Cash Distributed: RM ").append(String.format("%.2f", totalReceivedAmount)).append("\n");
         report.append("Total Items Distributed: ").append(totalItemsDistributed).append("\n");
         report.append("Category with Highest Quantity: ").append(highestCategory).append(" (").append(highestQuantity).append(" items)").append("\n");
         report.append("=======================================================\n");
         System.out.println(report.toString());
     }
 }
+
 
