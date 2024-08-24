@@ -281,6 +281,7 @@ public class DonationDistribution {
         }
         
         totalItemsDistributed = totalPendingItems + totalDeliveredItems + totalReceivedItems;
+        totalReceivedAmount = totalPendingCash + totalDeliveredCash + totalReceivedCash;
         distributeUI.displaySummaryReport(totalPendingItems,totalDeliveredItems,totalReceivedItems,totalPendingCash,totalDeliveredCash,totalReceivedCash,totalReceivedAmount,totalItemsDistributed,highestQuantity,highestCategory
         );
     }
@@ -302,4 +303,6 @@ public class DonationDistribution {
         distribute.runDonationDistribution();
   }
 }
+
+
 
