@@ -169,9 +169,10 @@ public class DonationDistribution {
                 System.out.println("Unknown type.");
                 return;
         }
-      
+
         result.append(DonationDistributionUI.formatHeader(title));
-        
+
+        boolean hasMatchingRecords = false;  // Track if there are any matches
         for (int i = 1; i <= distributeList.getNumberOfEntries(); i++) {
             Distribution dist = distributeList.getEntry(i);
 
@@ -192,26 +193,23 @@ public class DonationDistribution {
             }
 
             if (match) {
-                result.append(String.format("%-20s%-15s%-15d%-20s%-20s\n",
-                        dist.getItemName(),
-                        dist.getCategory(),
-                        dist.getQuantity(),
-                        dist.getStatus(),
-                        dist.getDistributionDate()));
+                hasMatchingRecords = true;  // Set to true if any match is found
+                result.append(String.format("%-20s%-15s%-15d%-15.2f%-20s%-20s\n",
+                    dist.getItemName(),
+                    dist.getCategory(),
+                    dist.getQuantity(),
+                    dist.getAmount(),
+                    dist.getStatus(),
+                    dist.getDistributionDate()));
             }
         }
 
-        result.append("===================================================================================================\n");
-
-        // If no matching records are found, inform the user
-        if (result.length() == 0) {
-            result.append("No matching records found.\n");
+        if (!hasMatchingRecords) {
+            result.append("No matching records found.\n");  // Add a message if no matches are found
         }
 
-        // Display the final formatted result
         distributeUI.listAllDistribute(result.toString());
     }
-
 
     private void trackByDoneeID() {
         String doneeID = distributeUI.inputDoneeID();
@@ -234,36 +232,61 @@ public class DonationDistribution {
     }
     
     public void generateReport() {
-        int totalPending = 0;
-        int totalDelivered = 0;
-        int totalReceived = 0;
+        // Initialize summary variables
+        int totalPendingItems = 0;
+        int totalDeliveredItems = 0;
+        int totalReceivedItems = 0;
+        double totalPendingCash = 0.0;
+        double totalDeliveredCash = 0.0;
+        double totalReceivedCash = 0.0;
+        double totalReceivedAmount = 0.0;
+        int totalItemsDistributed = 0;
         int highestQuantity = 0;
-        String highestStatus = "";
         String highestCategory = "";
 
         for (int i = 1; i <= distributeList.getNumberOfEntries(); i++) {
             Distribution dist = distributeList.getEntry(i);
 
+            boolean isCash = dist.getCategory().equalsIgnoreCase("cash");
+
             switch (dist.getStatus().toLowerCase()) {
                 case "pending":
-                    totalPending += dist.getQuantity();
+                    if (isCash) {
+                        totalPendingCash += dist.getAmount();
+                    } else {
+                        totalPendingItems += dist.getQuantity();
+                    }
                     break;
                 case "delivered":
-                    totalDelivered += dist.getQuantity();
+                    if (isCash) {
+                        totalDeliveredCash += dist.getAmount();
+                    } else {
+                        totalDeliveredItems += dist.getQuantity();
+                    }
                     break;
                 case "received":
-                    totalReceived += dist.getQuantity();
+                    if (isCash) {
+                        totalReceivedCash += dist.getAmount();
+                        totalReceivedAmount += dist.getAmount();
+                    } else {
+                        totalReceivedItems += dist.getQuantity();
+                    }
                     break;
             }
-
+            
             if (dist.getQuantity() > highestQuantity) {
                 highestQuantity = dist.getQuantity();
-                highestStatus = dist.getStatus();
                 highestCategory = dist.getCategory();
             }
         }
+        
+        totalItemsDistributed = totalPendingItems + totalDeliveredItems + totalReceivedItems;
+        distributeUI.displaySummaryReport(totalPendingItems,totalDeliveredItems,totalReceivedItems,totalPendingCash,totalDeliveredCash,totalReceivedCash,totalReceivedAmount,totalItemsDistributed,highestQuantity,highestCategory
+        );
+    }
 
-        distributeUI.displaySummaryReport(totalPending, totalDelivered, totalReceived, highestQuantity, highestStatus, highestCategory);
+    private boolean isCash(Distribution dist) {
+        return dist.getCategory().equalsIgnoreCase("cash");
     }
 
     public String getAllDistribute() {
