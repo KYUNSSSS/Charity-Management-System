@@ -20,15 +20,6 @@ public class Validator {
         return input.matches("[a-zA-Z ]+");
     }
     
-    public static boolean isValidQuantity(String input) {
-        try {
-            int quantity = Integer.parseInt(input.trim());
-            return quantity > 0; 
-        } catch (NumberFormatException e) {
-            return false; 
-        }
-    }
-    
     public static LocalDate isValidDate(String input, DateTimeFormatter formatter) {
         try {
             return LocalDate.parse(input, formatter); 
@@ -37,4 +28,14 @@ public class Validator {
         }
     }
     
+    public static boolean isValidPositiveInteger(String input) {
+        try {
+            int number = Integer.parseInt(input.trim());
+            return number > 0; 
+        } catch (NumberFormatException e) {
+            return false; 
+        }
+    }
+    
 }
+
