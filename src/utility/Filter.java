@@ -35,9 +35,10 @@ public class Filter<F> implements FilterInterface<F> {
             F entity = list.getEntry(i);
             if (entity instanceof Donor && isWithinDateRange(((Donor) entity).getDonationDate(), startDate, endDate)) {
                 filteredList.add(entity);
-            } else if (entity instanceof Donee && isWithinDateRange(((Donee) entity).getDonationDate(), startDate, endDate)) {
-                filteredList.add(entity);
-            }
+            } 
+//            else if (entity instanceof Donee && isWithinDateRange(((Donee) entity).getDonationDate(), startDate, endDate)) {
+//                filteredList.add(entity);
+//            }
         }
         return filteredList;
     }
@@ -49,9 +50,10 @@ public class Filter<F> implements FilterInterface<F> {
             F entity = list.getEntry(i);
             if (entity instanceof Donor && isWithinAmountRange(((Donor) entity).getDonations(), minAmount, maxAmount)) {
                 filteredList.add(entity);
-            } else if (entity instanceof Donee && isWithinAmountRange(((Donee) entity).getDonationAmount(), minAmount, maxAmount)) {
-                filteredList.add(entity);
-            }
+            } 
+//            else if (entity instanceof Donee && isWithinAmountRange(((Donee) entity).getDonationAmount(), minAmount, maxAmount)) {
+//                filteredList.add(entity);
+//            }
         }
         return filteredList;
     }
