@@ -5,10 +5,10 @@
 package boundary;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import entity.Distribution;
 import java.util.Scanner;
 import java.util.InputMismatchException;
+import utility.Validator;
 
 /**
  *
@@ -18,7 +18,7 @@ public class DonationDistributionUI {
     Scanner scanner = new Scanner(System.in);
     
     public int getMenuChoice() {
-        System.out.println("\n****** DONATION DISTRIBUTION SYSTEM ******");
+        System.out.println("\n********** DONATION DISTRIBUTION **********");
         System.out.println("1. Add New Donation Distribution");
         System.out.println("2. Update Donation Distribution Details");
         System.out.println("3. Remove Donation Distribution");
@@ -51,82 +51,67 @@ public class DonationDistributionUI {
         System.out.println("\nList of Donation Distribution:\n" + outputStr);
     }
     
-//    public String inputDistributionID() {
-////        System.out.print("Enter Distribution ID: ");
-////        String id = scanner.nextLine();
-////        return id;
-//    
-//    }
-  
     public String inputDistributionID() {
-        String id = "";
-        boolean isValid = false;
-
-        while (!isValid) {
+        while (true) {
             System.out.print("Enter Distribution ID: ");
-            id = scanner.nextLine();
-            // Check if the input contains only alphanumeric characters
-            if (id.matches("[a-zA-Z0-9]+")) {
-                isValid = true; 
-            } else {
-                System.out.println("\nInvalid Input. Please enter a valid Distribution ID exclude symbols. [Eg. A001].");
+            String id = scanner.nextLine();
+
+            if (Validator.isValidID(id)) {
+                return id;
             }
+            System.out.println("\nInvalid Input. Please enter a valid Distribution ID without symbols. [Eg. A001].");
         }
-        return id;
     }
 
     public String inputItemName(){
-        System.out.print("Enter Item Name: ");
-        String itemName = scanner.nextLine();
-        return itemName;
+        while (true) {
+            System.out.print("Enter Item Name: ");
+            String itemName = scanner.nextLine();
+
+            if (Validator.isAlphabetic(itemName)) {
+                return itemName;
+            }
+            System.out.println("\nInvalid Input. Please enter a valid Item Name containing only letters and spaces.");
+        }
     }
     
     public String inputDonationCategories(){
-        System.out.print("Enter Item Category: ");
-        String category = scanner.nextLine();
-        return category;
+        while (true) {
+            System.out.print("Enter Item Category: ");
+            String category = scanner.nextLine();
+
+            if (Validator.isAlphabetic(category)) {
+                return category;
+            }
+            System.out.println("\nInvalid Input. Please enter a valid Item Category containing only letters and spaces.");
+        }
     }
     
-//    public int inputQuantity(){
-//        System.out.print("Enter Item quantity: ");
-//        int quantity = scanner.nextInt();
-//        scanner.nextLine();
-//        return quantity;
-//    }
-    
     public int inputQuantity() {
-        int quantity = -1;
-        boolean isValid = false;
+         while (true) {
+            System.out.print("Enter Item Quantity: ");
+            String input = scanner.nextLine().trim();
 
-        while (!isValid) {
-            System.out.print("Enter Item quantity: ");
-            try {
-                quantity = scanner.nextInt();
-                scanner.nextLine(); // Consume the newline character
-                if (quantity > 0) { // Ensure quantity is a non-negative integer
-                    isValid = true;
-                } else {
-                    System.out.println("\nInvalid Input. Please enter valid number.");
-                }
-            } catch (InputMismatchException e) {
-                System.out.println("\nInvalid Input. Please enter a valid number.");
-                scanner.next(); // Clear the invalid input
+            if (Validator.isValidQuantity(input)) {
+                return Integer.parseInt(input); 
             }
+
+            System.out.println("\nInvalid Input. Please enter a valid number greater than zero.");
         }
-        return quantity;
     }
     
     public String inputDoneeID(){
-        System.out.print("Enter Donee ID: ");
-        String doneeId = scanner.nextLine();
-        return doneeId;
+        while (true) {
+            System.out.print("Enter Donee ID: ");
+            String doneeId = scanner.nextLine();
+
+            if (Validator.isValidID(doneeId)) {
+                return doneeId;
+            }
+            System.out.println("\nInvalid Input. Please enter a valid Distribution ID without symbols. [Eg. A001].");
+        }
     }
-    
-//    public String inputStatus() {
-//        System.out.print("Enter Distribution Status (Pending, Delivered, Received): ");
-//        String status = scanner.nextLine();
-//        return status;
-//    }
+   
     public String inputStatus() {
         String status;
         while (true) {
@@ -149,15 +134,12 @@ public class DonationDistributionUI {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
         while (date == null) {
-            try {
-                System.out.print("Enter Distribution Date (YYYY-MM-DD): ");
-                String distributeDate = scanner.nextLine();
+            System.out.print("Enter Distribution Date (YYYY-MM-DD): ");
+            String distributeDate = scanner.nextLine().trim();
 
-                // Parse the input date string into a LocalDate object
-                date = LocalDate.parse(distributeDate, formatter);
-                System.out.println();
+            date = Validator.isValidDate(distributeDate, formatter);
 
-            } catch (DateTimeParseException e) {
+            if (date == null) {
                 System.out.println("\nInvalid Date Format. Please use YYYY-MM-DD.");
             }
         }
@@ -172,19 +154,6 @@ public class DonationDistributionUI {
         header.append("========================================================================================================\n");
         return header.toString();
     }
-
-//    public Distribution inputDistributionDetails() {
-//       String id = inputDistributionID();
-//       String itemName = inputItemName();
-//       String category = inputDonationCategories();
-//       int quantity = inputQuantity();
-//       String doneeID = inputDoneeID();
-//       String status = inputStatus();
-//       LocalDate distributionDate = inputDistributionDate();
-//       
-//       System.out.println();
-//       return new Distribution(id, itemName, category, quantity, doneeID, status, distributionDate);
-//    }
     
     public Distribution inputDistributionDetails() {
         String id = inputDistributionID();
@@ -249,5 +218,8 @@ public class DonationDistributionUI {
         System.out.println(report.toString());
     }
 }
+
+
+
 
 
