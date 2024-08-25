@@ -96,28 +96,31 @@ public class Filter<F> implements FilterInterface<F> {
     }
 
     private boolean isWithinDateRange(LocalDate date, LocalDate startDate, LocalDate endDate) {
-        // Implement date comparison logic
-        return true; // Placeholder
+    if (date == null) {
+        return false; // Handle null dates appropriately
     }
+
+    // Check if the date is after or equal to startDate and before or equal to endDate
+    return (date.isEqual(startDate) || date.isAfter(startDate)) &&
+           (date.isEqual(endDate) || date.isBefore(endDate));
+}
 
     private boolean isWithinAmountRange(double amount, double minAmount, double maxAmount) {
         return amount >= minAmount && amount <= maxAmount;
     }
     @Override
-    public ListInterface<F> filterByDateAndDoneeID(ListInterface<F> list, LocalDate startDate, LocalDate endDate, String doneeID) {
-    ListInterface<F> filteredList = new LinkedList<>();
+    public ListInterface<Distribution> filterByDateAndDoneeID(ListInterface<Distribution> list, LocalDate startDate, LocalDate endDate, String doneeID) {
+    ListInterface<Distribution> filteredList = new LinkedList<>();
     for (int i = 1; i <= list.getNumberOfEntries(); i++) {
-        F entity = list.getEntry(i);
+        Distribution distribution = list.getEntry(i);
         
-        if (entity instanceof Distribution && isWithinDateRange(((Distribution) entity).getDistributionDate(), startDate, endDate)) {
-            // Assuming Distribution has a getDoneeID method to check the associated Donee ID
-            if (((Distribution) entity).getDoneeID().equals(doneeID)) {
-                filteredList.add(entity);
-            }
+        if (isWithinDateRange(distribution.getDistributionDate(), startDate, endDate) && distribution.getDoneeID().equals(doneeID)) {
+            filteredList.add(distribution);
         }
     }
     return filteredList;
 }
+
     public ListInterface<F> filterByAmountAndDoneeID(ListInterface<F> list, double minAmount, double maxAmount, String doneeID) {
     ListInterface<F> filteredList = new LinkedList<>();
     for (int i = 1; i <= list.getNumberOfEntries(); i++) {

@@ -8,6 +8,8 @@ import adt.*;
 import boundary.*;
 import utility.*;
 import entity.*;
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDate;
 /**
  *
@@ -27,6 +29,21 @@ public class DoneeManagement {
      private int lastDoneeNumber = 0;
     
     public DoneeManagement() {
+     File file = new File("Donee.txt");
+      if (!file.exists()) {
+        try {
+            if (file.createNewFile()) {
+                System.out.println("File not found. A new file has been created.");
+            } else {
+                System.out.println("Failed to create a new file.");
+                return;
+            }
+        } catch (IOException e) {
+            System.out.println("Error creating new file: " + e.getMessage());
+            e.printStackTrace();
+            return;
+        }
+    }
     doneeList = doneeDAO.retrieveFromFile();
      distributeList = distributeDAO.retrieveFromFile();
      for (int i = 1; i <= doneeList.getNumberOfEntries(); i++) {
@@ -219,7 +236,7 @@ public class DoneeManagement {
     public void filterDonees() {
         String doneeID;
     int filterChoice = doneeUI.getFilterChoice(); // Prompt user to choose filter type
-    ListInterface<Donee> filteredDonees = null;
+    ListInterface<Donee> filteredDonees ;
     ListInterface<Distribution> filteredInfoByDoneeID = null;
     
 
@@ -227,25 +244,27 @@ public class DoneeManagement {
         case 1:
             String doneeType = doneeUI.inputDoneeType();
             filteredDonees = filterDonee.filterByType(doneeList,doneeType);
+            doneeUI.displayFilteredDonees(filteredDonees);
             break;
         case 2:
             doneeID = doneeUI.inputDoneeID();
             LocalDate startDate = doneeUI.inputStartDate();
             LocalDate endDate = doneeUI.inputEndDate();
             filteredInfoByDoneeID = filterDonation.filterByDateAndDoneeID(distributeList,startDate, endDate,doneeID);
-            doneeUI.displayFilteredDoneesByDoneeID(distributeList);
+            doneeUI.displayFilteredDoneesByDoneeID(filteredInfoByDoneeID);
             break;
         case 3:
             doneeID = doneeUI.inputDoneeID();
             double minAmount = doneeUI.inputMinAmount();
             double maxAmount = doneeUI.inputMaxAmount();
             filteredInfoByDoneeID = filterDonation.filterByAmountAndDoneeID(distributeList,minAmount, maxAmount,doneeID);
-            doneeUI.displayFilteredDoneesByDoneeID(distributeList);
+            doneeUI.displayFilteredDoneesByDoneeID(filteredInfoByDoneeID);
             break;
         case 4:
             String doneeLocation = doneeUI.inputDoneeLocation();
             filteredDonees = filterDonee.filterByLocation(doneeList,doneeLocation);
             doneeUI.displayFilteredDonees(filteredDonees);
+            break;
         default:
             MessageUI.displayInvalidChoiceMessage();
             filterDonees();

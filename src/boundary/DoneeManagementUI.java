@@ -205,10 +205,10 @@ public class DoneeManagementUI {
                         donation.getAmount(),
                         donation.getStatus(),
                         donation.getDistributionDate().toString());
-                System.out.println("**************");
-                MessageUI.pressAnyKeyToContinue();
+                
             }
-        }
+        }System.out.println("**************");
+                MessageUI.pressAnyKeyToContinue();
     }
 
     public void listDonee(Donee donee) {
