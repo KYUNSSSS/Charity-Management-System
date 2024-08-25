@@ -2,6 +2,7 @@
 package adt;
 
 import java.time.LocalDate;
+import java.util.Iterator;
 
 /**
  * ListInterface.java An interface for the ADT List. Entries in the list have
@@ -103,7 +104,7 @@ public interface ListInterface<T> {
    * @return true if the list is full, or false if not
    */
   public boolean isFull();
-  public ListInterface<T> filterByAmountRange(double minAmount, double maxAmount) ;
-  public ListInterface<T> filterByDateRange(LocalDate startDate, LocalDate endDate);
+  public Iterator<T> iterator();
+  public LinkedList<T> filterByDateRange(LocalDate startDate, LocalDate endDate);
   public ListInterface<T> filterByDoneeType(String doneeType);
 }
