@@ -9,7 +9,7 @@ import entity.*;
 import boundary.DonorManagementUI;
 import dao.DonorDAO;
 import java.time.LocalDate;
-import utility.MessageUI;
+import utility.*;
 
 /**
  *
@@ -21,6 +21,7 @@ public class DonorManagement {
     private DonorDAO donorDAO = new DonorDAO();
     private DonorManagementUI donorUI = new DonorManagementUI();
     private MapInterface<String, LinkedList<Donor>> categorisedDonors;
+    private FilterInterface<Donor> filterDonor = new Filter<>();
 
     public DonorManagement() {
         donorList = donorDAO.retrieveFromFile();
@@ -152,42 +153,31 @@ public class DonorManagement {
     }
 
     // Filter donor by type
-//    public String filterDonor() {
-//        String donorType = donorUI.inputDonorType();
-//        String outputStr = "";
-//        for (int i = 1; i <= donorList.getNumberOfEntries(); i++) {
-//            Donor donor = donorList.getEntry(i);
-//            if (donor.getType().equalsIgnoreCase(donorType)) {
-//                outputStr += donorList.getEntry(i) + "\n";
-//            }
-//        }
-//        return outputStr;
-//    }
     public void filterDonor() {
-//        int filterChoice = donorUI.getFilterChoice(); // Prompt user to choose filter type
-//        ListInterface<Donee> filteredDonors = null;
-//
-//        switch (filterChoice) {
-//            case 1:
-//                String doneeType = donorUI.inputDonorType();
-//                filteredDonors = donorList.filterByDonorType(doneeType);
-//                break;
-//            case 2:
-//                LocalDate startDate = donorUI.inputStartDate();
-//                LocalDate endDate = donorUI.inputEndDate();
-//                filteredDonors = donorList.filterByDateRange(startDate, endDate);
-//                break;
-//            case 3:
-//                double minAmount = donorUI.inputMinAmount();
-//                double maxAmount = donorUI.inputMaxAmount();
-//                filteredDonors = donorList.filterByAmountRange(minAmount, maxAmount);
-//                break;
-//            default:
-//                MessageUI.displayInvalidChoiceMessage();
-//                return;
-//        }
-//
-//        donorUI.displayFilteredDonees(filteredDonors);
+        int filterChoice = donorUI.getFilterChoice(); // Prompt user to choose filter type
+        ListInterface<Donor> filteredDonors = null;
+
+        switch (filterChoice) {
+            case 1:
+                String donorType = donorUI.inputDonorType();
+                filteredDonors = filterDonor.filterByType(donorList, donorType);
+                break;
+            case 2:
+                LocalDate startDate = donorUI.inputStartDate();
+                LocalDate endDate = donorUI.inputEndDate();
+                filteredDonors = filterDonor.filterByDate(donorList, startDate, endDate);
+                break;
+            case 3:
+                double minAmount = donorUI.inputMinAmount();
+                double maxAmount = donorUI.inputMaxAmount();
+                filteredDonors = filterDonor.filterByAmountRange(donorList, minAmount, maxAmount);
+                break;
+            default:
+                MessageUI.displayInvalidChoiceMessage();
+                return;
+        }
+
+        donorUI.displayFilteredDonors(filteredDonors);
     }
 
     public MapInterface<String, LinkedList<Donor>> categoriseDonors() {
