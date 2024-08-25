@@ -145,11 +145,15 @@ public class DonationDistributionUI {
         return date;
     }
     
-    public static String formatHeader(String title) {
+    public static String formatHeader(String title, boolean includeDoneeID) {
         StringBuilder header = new StringBuilder();
         header.append(title).append("\n");
         header.append("=====================================================================================================================\n");
-        header.append(String.format("%-20s%-15s%-15s%-15s%-20s%-20s%-20s\n", "Item", "Category", "Quantity", "Amount", "Status", "Distribution Date", "Location"));
+        if (includeDoneeID) {
+            header.append(String.format("%-20s%-15s%-15s%-15s%-20s%-20s%-20s\n", "Item", "Category", "Quantity", "Amount", "Status", "Distribution Date", "Donee ID"));
+        } else {
+            header.append(String.format("%-20s%-15s%-15s%-15s%-20s%-20s%-50s\n", "Item", "Category", "Quantity", "Amount", "Status", "Distribution Date", "Location"));
+        }
         header.append("=====================================================================================================================\n");
         return header.toString();
     }
@@ -217,6 +221,7 @@ public class DonationDistributionUI {
         System.out.println(report.toString());
     }
 }
+
 
 
 

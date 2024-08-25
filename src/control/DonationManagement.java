@@ -9,8 +9,8 @@
 package control;
 
 import adt.LinkedList;
-import dao.DonationManagementDAO;
-import entity.DonationManagement;
+import dao.DonationDAO;
+import entity.Donation;
 import boundary.DonationManagementUI;
 
 import java.io.BufferedWriter;
@@ -23,17 +23,17 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import utility.MessageUI;
 
-public class DonationManagementController {
-    private DonationManagementDAO donationDAO = new DonationManagementDAO();
+public class DonationManagement {
+    private DonationDAO donationDAO = new DonationDAO();
     private DonationManagementUI ui;
 
     // Constructor with DonationManagementUI
-    public DonationManagementController(DonationManagementUI ui) {
+    public DonationManagement(DonationManagementUI ui) {
         this.ui = ui;
     }
 
     // Default constructor
-    public DonationManagementController() {
+    public DonationManagement() {
         // Default constructor
     }
 
@@ -86,7 +86,7 @@ public class DonationManagementController {
         for (String item : itemsArray) {
             items.add(item);
         }
-        DonationManagement donation = new DonationManagement(donationID, donorID, items, donationType);
+        Donation donation = new Donation(donationID, donorID, items, donationType);
         return donationDAO.addDonation(donation);
     }
 
@@ -94,7 +94,7 @@ public class DonationManagementController {
         return donationDAO.removeDonation(donationID);
     }
 
-    public DonationManagement getDonationById(String donationID) {
+    public Donation getDonationById(String donationID) {
         return donationDAO.getDonationById(donationID);
     }
     
@@ -102,12 +102,12 @@ public class DonationManagementController {
         return donationDAO.getItemsByCategory(category);
     }
 
-    public LinkedList<DonationManagement> listDonationsByDonor(String donorID) {
-        LinkedList<DonationManagement> filteredDonations = new LinkedList<>();
-        LinkedList<DonationManagement> allDonations = donationDAO.getAllDonations();
+    public LinkedList<Donation> listDonationsByDonor(String donorID) {
+        LinkedList<Donation> filteredDonations = new LinkedList<>();
+        LinkedList<Donation> allDonations = donationDAO.getAllDonations();
 
         for (int i = 1; i <= allDonations.getNumberOfEntries(); i++) {
-            DonationManagement donation = allDonations.getEntry(i);
+            Donation donation = allDonations.getEntry(i);
             if (donation.getDonorID().equals(donorID)) {
                 filteredDonations.add(donation);
             }
@@ -116,15 +116,15 @@ public class DonationManagementController {
         return filteredDonations;
     }
 
-    public LinkedList<DonationManagement> getDonationsByDonor(String donorID) {
+    public LinkedList<Donation> getDonationsByDonor(String donorID) {
         return donationDAO.getDonationsByDonor(donorID);
     }
 
-    public LinkedList<DonationManagement> getAllDonations() {
+    public LinkedList<Donation> getAllDonations() {
         return donationDAO.getAllDonations();
     }
     
-    public LinkedList<DonationManagement> listAllDonations() {
+    public LinkedList<Donation> listAllDonations() {
         return donationDAO.getAllDonations();
     }
 
@@ -142,7 +142,7 @@ public class DonationManagementController {
                 Files.createFile(filePath);
             }
 
-            LinkedList<DonationManagement> donations = donationDAO.getAllDonations();
+            LinkedList<Donation> donations = donationDAO.getAllDonations();
 
             reportContent.append("*****Donation Summary Report*****\n");
             reportContent.append("Date Generated    : ").append(LocalDate.now().format(dateFormatter)).append("\n\n");
@@ -151,7 +151,7 @@ public class DonationManagementController {
             reportContent.append("Total Number of Donations : ").append(donations.getNumberOfEntries()).append("\n\n");
 
             for (int i = 1; i <= donations.getNumberOfEntries(); i++) {
-                DonationManagement donation = donations.getEntry(i);
+                Donation donation = donations.getEntry(i);
                 reportContent.append("Donation ID   : ").append(donation.getDonationID()).append("\n");
                 reportContent.append("Donor ID      : ").append(donation.getDonorID()).append("\n");
                 reportContent.append("Donation Type : ").append(donation.getDonationType()).append("\n");
@@ -174,16 +174,10 @@ public class DonationManagementController {
     }
 
     public static void main(String[] args) {
-        // Create the controller first
-        DonationManagementController controller = new DonationManagementController();
-        
-        // Now pass the controller to UI
+        DonationManagement controller = new DonationManagement();
         DonationManagementUI ui = new DonationManagementUI(controller);
-        
         // Create the controller with the UI
-        controller.setUI(ui); // This method should be implemented if needed
-
-        // Run the donation management system
+        controller.setUI(ui);
         controller.runDonationManagement();
     }
 }

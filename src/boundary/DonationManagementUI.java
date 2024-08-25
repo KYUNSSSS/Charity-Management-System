@@ -5,18 +5,18 @@
  */
 package boundary;
 
-import control.DonationManagementController;
-import entity.DonationManagement;
+import control.DonationManagement;
+import entity.Donation;
 
 import java.util.Scanner;
 import adt.LinkedList; 
 
 public class DonationManagementUI {
     Scanner scanner = new Scanner(System.in);
-    private DonationManagementController controller;
+    private DonationManagement controller;
 
     // Constructor that takes DonationManagementController as a parameter
-    public DonationManagementUI(DonationManagementController controller) {
+    public DonationManagementUI(DonationManagement controller) {
         this.controller = controller;
     } 
     // ANSI escape code for green text
@@ -84,7 +84,7 @@ public class DonationManagementUI {
         System.out.print("Enter Donation ID: ");
         String donationID = scanner.nextLine();
 
-        DonationManagement donation = controller.getDonationById(donationID);
+        Donation donation = controller.getDonationById(donationID);
         if (donation != null) {
             System.out.println("Donation ID     : " + donation.getDonationID());
             System.out.println("Donor ID        : " + donation.getDonorID()); //remember to link to donorManagement
@@ -120,7 +120,7 @@ public class DonationManagementUI {
         System.out.print("Enter Donation ID: ");
         String donationID = scanner.nextLine();
 
-        DonationManagement donation = controller.getDonationById(donationID);
+        Donation donation = controller.getDonationById(donationID);
         if (donation != null) {
             System.out.println("Donation ID: " + donation.getDonationID());
             System.out.println("Donor ID: " + donation.getDonorID());
@@ -168,10 +168,10 @@ public class DonationManagementUI {
         System.out.print("Enter Donor ID: ");
         String donorID = scanner.nextLine();
 
-        LinkedList<DonationManagement> donations = controller.getDonationsByDonor(donorID);
+        LinkedList<Donation> donations = controller.getDonationsByDonor(donorID);
         if (donations != null && donations.getNumberOfEntries() > 0) {
             for (int i = 1; i <= donations.getNumberOfEntries(); i++) {
-                DonationManagement donation = donations.getEntry(i);
+                Donation donation = donations.getEntry(i);
                 System.out.println("Donation ID : " + donation.getDonationID());
                 System.out.println("Donation Type : " + donation.getDonationType());
                 System.out.println("Items : " + donation.getItems().toString());
@@ -186,10 +186,10 @@ public class DonationManagementUI {
     public void listDonations() {
         System.out.println("*****List All Donations*****");
 
-        LinkedList<DonationManagement> donations = controller.getAllDonations();
+        LinkedList<Donation> donations = controller.getAllDonations();
         if (donations != null && donations.getNumberOfEntries() > 0) {
             for (int i = 1; i <= donations.getNumberOfEntries(); i++) {
-                DonationManagement donation = donations.getEntry(i);
+                Donation donation = donations.getEntry(i);
                 System.out.println("Donation ID: " + donation.getDonationID());
                 System.out.println("Donor ID: " + donation.getDonorID());
                 System.out.println("Donation Type: " + donation.getDonationType());
