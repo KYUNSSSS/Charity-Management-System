@@ -21,6 +21,10 @@ public class Volunteer implements Serializable{
   public Volunteer() {
   }
 
+    public Volunteer(String id, String type, String name, int phone, String email) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
     public String getVolunteerID() {
         return volunteerID;
     }

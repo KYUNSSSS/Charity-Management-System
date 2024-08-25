@@ -8,7 +8,8 @@ import adt.*;
 import entity.*;
 import boundary.DonorManagementUI;
 import dao.DonorDAO;
-import utility.MessageUI;
+import java.time.LocalDate;
+import utility.*;
 
 /**
  *
@@ -19,9 +20,15 @@ public class DonorManagement {
     private ListInterface<Donor> donorList = new LinkedList<>();
     private DonorDAO donorDAO = new DonorDAO();
     private DonorManagementUI donorUI = new DonorManagementUI();
+    private MapInterface<String, LinkedList<Donor>> categorisedDonors;
+    private FilterInterface<Donor> filterDonor = new Filter<>();
 
     public DonorManagement() {
         donorList = donorDAO.retrieveFromFile();
+        categorisedDonors = new HashMap<>();
+        categorisedDonors.put("government", new LinkedList<>());
+        categorisedDonors.put("private", new LinkedList<>());
+        categorisedDonors.put("public", new LinkedList<>());
     }
 
     public void runDonorManagement() {
@@ -57,8 +64,8 @@ public class DonorManagement {
                     donorUI.listAllDonors(getAllDonors());
                     break;
                 case 7:
-                    categoriseDonor();
-                    donorUI.listAllDonors(getAllDonors());
+                    categoriseDonors();
+                    printCategorisedDonors();
                     break;
                 case 8:
                     generateReport();
@@ -76,14 +83,6 @@ public class DonorManagement {
     }
 
     public String getAllDonors() {
-        String outputStr = "";
-        for (int i = 1; i <= donorList.getNumberOfEntries(); i++) {
-            outputStr += donorList.getEntry(i) + "\n";
-        }
-        return outputStr;
-    }
-
-    public String getAllDonors(ListInterface<Donor> donorList) {
         String outputStr = "";
         for (int i = 1; i <= donorList.getNumberOfEntries(); i++) {
             outputStr += donorList.getEntry(i) + "\n";
@@ -132,6 +131,7 @@ public class DonorManagement {
         }
         if (donorFound) {
             donorDAO.saveToFile(getAllDonors());
+            System.out.println("Donor detail updated successfully.");
         } else {
             System.err.println("Donor ID not found.");
         }
@@ -153,60 +153,76 @@ public class DonorManagement {
     }
 
     // Filter donor by type
-    public String filterDonor() {
-        String donorType = donorUI.inputDonorType();
-        String outputStr = "";
-        for (int i = 1; i <= donorList.getNumberOfEntries(); i++) {
-            Donor donor = donorList.getEntry(i);
-            if (donor.getType().equalsIgnoreCase(donorType)) {
-                outputStr += donorList.getEntry(i) + "\n";
-            }
+    public void filterDonor() {
+        int filterChoice = donorUI.getFilterChoice(); // Prompt user to choose filter type
+        ListInterface<Donor> filteredDonors = null;
+
+        switch (filterChoice) {
+            case 1:
+                String donorType = donorUI.inputDonorType();
+                filteredDonors = filterDonor.filterByType(donorList, donorType);
+                break;
+            case 2:
+                LocalDate startDate = donorUI.inputStartDate();
+                LocalDate endDate = donorUI.inputEndDate();
+                filteredDonors = filterDonor.filterByDate(donorList, startDate, endDate);
+                break;
+            case 3:
+                double minAmount = donorUI.inputMinAmount();
+                double maxAmount = donorUI.inputMaxAmount();
+                filteredDonors = filterDonor.filterByAmountRange(donorList, minAmount, maxAmount);
+                break;
+            default:
+                MessageUI.displayInvalidChoiceMessage();
+                return;
         }
-        return outputStr;
+
+        donorUI.displayFilteredDonors(filteredDonors);
     }
 
-    private void categoriseDonor() {
-        // LinkedLists to hold categorized donors
-        ListInterface<Donor> governmentDonors = new LinkedList<>();
-        ListInterface<Donor> privateDonors = new LinkedList<>();
-        ListInterface<Donor> publicDonors = new LinkedList<>();
+    public MapInterface<String, LinkedList<Donor>> categoriseDonors() {
+        ListInterface<Donor> donors = donorList;
+        for (int i = 1; i <= donors.getNumberOfEntries(); i++) {
+            Donor donor = donors.getEntry(i);
 
-        // Categorize donors
-        for (int i = 1; i <= donorList.getNumberOfEntries(); i++) {
-            Donor donor = donorList.getEntry(i);
-            String donorType = donor.getType().toLowerCase(); // Convert to lower case for consistent comparison
-
-            switch (donorType) {
-                case "government":
-                    governmentDonors.add(donor);
-                    break;
-                case "private":
-                    privateDonors.add(donor);
-                    break;
-                case "public":
-                    publicDonors.add(donor);
-                    break;
-                default:
-                    System.err.println("Unknown donor type: " + donorType);
-                    break;
+            String type = donor.getType().toLowerCase();
+            if (categorisedDonors.containsKey(type)) {
+                LinkedList<Donor> typeList = categorisedDonors.get(type);
+                typeList.add(donor);
+            } else {
+                System.out.println("Invalid Type.");
             }
         }
+        return categorisedDonors;
+    }
 
-        // Display categorized donors
-        System.out.println("Categorized Donors by Type:");
-        System.out.println("Government Donors:");
-        System.out.println(getAllDonors(governmentDonors));
+    public void printCategorisedDonors() {
+        for (String type : new String[]{"government", "private", "public"}) {
+            switch (type) {
+                case "government":
+                    System.out.println("Category: Government");
+                    break;
+                case "private":
+                    System.out.println("Category: Private");
+                    break;
+                default:
+                    System.out.println("Category: Public");
+                    break;
+            }
 
-        System.out.println("Private Donors:");
-        System.out.println(getAllDonors(privateDonors));
-
-        System.out.println("Public Donors:");
-        System.out.println(getAllDonors(publicDonors));
+            LinkedList<Donor> donors = categorisedDonors.get(type);
+            if (!donors.isEmpty()) {
+                System.out.println(donors);
+            } else {
+                System.out.println("No donors in this category.");
+            }
+            System.out.println();
+        }
     }
 
     public void generateReport() {
         ListInterface<Donor> donors = donorList;
-        
+
         LinkedList<Donor> governmentList = new LinkedList<>();
         LinkedList<Donor> publicList = new LinkedList<>();
         LinkedList<Donor> privateList = new LinkedList<>();

@@ -3,123 +3,130 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package control;
+
 import dao.*;
 import adt.*;
 import boundary.*;
 import utility.*;
 import entity.Donee;
 import java.time.LocalDate;
+
 /**
  *
  * @author Hp
  */
 public class DoneeManagement {
+
     private ListInterface<Donee> doneeList = new LinkedList<>();
     private DoneeDAO doneeDAO = new DoneeDAO();
     private DoneeManagementUI doneeUI = new DoneeManagementUI();
-    
+
     public DoneeManagement() {
-    doneeList = doneeDAO.retrieveFromFile();
-  }
-    
+        doneeList = doneeDAO.retrieveFromFile();
+    }
+
     public void runDoneeManagement() {
         int choice = 0;
         do {
-          choice = doneeUI.getMenuChoice();
-          switch(choice) {
-            case 0:
-              MessageUI.displayExitMessage();
-              break;
-            case 1:
-              addNewDonee();
-              doneeUI.listAllDonees(getAllDonee());
-              break;
-            case 2:
-              updateDoneeDetails();
-              doneeUI.listAllDonees(getAllDonee());
-              break;
-             case 3:
-             searchDoneeDetails();
-             //doneeUI.listAllDonees(getAllDonee());
-              break;
-             case 4:
-             // doneeUI.listAllDonees(getAllDonee());
-              break;
-             case 5:
-              filterDonees();
-             // doneeUI.listAllDonees(getAllDonee());
-              break;
-              case 6:
-              removeDonee();
-              doneeUI.listAllDonees(getAllDonee());
-              break;
-              case 7:
-              generateSummaryReport();
-              break;
-            default:
-              MessageUI.displayInvalidChoiceMessage();
-          } 
+            choice = doneeUI.getMenuChoice();
+            switch (choice) {
+                case 0:
+                    MessageUI.displayExitMessage();
+                    break;
+                case 1:
+                    addNewDonee();
+                    doneeUI.listAllDonees(getAllDonee());
+                    break;
+                case 2:
+                    updateDoneeDetails();
+                    doneeUI.listAllDonees(getAllDonee());
+                    break;
+                case 3:
+                    searchDoneeDetails();
+                    //doneeUI.listAllDonees(getAllDonee());
+                    break;
+                case 4:
+                    // doneeUI.listAllDonees(getAllDonee());
+                    break;
+                case 5:
+                    filterDonees();
+                    // doneeUI.listAllDonees(getAllDonee());
+                    break;
+                case 6:
+                    removeDonee();
+                    doneeUI.listAllDonees(getAllDonee());
+                    break;
+                case 7:
+                    generateSummaryReport();
+                    break;
+                default:
+                    MessageUI.displayInvalidChoiceMessage();
+            }
         } while (choice != 0);
-      }
-        
+    }
+
     public void addNewDonee() {
-    Donee newDonee = doneeUI.inputDoneeDetails();
-    doneeList.add(newDonee);
-    doneeDAO.saveToFile(getAllDonee());
-  }
-    
+        Donee newDonee = doneeUI.inputDoneeDetails();
+        doneeList.add(newDonee);
+        doneeDAO.saveToFile(getAllDonee());
+    }
+
     public void removeDonee() {
         String doneeID = doneeUI.inputDoneeID();
         boolean result = removeDoneeById(doneeID);
     }
+
     public boolean removeDoneeById(String doneeID) {
-    boolean removed = false;
-    
-    for (int i = 1; i <= doneeList.getNumberOfEntries(); i++) {
-        Donee donee = doneeList.getEntry(i);
-        if (donee.getDoneeID().equalsIgnoreCase(doneeID)) {
-            doneeList.remove(i);
-            removed = true;
-            break;
+        boolean removed = false;
+
+        for (int i = 1; i <= doneeList.getNumberOfEntries(); i++) {
+            Donee donee = doneeList.getEntry(i);
+            if (donee.getDoneeID().equalsIgnoreCase(doneeID)) {
+                doneeList.remove(i);
+                removed = true;
+                break;
+            }
         }
+
+        if (removed) {
+            doneeDAO.saveToFile(getAllDonee());
+            System.out.println("Donee with ID " + doneeID + " has been removed.");
+        } else {
+            System.out.println("Donee with ID " + doneeID + " not found.");
+        }
+
+        return removed;
     }
 
-    if (removed) {
-        doneeDAO.saveToFile(getAllDonee());
-        System.out.println("Donee with ID " + doneeID + " has been removed.");
-    } else {
-        System.out.println("Donee with ID " + doneeID + " not found.");
-    }
-    
-    return removed;
-}
     public void updateDoneeDetails() {
         String doneeID = doneeUI.inputDoneeID();
         boolean result = updateDoneeDetails(doneeID);
     }
+
     public boolean updateDoneeDetails(String doneeID) {
-    boolean updated = false;
-    
-    for (int i = 1; i <= doneeList.getNumberOfEntries(); i++) {
-        Donee donee = doneeList.getEntry(i);
-        if (donee.getDoneeID().equalsIgnoreCase(doneeID)) {
-            Donee updatedDonee = doneeUI.inputDoneeDetails(); // Prompt user for new details
-            doneeList.replace(i, updatedDonee);
-            updated = true;
-            break;
+        boolean updated = false;
+
+        for (int i = 1; i <= doneeList.getNumberOfEntries(); i++) {
+            Donee donee = doneeList.getEntry(i);
+            if (donee.getDoneeID().equalsIgnoreCase(doneeID)) {
+                Donee updatedDonee = doneeUI.inputDoneeDetails(); // Prompt user for new details
+                doneeList.replace(i, updatedDonee);
+                updated = true;
+                break;
+            }
         }
+
+        if (updated) {
+            doneeDAO.saveToFile(getAllDonee());
+            System.out.println("Donee with ID " + doneeID + " has been updated.");
+        } else {
+            System.out.println("Donee with ID " + doneeID + " not found.");
+        }
+
+        return updated;
     }
 
-    if (updated) {
-        doneeDAO.saveToFile(getAllDonee());
-        System.out.println("Donee with ID " + doneeID + " has been updated.");
-    } else {
-        System.out.println("Donee with ID " + doneeID + " not found.");
-    }
-    
-    return updated;
-}
-        public void searchDoneeDetails() {
+    public void searchDoneeDetails() {
         String doneeID = doneeUI.inputDoneeID();
         Donee foundDonee = searchDoneeByID(doneeID);
         if (foundDonee != null) {
@@ -128,110 +135,110 @@ public class DoneeManagement {
             System.out.println("Donee not found.");
         }
     }
-    
+
     public Donee searchDoneeByID(String doneeID) {
-    for (int i = 1; i <= doneeList.getNumberOfEntries(); i++) {
-        Donee donee = doneeList.getEntry(i);
-        if (donee.getDoneeID().equals(doneeID)) {
-            return donee;
+        for (int i = 1; i <= doneeList.getNumberOfEntries(); i++) {
+            Donee donee = doneeList.getEntry(i);
+            if (donee.getDoneeID().equals(doneeID)) {
+                return donee;
+            }
         }
+        return null; // Return null if not found
     }
-    return null; // Return null if not found
-}
+
     public String getAllDonee() {
-    String outputStr = "";
-    for (int i = 1; i <= doneeList.getNumberOfEntries(); i++) {
-      outputStr += doneeList.getEntry(i) + "\n";
+        String outputStr = "";
+        for (int i = 1; i <= doneeList.getNumberOfEntries(); i++) {
+            outputStr += doneeList.getEntry(i) + "\n";
+        }
+        return outputStr;
     }
-    return outputStr;
-  }
+
     public void filterDonees() {
-    int filterChoice = doneeUI.getFilterChoice(); // Prompt user to choose filter type
-    ListInterface<Donee> filteredDonees = null;
+        int filterChoice = doneeUI.getFilterChoice(); // Prompt user to choose filter type
+        ListInterface<Donee> filteredDonees = null;
 
-    switch (filterChoice) {
-        case 1:
-            String doneeType = doneeUI.inputDoneeType();
-            filteredDonees = doneeList.filterByDoneeType(doneeType);
-            break;
-        case 2:
-            LocalDate startDate = doneeUI.inputStartDate();
-            LocalDate endDate = doneeUI.inputEndDate();
-            filteredDonees = doneeList.filterByDateRange(startDate, endDate);
-            break;
-        case 3:
-            double minAmount = doneeUI.inputMinAmount();
-            double maxAmount = doneeUI.inputMaxAmount();
-            filteredDonees = doneeList.filterByAmountRange(minAmount, maxAmount);
-            break;
-        default:
-            MessageUI.displayInvalidChoiceMessage();
-            return;
-    }
-
-    doneeUI.displayFilteredDonees(filteredDonees);
-}
-    
-  public void generateSummaryReport() {
-    int totalDonees = doneeList.getNumberOfEntries();
-    double totalDonations = 0.0;
-    double averageDonation = 0.0;
-
-    // Variables to track the highest and lowest donations
-    double highestDonation = Double.MIN_VALUE;
-    double lowestDonation = Double.MAX_VALUE;
-    Donee highestDonee = null;
-    Donee lowestDonee = null;
-
-    for (int i = 1; i <= totalDonees; i++) {
-        Donee donee = doneeList.getEntry(i);
-        double donationAmount = donee.getDonationAmount();
-        totalDonations += donationAmount;
-
-        // Check for highest donation
-        if (donationAmount > highestDonation) {
-            highestDonation = donationAmount;
-            highestDonee = donee;
+        switch (filterChoice) {
+            case 1:
+                String doneeType = doneeUI.inputDoneeType();
+                filteredDonees = doneeList.filterByDoneeType(doneeType);
+                break;
+            case 2:
+                LocalDate startDate = doneeUI.inputStartDate();
+                LocalDate endDate = doneeUI.inputEndDate();
+                filteredDonees = doneeList.filterByDateRange(startDate, endDate);
+                break;
+            case 3:
+                double minAmount = doneeUI.inputMinAmount();
+                double maxAmount = doneeUI.inputMaxAmount();
+                filteredDonees = doneeList.filterByAmountRange(minAmount, maxAmount);
+                break;
+            default:
+                MessageUI.displayInvalidChoiceMessage();
+                return;
         }
 
-        // Check for lowest donation
-        if (donationAmount < lowestDonation) {
-            lowestDonation = donationAmount;
-            lowestDonee = donee;
+        doneeUI.displayFilteredDonees(filteredDonees);
+    }
+
+    public void generateSummaryReport() {
+        int totalDonees = doneeList.getNumberOfEntries();
+        double totalDonations = 0.0;
+        double averageDonation = 0.0;
+
+        // Variables to track the highest and lowest donations
+        double highestDonation = Double.MIN_VALUE;
+        double lowestDonation = Double.MAX_VALUE;
+        Donee highestDonee = null;
+        Donee lowestDonee = null;
+
+        for (int i = 1; i <= totalDonees; i++) {
+            Donee donee = doneeList.getEntry(i);
+            double donationAmount = donee.getDonationAmount();
+            totalDonations += donationAmount;
+
+            // Check for highest donation
+            if (donationAmount > highestDonation) {
+                highestDonation = donationAmount;
+                highestDonee = donee;
+            }
+
+            // Check for lowest donation
+            if (donationAmount < lowestDonation) {
+                lowestDonation = donationAmount;
+                lowestDonee = donee;
+            }
         }
+
+        if (totalDonees > 0) {
+            averageDonation = totalDonations / totalDonees;
+        }
+
+        System.out.println("=== Donee Summary Report ===");
+        System.out.println("Total Number of Donees: " + totalDonees);
+        System.out.println("Total Donation Amount: RM" + String.format("%.2f", totalDonations));
+        System.out.println("Average Donation Amount: RM" + String.format("%.2f", averageDonation));
+
+        if (highestDonee != null) {
+            System.out.println("Highest Donation: RM" + String.format("%.2f", highestDonation)
+                    + " by " + highestDonee.getDoneeName() + " (ID: " + highestDonee.getDoneeID() + ")");
+        }
+
+        if (lowestDonee != null) {
+            System.out.println("Lowest Donation: RM" + String.format("%.2f", lowestDonation)
+                    + " by " + lowestDonee.getDoneeName() + " (ID: " + lowestDonee.getDoneeID() + ")");
+        }
+
+        System.out.println("============================");
     }
-
-    if (totalDonees > 0) {
-        averageDonation = totalDonations / totalDonees;
-    }
-
-    System.out.println("=== Donee Summary Report ===");
-    System.out.println("Total Number of Donees: " + totalDonees);
-    System.out.println("Total Donation Amount: RM" + String.format("%.2f", totalDonations));
-    System.out.println("Average Donation Amount: RM" + String.format("%.2f", averageDonation));
-
-    if (highestDonee != null) {
-        System.out.println("Highest Donation: RM" + String.format("%.2f", highestDonation) +
-                " by " + highestDonee.getDoneeName() + " (ID: " + highestDonee.getDoneeID() + ")");
-    }
-
-    if (lowestDonee != null) {
-        System.out.println("Lowest Donation: RM" + String.format("%.2f", lowestDonation) +
-                " by " + lowestDonee.getDoneeName() + " (ID: " + lowestDonee.getDoneeID() + ")");
-    }
-
-    System.out.println("============================");
-}
-   
 
 //    public void updateNewProduct() {
 //    Donee newProduct = DoneeManagementUI.inputDoneeDetails();
 //    productList.add(newProduct);
 //    productDAO.saveToFile(productList);
 //  }
-      
     public static void main(String[] args) {
-    DoneeManagement doneeMaintenance = new DoneeManagement();
-    doneeMaintenance.runDoneeManagement();
-  }
+        DoneeManagement doneeMaintenance = new DoneeManagement();
+        doneeMaintenance.runDoneeManagement();
+    }
 }

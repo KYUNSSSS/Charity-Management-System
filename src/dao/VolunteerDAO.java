@@ -53,8 +53,8 @@ public class VolunteerDAO {
                     String volunteerEmail = parts[4].trim();
 
                     // Create a Volunteer object and add it to the list
-                    Volunteer volunteer = new Volunteer(volunteerID, volunteerType, volunteerName, volunteerPhoneNum, volunteerEmail);
-                    volunteerList.add(volunteer);
+//                    Volunteer volunteer = new Volunteer(volunteerID, volunteerType, volunteerName, volunteerPhoneNum, volunteerEmail);
+//                    volunteerList.add(volunteer);
                 } else {
                     System.out.println("Skipping invalid line: " + line);
                 }

@@ -131,7 +131,7 @@ public class VolunteerManagement {
         switch (filterChoice) {
             case 1:
                 String volunteerType = volunteerUI.inputVolunteerType();
-                filteredVolunteers = volunteerList.filterByVolunteerType(volunteerType);
+//                filteredVolunteers = volunteerList.filterByVolunteerType(volunteerType);
                 break;
     //        case 2:
     //            LocalDate startDate = doneeUI.inputStartDate();
@@ -148,7 +148,7 @@ public class VolunteerManagement {
                 return;
         }
 
-        volunteerUI.displayFilteredVolunteers(filteredVolunteers);
+//        volunteerUI.displayFilteredVolunteers(filteredVolunteers);
     }
     
     public static void main(String[] args) {
