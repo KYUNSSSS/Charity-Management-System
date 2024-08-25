@@ -7,7 +7,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import entity.Distribution;
 import java.util.Scanner;
-import java.util.InputMismatchException;
 import utility.Validator;
 
 /**
@@ -92,7 +91,7 @@ public class DonationDistributionUI {
             System.out.print("Enter Item Quantity: ");
             String input = scanner.nextLine().trim();
 
-            if (Validator.isValidQuantity(input)) {
+            if (Validator.isValidPositiveInteger(input)) {
                 return Integer.parseInt(input); 
             }
 
@@ -160,7 +159,6 @@ public class DonationDistributionUI {
         String itemName = inputItemName();
         String category = inputDonationCategories();
 
-        // Declare variables for quantity and amount
         int quantity = 0;
         double amount = 0.0;
         
@@ -181,25 +179,16 @@ public class DonationDistributionUI {
     }
 
     public double inputAmount() {
-        double amount = -1;
-        boolean isValid = false;
+        while (true) {
+            System.out.print("Enter Amount (must be a positive integer): ");
+            String input = scanner.nextLine().trim();
 
-        while (!isValid) {
-            System.out.print("Enter Amount: ");
-            try {
-                amount = scanner.nextDouble();
-                scanner.nextLine(); // Consume the newline character
-                if (amount > 0) { // Ensure amount is a positive number
-                    isValid = true;
-                } else {
-                    System.out.println("\nInvalid Input. Please enter a valid amount.");
-                }
-            } catch (InputMismatchException e) {
-                System.out.println("\nInvalid Input. Please enter a valid amount.");
-                scanner.next(); // Clear the invalid input
+            if (Validator.isValidPositiveInteger(input)) {
+                return Integer.parseInt(input);
             }
+
+            System.out.println("\nInvalid Input. Please enter a positive integer greater than 0.");
         }
-        return amount;
     }
 
     public void displaySummaryReport(int totalPendingItems, int totalDeliveredItems, int totalReceivedItems, double totalPendingCash, double totalDeliveredCash, double totalReceivedCash, double totalReceivedAmount, int totalItemsDistributed, int highestQuantity, String highestCategory) {
@@ -218,6 +207,9 @@ public class DonationDistributionUI {
         System.out.println(report.toString());
     }
 }
+
+
+
 
 
 
