@@ -153,11 +153,12 @@ public class DonationDistribution {
         
     }
 
-    private void trackByCriteria(String criteria, String type) {
+   private void trackByCriteria(String criteria, String type) {
         StringBuilder result = new StringBuilder();
         String title = "";
+        boolean includeDoneeID = false;
 
-        // Set the title based on the type of criteria
+        // Set the title and header based on the type of criteria
         switch (type) {
             case "DoneeID":
                 title = "Donation Details for Donee ID: " + criteria;
@@ -173,14 +174,14 @@ public class DonationDistribution {
                 break;
             case "Location":
                 title = "Donation Details for Location: " + criteria;
+                includeDoneeID = true; // Set flag to include Donee ID
                 break;
             default:
                 System.out.println("Unknown type.");
                 return;
         }
 
-        result.append(DonationDistributionUI.formatHeader(title));
-
+        result.append(DonationDistributionUI.formatHeader(title, includeDoneeID));
         boolean hasMatchingRecords = false;
 
         // Iterate through the distributeList
@@ -203,28 +204,27 @@ public class DonationDistribution {
                     break;
                 case "Location":
                     for (Map.Entry<String, String> entry : doneeLocationCache.entrySet()) {
-                    if (entry.getValue().equalsIgnoreCase(criteria)) {
-                        if (dist.getDoneeID().equalsIgnoreCase(entry.getKey())) {
-                            match = true;
-                            break;
+                        if (entry.getValue().equalsIgnoreCase(criteria)) {
+                            if (dist.getDoneeID().equalsIgnoreCase(entry.getKey())) {
+                                match = true;
+                                break;
+                            }
                         }
                     }
-                }
-                break;
+                    break;
             }
 
             if (match) {
                 hasMatchingRecords = true;
 
-                // Append matching distribution details, including location
-                result.append(String.format("%-20s%-15s%-15d%-15.2f%-20s%-20s%-50s\n",
-                    dist.getItemName(),
-                    dist.getCategory(),
-                    dist.getQuantity(),
-                    dist.getAmount(),
-                    dist.getStatus(),
-                    dist.getDistributionDate(),
-                    doneeLocationCache.getOrDefault(dist.getDoneeID(), "Unknown")));  
+                if (includeDoneeID) {
+                    result.append(String.format("%-20s%-15s%-15d%-15.2f%-20s%-20s%-20s\n",
+                        dist.getItemName(),dist.getCategory(),dist.getQuantity(),dist.getAmount(),dist.getStatus(),dist.getDistributionDate(),dist.getDoneeID())); 
+                }else {
+                    result.append(String.format("%-20s%-15s%-15d%-15.2f%-20s%-20s%-50s\n",
+                        dist.getItemName(),dist.getCategory(),dist.getQuantity(),dist.getAmount(),dist.getStatus(),dist.getDistributionDate(),
+                        doneeLocationCache.getOrDefault(dist.getDoneeID(), "Unknown"))); 
+                }
             }
         }
 
