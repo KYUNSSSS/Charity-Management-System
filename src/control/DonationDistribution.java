@@ -58,7 +58,7 @@ public class DonationDistribution {
                     //distributeUI.listAllDistribute(getAllDistribute());
                     break;
                 case 5:
-                    //trackByLocation();
+                    generateReport();
                     break;
                 default:
                     MessageUI.displayInvalidChoiceMessage();
@@ -139,7 +139,7 @@ public class DonationDistribution {
                     trackByStatus();
                     break;
                 case 5:
-                    generateReport();
+                    //trackByLocation();
                     break;
                 default:
                     MessageUI.displayInvalidChoiceMessage();
@@ -303,6 +303,12 @@ public class DonationDistribution {
         distribute.runDonationDistribution();
   }
 }
+
+
+
+
+
+
 
 
 
