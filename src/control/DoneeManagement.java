@@ -21,7 +21,7 @@ public class DoneeManagement {
     private DistributionDAO distributeDAO = new DistributionDAO();
     private HashMap<String, Donee> doneeMap = new HashMap<>();
     private HashMap<String, ListInterface<Distribution>> donationMap = new HashMap<>();
-    private FilterInterface<Donor> filterDonee = new Filter<>();
+    private FilterInterface<Donee> filterDonee = new Filter<>();
 
      private int lastDoneeNumber = 0;
     
