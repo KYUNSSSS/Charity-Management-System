@@ -86,6 +86,7 @@ public class DoneeManagement {
               break;
              case 4:
              listDoneeDonation();//done
+             
               break;
              case 5:
               filterDonees();
@@ -93,10 +94,11 @@ public class DoneeManagement {
               break;
               case 6:
               removeDonee();
-              doneeUI.listAllDonees(getAllDonee());
+              MessageUI.pressAnyKeyToContinue();
               break;
               case 7:
               generateSummaryReport();
+              MessageUI.pressAnyKeyToContinue();
               break;
             default:
               MessageUI.displayInvalidChoiceMessage();
@@ -244,6 +246,7 @@ public class DoneeManagement {
         case 1:
             String doneeType = doneeUI.inputDoneeType();
             filteredDonees = filterDonee.filterByType(doneeList,doneeType);
+            System.out.println("Donation for "+doneeType+" Category");
             doneeUI.displayFilteredDonees(filteredDonees);
             break;
         case 2:
@@ -251,6 +254,7 @@ public class DoneeManagement {
             LocalDate startDate = doneeUI.inputStartDate();
             LocalDate endDate = doneeUI.inputEndDate();
             filteredInfoByDoneeID = filterDonation.filterByDateAndDoneeID(distributeList,startDate, endDate,doneeID);
+            System.out.println("Donation for "+doneeMap.get(doneeID).getDoneeName()+" between "+startDate+" and "+endDate);
             doneeUI.displayFilteredDoneesByDoneeID(filteredInfoByDoneeID);
             break;
         case 3:
@@ -258,6 +262,7 @@ public class DoneeManagement {
             double minAmount = doneeUI.inputMinAmount();
             double maxAmount = doneeUI.inputMaxAmount();
             filteredInfoByDoneeID = filterDonation.filterByAmountAndDoneeID(distributeList,minAmount, maxAmount,doneeID);
+            System.out.println("Donation for "+doneeMap.get(doneeID).getDoneeName()+" between "+minAmount+" and "+maxAmount);
             doneeUI.displayFilteredDoneesByDoneeID(filteredInfoByDoneeID);
             break;
         case 4:
