@@ -174,16 +174,10 @@ public class DonationManagement {
     }
 
     public static void main(String[] args) {
-        // Create the controller first
         DonationManagement controller = new DonationManagement();
-        
-        // Now pass the controller to UI
         DonationManagementUI ui = new DonationManagementUI(controller);
-        
         // Create the controller with the UI
-        controller.setUI(ui); // This method should be implemented if needed
-
-        // Run the donation management system
+        controller.setUI(ui);
         controller.runDonationManagement();
     }
 }
