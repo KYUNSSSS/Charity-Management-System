@@ -15,7 +15,7 @@ import java.time.LocalDate;
 public class Filter<F> implements FilterInterface<F> {
 
     @Override
-    public ListInterface<F> filterByType(LinkedList<F> list, String type) {
+    public ListInterface<F> filterByType(ListInterface<F> list, String type) {
         ListInterface<F> filteredList = new LinkedList<>();
         for (int i = 1; i <= list.getNumberOfEntries(); i++) {
             F types = list.getEntry(i);
@@ -29,7 +29,7 @@ public class Filter<F> implements FilterInterface<F> {
     }
 
     @Override
-    public ListInterface<F> filterByDate(LinkedList<F> list, String startDate, String endDate) {
+    public ListInterface<F> filterByDate(ListInterface<F> list, LocalDate startDate, LocalDate endDate) {
         ListInterface<F> filteredList = new LinkedList<>();
         for (int i = 1; i <= list.getNumberOfEntries(); i++) {
             F entity = list.getEntry(i);
@@ -42,7 +42,8 @@ public class Filter<F> implements FilterInterface<F> {
         return filteredList;
     }
 
-    public ListInterface<F> filterByAmountRange(LinkedList<F> list, double minAmount, double maxAmount) {
+    @Override
+    public ListInterface<F> filterByAmountRange(ListInterface<F> list, double minAmount, double maxAmount) {
         ListInterface<F> filteredList = new LinkedList<>();
         for (int i = 1; i <= list.getNumberOfEntries(); i++) {
             F entity = list.getEntry(i);
@@ -55,20 +56,22 @@ public class Filter<F> implements FilterInterface<F> {
         return filteredList;
     }
 
-    public ListInterface<F> filterByDonationItem(LinkedList<F> list, String item) {
+    @Override
+    public ListInterface<F> filterByDonationItem(ListInterface<F> list, String item) {
         ListInterface<F> filteredList = new LinkedList<>();
         for (int i = 1; i <= list.getNumberOfEntries(); i++) {
-            F entity = list.getEntry(i);
-            if (entity instanceof Donor && ((Donor) entity).getDonationItem().equalsIgnoreCase(item)) {
-                filteredList.add(entity);
-            } else if (entity instanceof Donee && ((Donee) entity).getDonationItem().equalsIgnoreCase(item)) {
-                filteredList.add(entity);
-            }
+//            F entity = list.getEntry(i);
+//            if (entity instanceof Donor && ((Donor) entity).getDonationItem().equalsIgnoreCase(item)) {
+//                filteredList.add(entity);
+//            } else if (entity instanceof Donee && ((Donee) entity).getDonationItem().equalsIgnoreCase(item)) {
+//                filteredList.add(entity);
+//            }
         }
         return filteredList;
     }
 
-    public ListInterface<F> filterByEntityType(LinkedList<F> list, String type) {
+    @Override
+    public ListInterface<F> filterByEntityType(ListInterface<F> list, String type) {
         ListInterface<F> filteredList = new LinkedList<>();
         for (int i = 1; i <= list.getNumberOfEntries(); i++) {
             F entity = list.getEntry(i);
@@ -79,7 +82,7 @@ public class Filter<F> implements FilterInterface<F> {
         return filteredList;
     }
 
-    private boolean isWithinDateRange(LocalDate date, String startDate, String endDate) {
+    private boolean isWithinDateRange(LocalDate date, LocalDate startDate, LocalDate endDate) {
         // Implement date comparison logic
         return true; // Placeholder
     }
