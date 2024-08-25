@@ -47,11 +47,10 @@ public class DonorDAO implements Serializable {
                     String donorEmail = parts[3].trim();
                     String donorType = parts[4].trim();
                     String donorEntity = parts[5].trim();
-                    double donationAmount = Double.parseDouble(parts[6].trim());
-                    LocalDate donationDate = LocalDate.parse(parts[7].trim(), dateFormatter);
+//                    LocalDate donationDate = LocalDate.parse(parts[6].trim(), dateFormatter);
 
                     // Create a Donee object and add it to the list
-                    Donor donor = new Donor(donorID, donorName, donorPhoneNum, donorEmail, donorType, donorEntity, donationAmount, donationDate);
+                    Donor donor = new Donor(donorID, donorName, donorPhoneNum, donorEmail, donorType, donorEntity);
                     donorList.add(donor);
                 } else {
                     System.out.println("Skipping invalid line: " + line);

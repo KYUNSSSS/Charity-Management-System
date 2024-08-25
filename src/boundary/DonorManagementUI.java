@@ -197,11 +197,11 @@ public class DonorManagementUI {
         String name = inputDonorName();
         int phone = inputPhoneNum();
         String email = inputDonorEmail();
-        double donation = inputDonationAmount();
-        LocalDate date = inputDonationDate();
+//        double donation = inputDonationAmount();
+//        LocalDate date = inputDonationDate();
         String entity = inputEntityType();
         System.out.println();
-        return new Donor(id, name, phone, email, type, entity, donation, date);
+        return new Donor(id, name, phone, email, type, entity);
     }
 
     public int getFilterChoice() {
