@@ -21,6 +21,14 @@ public class Volunteer implements Serializable{
   public Volunteer() {
   }
 
+    public Volunteer(String volunteerID, String volunteerType, String volunteerName, int volunteerPhoneNum, String volunteerEmail) {
+        this.volunteerID = volunteerID;
+        this.volunteerType = volunteerType;
+        this.volunteerName = volunteerName;
+        this.volunteerPhoneNum = volunteerPhoneNum;
+        this.volunteerEmail = volunteerEmail;
+    }
+
     public String getVolunteerID() {
         return volunteerID;
     }
