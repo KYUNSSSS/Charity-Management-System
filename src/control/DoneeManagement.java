@@ -242,13 +242,16 @@ public class DoneeManagement {
             filteredInfoByDoneeID = filterDonation.filterByAmountAndDoneeID(distributeList,minAmount, maxAmount,doneeID);
             doneeUI.displayFilteredDoneesByDoneeID(distributeList);
             break;
-        
+        case 4:
+            String doneeLocation = doneeUI.inputDoneeLocation();
+            filteredDonees = filterDonee.filterByLocation(doneeList,doneeLocation);
+            doneeUI.displayFilteredDonees(filteredDonees);
         default:
             MessageUI.displayInvalidChoiceMessage();
-            return;
+            filterDonees();
     }
 
-    doneeUI.displayFilteredDonees(filteredDonees);
+    
 }
     
   public void generateSummaryReport() {
