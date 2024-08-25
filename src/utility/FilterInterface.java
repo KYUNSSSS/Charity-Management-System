@@ -5,12 +5,21 @@
 package utility;
 
 import adt.*;
+import java.time.LocalDate;
 
 /**
  *
  * @author xuan
  */
 public interface FilterInterface<F> {
-    ListInterface<F> filterByType(LinkedList<F> list, String type);
-    ListInterface<F> filterByDate(LinkedList<F> list, String startDate, String endDate);
+
+    public ListInterface<F> filterByType(ListInterface<F> list, String type);
+
+    public ListInterface<F> filterByDate(ListInterface<F> list, LocalDate startDate, LocalDate endDate);
+
+    public ListInterface<F> filterByAmountRange(ListInterface<F> list, double minAmount, double maxAmount);
+    
+    public ListInterface<F> filterByDonationItem(ListInterface<F> list, String item);
+    
+    public ListInterface<F> filterByEntityType(ListInterface<F> list, String type);
 }
