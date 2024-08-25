@@ -21,6 +21,8 @@ public class DoneeManagement {
     private DistributionDAO distributeDAO = new DistributionDAO();
     private HashMap<String, Donee> doneeMap = new HashMap<>();
     private HashMap<String, ListInterface<Distribution>> donationMap = new HashMap<>();
+    private FilterInterface<Donor> filterDonee = new Filter<>();
+
      private int lastDoneeNumber = 0;
     
     public DoneeManagement() {
@@ -190,7 +192,7 @@ public class DoneeManagement {
     switch (filterChoice) {
         case 1:
             String doneeType = doneeUI.inputDoneeType();
-            filteredDonees = doneeList.filterByDoneeType(doneeType);
+            filteredDonees = filterDonee.filterByType(doneeList,doneeType);
             break;
         case 2:
             LocalDate startDate = doneeUI.inputStartDate();

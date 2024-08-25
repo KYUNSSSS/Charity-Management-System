@@ -5,6 +5,7 @@
 package utility;
 
 import adt.*;
+import entity.Donee;
 import java.time.LocalDate;
 
 /**
@@ -22,4 +23,6 @@ public interface FilterInterface<F> {
     public ListInterface<F> filterByDonationItem(ListInterface<F> list, String item);
     
     public ListInterface<F> filterByEntityType(ListInterface<F> list, String type);
+
+    
 }
