@@ -137,6 +137,7 @@ public class DoneeManagementUI {
         System.out.println("1. Donee Type");
         System.out.println("2. Date Range");
         System.out.println("3. Donation Amount Range");
+        System.out.println("4. Location");
         System.out.print("Enter your choice: ");
         int choice = scanner.nextInt();
         scanner.nextLine();
