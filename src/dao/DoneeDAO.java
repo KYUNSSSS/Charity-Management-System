@@ -34,18 +34,16 @@ public class DoneeDAO implements Serializable {
                 // Split the line by commas
                 String[] parts = line.split(",");
 
-                if (parts.length == 7) {
+                if (parts.length == 6) {
                     // Parse the data
                     String doneeID = parts[0].trim();
                     String doneeType = parts[1].trim();
                     String doneeName = parts[2].trim();
                     int doneePhoneNum = Integer.parseInt(parts[3].trim());
                     String doneeEmail = parts[4].trim();
-                    double donationAmount = Double.parseDouble(parts[5].trim());
-                    LocalDate donationDate = LocalDate.parse(parts[6].trim(), dateFormatter);
-
+                    String doneeLocation = parts[5].trim();
                     // Create a Donee object and add it to the list
-                    Donee donee = new Donee(doneeID, doneeType, doneeName, doneePhoneNum, doneeEmail, donationAmount, donationDate);
+                    Donee donee = new Donee(doneeID, doneeType, doneeName, doneePhoneNum, doneeEmail,doneeLocation);
                     doneeList.add(donee);
                 } else {
                     System.out.println("Skipping invalid line: " + line);
