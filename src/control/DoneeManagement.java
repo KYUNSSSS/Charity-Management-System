@@ -22,6 +22,7 @@ public class DoneeManagement {
     private HashMap<String, Donee> doneeMap = new HashMap<>();
     private HashMap<String, ListInterface<Distribution>> donationMap = new HashMap<>();
     private FilterInterface<Donee> filterDonee = new Filter<>();
+    private FilterInterface<Distribution> filterDonation = new Filter<>();
 
      private int lastDoneeNumber = 0;
     
@@ -51,7 +52,8 @@ public class DoneeManagement {
           choice = doneeUI.getMenuChoice();
           switch(choice) {
             case 0:
-              MessageUI.displayExitMessage();
+             driver driver = new driver();
+              driver.runDriver();
               break;
             case 1:
               addNewDonee();//done
@@ -162,15 +164,44 @@ public class DoneeManagement {
         String doneeID = doneeUI.inputDoneeID();
         listDonationsByDoneeID(doneeID);
     }
-    public void listDonationsByDoneeID(String doneeID) {
+  public void listDonationsByDoneeID(String doneeID) {
     ListInterface<Distribution> donations = donationMap.get(doneeID);
     
     if (donations != null && !donations.isEmpty()) {
-        System.out.println("=== Donations for Donee ID: " + doneeID + " ===");
+        System.out.println("Donation For "+doneeMap.get(doneeID).getDoneeName()+"\n**************");
+        System.out.printf("%-15s %-20s %-15s %-10s %-10s %-10s %-20s\n", 
+                          "Distribution ID", "Item Name", "Category", 
+                          "Quantity", "Amount", "Status", "Distribution Date");
+        System.out.println("**************");
+
+        double totalDonations = 0;
+        int totalGoods = 0;
+        double totalCash = 0;
+
         for (int i = 1; i <= donations.getNumberOfEntries(); i++) {
-            System.out.println(donations.getEntry(i));
+            Distribution donation = donations.getEntry(i);
+
+            System.out.printf("%-15s %-20s %-15s %-10d %-10.2f %-10s %-20s\n", 
+                              donation.getDistributionID(), 
+                              donation.getItemName(), 
+                              donation.getCategory(), 
+                              donation.getQuantity(), 
+                              donation.getAmount(), 
+                              donation.getStatus(), 
+                              donation.getDistributionDate().toString());
+
+            totalDonations++;
+            totalGoods += donation.getQuantity();
+            totalCash += donation.getAmount();
         }
-        System.out.println("==========================================");
+
+        System.out.println("**************");
+        System.out.println("Total Donations: " + totalDonations);
+        System.out.println("Total Donated Goods: " + totalGoods);
+        System.out.println("Total Donated Cash: " + String.format("%.2f", totalCash));
+        System.out.println("**************");
+        MessageUI.pressAnyKeyToContinue();
+
     } else {
         System.out.println("No donations found for Donee ID: " + doneeID);
     }
@@ -186,8 +217,11 @@ public class DoneeManagement {
     return outputStr;
   }
     public void filterDonees() {
+        String doneeID;
     int filterChoice = doneeUI.getFilterChoice(); // Prompt user to choose filter type
     ListInterface<Donee> filteredDonees = null;
+    ListInterface<Distribution> filteredInfoByDoneeID = null;
+    
 
     switch (filterChoice) {
         case 1:
@@ -195,15 +229,20 @@ public class DoneeManagement {
             filteredDonees = filterDonee.filterByType(doneeList,doneeType);
             break;
         case 2:
+            doneeID = doneeUI.inputDoneeID();
             LocalDate startDate = doneeUI.inputStartDate();
             LocalDate endDate = doneeUI.inputEndDate();
-            //filteredDonees = doneeList.filterByDateRange(startDate, endDate);
+            filteredInfoByDoneeID = filterDonation.filterByDateAndDoneeID(distributeList,startDate, endDate,doneeID);
+            doneeUI.displayFilteredDoneesByDoneeID(distributeList);
             break;
         case 3:
+            doneeID = doneeUI.inputDoneeID();
             double minAmount = doneeUI.inputMinAmount();
             double maxAmount = doneeUI.inputMaxAmount();
-            //filteredDonees = doneeList.filterByAmountRange(minAmount, maxAmount);
+            filteredInfoByDoneeID = filterDonation.filterByAmountAndDoneeID(distributeList,minAmount, maxAmount,doneeID);
+            doneeUI.displayFilteredDoneesByDoneeID(distributeList);
             break;
+        
         default:
             MessageUI.displayInvalidChoiceMessage();
             return;

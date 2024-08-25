@@ -36,9 +36,9 @@ public class Filter<F> implements FilterInterface<F> {
             if (entity instanceof Donor && isWithinDateRange(((Donor) entity).getDonationDate(), startDate, endDate)) {
                 filteredList.add(entity);
             } 
-//            else if (entity instanceof Donee && isWithinDateRange(((Donee) entity).getDonationDate(), startDate, endDate)) {
-//                filteredList.add(entity);
-//            }
+            else if (entity instanceof Distribution && isWithinDateRange(((Distribution) entity).getDistributionDate(), startDate, endDate)) {
+                filteredList.add(entity);
+            }
         }
         return filteredList;
     }
@@ -51,9 +51,9 @@ public class Filter<F> implements FilterInterface<F> {
             if (entity instanceof Donor && isWithinAmountRange(((Donor) entity).getDonations(), minAmount, maxAmount)) {
                 filteredList.add(entity);
             } 
-//            else if (entity instanceof Donee && isWithinAmountRange(((Donee) entity).getDonationAmount(), minAmount, maxAmount)) {
-//                filteredList.add(entity);
-//            }
+            else if (entity instanceof Distribution && isWithinAmountRange(((Distribution) entity).getAmount(), minAmount, maxAmount)) {
+                filteredList.add(entity);
+            }
         }
         return filteredList;
     }
@@ -103,4 +103,32 @@ public class Filter<F> implements FilterInterface<F> {
     private boolean isWithinAmountRange(double amount, double minAmount, double maxAmount) {
         return amount >= minAmount && amount <= maxAmount;
     }
+    @Override
+    public ListInterface<F> filterByDateAndDoneeID(ListInterface<F> list, LocalDate startDate, LocalDate endDate, String doneeID) {
+    ListInterface<F> filteredList = new LinkedList<>();
+    for (int i = 1; i <= list.getNumberOfEntries(); i++) {
+        F entity = list.getEntry(i);
+        
+        if (entity instanceof Distribution && isWithinDateRange(((Distribution) entity).getDistributionDate(), startDate, endDate)) {
+            // Assuming Distribution has a getDoneeID method to check the associated Donee ID
+            if (((Distribution) entity).getDoneeID().equals(doneeID)) {
+                filteredList.add(entity);
+            }
+        }
+    }
+    return filteredList;
+}
+    public ListInterface<F> filterByAmountAndDoneeID(ListInterface<F> list, double minAmount, double maxAmount, String doneeID) {
+    ListInterface<F> filteredList = new LinkedList<>();
+    for (int i = 1; i <= list.getNumberOfEntries(); i++) {
+        F entity = list.getEntry(i);
+        
+      if (entity instanceof Distribution distribution) {
+            if (distribution.getAmount() >= minAmount && distribution.getAmount() <= maxAmount && distribution.getDoneeID().equals(doneeID)) {
+                filteredList.add(entity);
+            }
+        }
+    }
+    return filteredList;
+}
 }

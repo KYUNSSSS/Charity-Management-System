@@ -135,9 +135,9 @@ public class DoneeManagementUI {
     public int getFilterChoice() {
         System.out.println("Filter by: ");
         System.out.println("1. Donee Type");
-        System.out.println("2. Date Range");
-        System.out.println("3. Donation Amount Range");
-        System.out.println("4. Location");
+        System.out.println("2. Date Range By Donee ID");
+        System.out.println("3. Donation Amount Range By Donee ID");
+        System.out.println("4. Donee Location");
         System.out.print("Enter your choice: ");
         int choice = scanner.nextInt();
         scanner.nextLine();
@@ -165,6 +165,16 @@ public class DoneeManagementUI {
     }
 
     public void displayFilteredDonees(ListInterface<Donee> donees) {
+        if (donees.isEmpty()) {
+            System.out.println("No matching donees found.");
+        } else {
+            for (int i = 1; i <= donees.getNumberOfEntries(); i++) {
+                System.out.println(donees.getEntry(i));
+            }
+        }
+        MessageUI.pressAnyKeyToContinue();
+    }
+        public void displayFilteredDoneesByDoneeID(ListInterface<Distribution> donees) {
         if (donees.isEmpty()) {
             System.out.println("No matching donees found.");
         } else {
