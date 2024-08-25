@@ -8,7 +8,7 @@ import dao.*;
 import adt.*;
 import boundary.*;
 import utility.*;
-import entity.Donee;
+import entity.*;
 import java.time.LocalDate;
 
 /**
@@ -20,9 +20,28 @@ public class DoneeManagement {
     private ListInterface<Donee> doneeList = new LinkedList<>();
     private DoneeDAO doneeDAO = new DoneeDAO();
     private DoneeManagementUI doneeUI = new DoneeManagementUI();
+    private ListInterface<Distribution> distributeList = new LinkedList<>();
+    private DistributionDAO distributeDAO = new DistributionDAO();
+    private HashMap<String, Donee> doneeMap = new HashMap<>();
+    private HashMap<String, ListInterface<Distribution>> donationMap = new HashMap<>();
 
     public DoneeManagement() {
         doneeList = doneeDAO.retrieveFromFile();
+        distributeList = distributeDAO.retrieveFromFile();
+        for (int i = 1; i <= doneeList.getNumberOfEntries(); i++) {
+            Donee donee = doneeList.getEntry(i);
+            doneeMap.put(donee.getDoneeID(), donee); // Populate HashMap
+        }
+        for (int i = 1; i <= distributeList.getNumberOfEntries(); i++) {
+            Distribution distribution = distributeList.getEntry(i);
+            String doneeID = distribution.getDoneeID();
+
+            if (!donationMap.containsKey(doneeID)) {
+                donationMap.put(doneeID, new LinkedList<Distribution>());
+            }
+
+            donationMap.get(doneeID).add(distribution); // Populate HashMap for Donations
+        }
     }
 
     public void runDoneeManagement() {
@@ -46,7 +65,7 @@ public class DoneeManagement {
                     //doneeUI.listAllDonees(getAllDonee());
                     break;
                 case 4:
-                    // doneeUI.listAllDonees(getAllDonee());
+                    listDoneeDonation();
                     break;
                 case 5:
                     filterDonees();
@@ -68,6 +87,7 @@ public class DoneeManagement {
     public void addNewDonee() {
         Donee newDonee = doneeUI.inputDoneeDetails();
         doneeList.add(newDonee);
+        doneeMap.put(newDonee.getDoneeID(), newDonee);
         doneeDAO.saveToFile(getAllDonee());
     }
 
@@ -136,14 +156,27 @@ public class DoneeManagement {
         }
     }
 
-    public Donee searchDoneeByID(String doneeID) {
-        for (int i = 1; i <= doneeList.getNumberOfEntries(); i++) {
-            Donee donee = doneeList.getEntry(i);
-            if (donee.getDoneeID().equals(doneeID)) {
-                return donee;
+    public void listDoneeDonation() {
+        String doneeID = doneeUI.inputDoneeID();
+        listDonationsByDoneeID(doneeID);
+    }
+
+    public void listDonationsByDoneeID(String doneeID) {
+        ListInterface<Distribution> donations = donationMap.get(doneeID);
+
+        if (donations != null && !donations.isEmpty()) {
+            System.out.println("=== Donations for Donee ID: " + doneeID + " ===");
+            for (int i = 1; i <= donations.getNumberOfEntries(); i++) {
+                System.out.println(donations.getEntry(i));
             }
+            System.out.println("==========================================");
+        } else {
+            System.out.println("No donations found for Donee ID: " + doneeID);
         }
-        return null; // Return null if not found
+    }
+
+    public Donee searchDoneeByID(String doneeID) {
+        return doneeMap.get(doneeID);
     }
 
     public String getAllDonee() {
@@ -161,17 +194,17 @@ public class DoneeManagement {
         switch (filterChoice) {
             case 1:
                 String doneeType = doneeUI.inputDoneeType();
-                filteredDonees = doneeList.filterByDoneeType(doneeType);
+//                filteredDonees = doneeList.filterByType(doneeList, doneeType);
                 break;
             case 2:
                 LocalDate startDate = doneeUI.inputStartDate();
                 LocalDate endDate = doneeUI.inputEndDate();
-                filteredDonees = doneeList.filterByDateRange(startDate, endDate);
+                //filteredDonees = doneeList.filterByDateRange(startDate, endDate);
                 break;
             case 3:
                 double minAmount = doneeUI.inputMinAmount();
                 double maxAmount = doneeUI.inputMaxAmount();
-                filteredDonees = doneeList.filterByAmountRange(minAmount, maxAmount);
+                //filteredDonees = doneeList.filterByAmountRange(minAmount, maxAmount);
                 break;
             default:
                 MessageUI.displayInvalidChoiceMessage();
@@ -183,51 +216,9 @@ public class DoneeManagement {
 
     public void generateSummaryReport() {
         int totalDonees = doneeList.getNumberOfEntries();
-        double totalDonations = 0.0;
-        double averageDonation = 0.0;
-
-        // Variables to track the highest and lowest donations
-        double highestDonation = Double.MIN_VALUE;
-        double lowestDonation = Double.MAX_VALUE;
-        Donee highestDonee = null;
-        Donee lowestDonee = null;
-
-        for (int i = 1; i <= totalDonees; i++) {
-            Donee donee = doneeList.getEntry(i);
-            double donationAmount = donee.getDonationAmount();
-            totalDonations += donationAmount;
-
-            // Check for highest donation
-            if (donationAmount > highestDonation) {
-                highestDonation = donationAmount;
-                highestDonee = donee;
-            }
-
-            // Check for lowest donation
-            if (donationAmount < lowestDonation) {
-                lowestDonation = donationAmount;
-                lowestDonee = donee;
-            }
-        }
-
-        if (totalDonees > 0) {
-            averageDonation = totalDonations / totalDonees;
-        }
 
         System.out.println("=== Donee Summary Report ===");
         System.out.println("Total Number of Donees: " + totalDonees);
-        System.out.println("Total Donation Amount: RM" + String.format("%.2f", totalDonations));
-        System.out.println("Average Donation Amount: RM" + String.format("%.2f", averageDonation));
-
-        if (highestDonee != null) {
-            System.out.println("Highest Donation: RM" + String.format("%.2f", highestDonation)
-                    + " by " + highestDonee.getDoneeName() + " (ID: " + highestDonee.getDoneeID() + ")");
-        }
-
-        if (lowestDonee != null) {
-            System.out.println("Lowest Donation: RM" + String.format("%.2f", lowestDonation)
-                    + " by " + lowestDonee.getDoneeName() + " (ID: " + lowestDonee.getDoneeID() + ")");
-        }
 
         System.out.println("============================");
     }

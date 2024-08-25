@@ -103,7 +103,7 @@ public interface ListInterface<T> {
    * @return true if the list is full, or false if not
    */
   public boolean isFull();
-  public ListInterface<T> filterByAmountRange(double minAmount, double maxAmount) ;
-  public ListInterface<T> filterByDateRange(LocalDate startDate, LocalDate endDate);
-  public ListInterface<T> filterByDoneeType(String doneeType);
+//  public ListInterface<T> filterByAmountRange(double minAmount, double maxAmount) ;
+//  public ListInterface<T> filterByDateRange(LocalDate startDate, LocalDate endDate);
+//  public ListInterface<T> filterByDoneeType(String doneeType);
 }

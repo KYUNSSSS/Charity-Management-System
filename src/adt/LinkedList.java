@@ -2,7 +2,6 @@ package adt;
 
 import java.io.Serializable;
 import entity.*;
-import java.time.LocalDate;
 
 /**
  * LinkedList.java A class that implements the ADT List using a chain of nodes,
@@ -188,35 +187,33 @@ public class LinkedList<T> implements ListInterface<T>, Serializable {
         }
         return outputStr;
     }
-
-    public ListInterface<T> filterByAmountRange(double minAmount, double maxAmount) {
-        ListInterface<T> filteredList = new LinkedList<>();
-        Node currentNode = firstNode;
-
-        while (currentNode != null) {
-            Donee donee = (Donee) currentNode.data;
-            if (donee.getDonationAmount() >= minAmount && donee.getDonationAmount() <= maxAmount) {
-                filteredList.add(currentNode.data);
-            }
-            currentNode = currentNode.next;
-        }
-        return filteredList;
-    }
-
-    public ListInterface<T> filterByDateRange(LocalDate startDate, LocalDate endDate) {
-        ListInterface<T> filteredList = new LinkedList<>();
-        Node currentNode = firstNode;
-
-        while (currentNode != null) {
-            Donee donee = (Donee) currentNode.data;
-            if ((donee.getDonationDate().isEqual(startDate) || donee.getDonationDate().isAfter(startDate))
-                    && (donee.getDonationDate().isEqual(endDate) || donee.getDonationDate().isBefore(endDate))) {
-                filteredList.add(currentNode.data);
-            }
-            currentNode = currentNode.next;
-        }
-        return filteredList;
-    }
+//  public ListInterface<T> filterByAmountRange(double minAmount, double maxAmount) {
+//    ListInterface<T> filteredList = new LinkedList<>();
+//    Node currentNode = firstNode;
+//
+//    while (currentNode != null) {
+//        Donee donee = (Donee) currentNode.data;
+//        if (donee.getDonationAmount() >= minAmount && donee.getDonationAmount() <= maxAmount) {
+//            filteredList.add(currentNode.data);
+//        }
+//        currentNode = currentNode.next;
+//    }
+//    return filteredList;
+//}
+//public ListInterface<T> filterByDateRange(LocalDate startDate, LocalDate endDate) {
+//    ListInterface<T> filteredList = new LinkedList<>();
+//    Node currentNode = firstNode;
+//
+//    while (currentNode != null) {
+//        Donee donee = (Donee) currentNode.data;
+//        if ((donee.getDonationDate().isEqual(startDate) || donee.getDonationDate().isAfter(startDate)) &&
+//            (donee.getDonationDate().isEqual(endDate) || donee.getDonationDate().isBefore(endDate))) {
+//            filteredList.add(currentNode.data);
+//        }
+//        currentNode = currentNode.next;
+//    }
+//    return filteredList;
+//}
 
     public ListInterface<T> filterByDoneeType(String doneeType) {
         ListInterface<T> filteredList = new LinkedList<>();
