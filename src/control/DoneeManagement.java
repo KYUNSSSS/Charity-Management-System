@@ -157,12 +157,12 @@ public class DoneeManagement {
         case 2:
             LocalDate startDate = doneeUI.inputStartDate();
             LocalDate endDate = doneeUI.inputEndDate();
-            filteredDonees = doneeList.filterByDateRange(startDate, endDate);
+            //filteredDonees = doneeList.filterByDateRange(startDate, endDate);
             break;
         case 3:
             double minAmount = doneeUI.inputMinAmount();
             double maxAmount = doneeUI.inputMaxAmount();
-            filteredDonees = doneeList.filterByAmountRange(minAmount, maxAmount);
+            //filteredDonees = doneeList.filterByAmountRange(minAmount, maxAmount);
             break;
         default:
             MessageUI.displayInvalidChoiceMessage();
@@ -174,51 +174,10 @@ public class DoneeManagement {
     
   public void generateSummaryReport() {
     int totalDonees = doneeList.getNumberOfEntries();
-    double totalDonations = 0.0;
-    double averageDonation = 0.0;
-
-    // Variables to track the highest and lowest donations
-    double highestDonation = Double.MIN_VALUE;
-    double lowestDonation = Double.MAX_VALUE;
-    Donee highestDonee = null;
-    Donee lowestDonee = null;
-
-    for (int i = 1; i <= totalDonees; i++) {
-        Donee donee = doneeList.getEntry(i);
-        double donationAmount = donee.getDonationAmount();
-        totalDonations += donationAmount;
-
-        // Check for highest donation
-        if (donationAmount > highestDonation) {
-            highestDonation = donationAmount;
-            highestDonee = donee;
-        }
-
-        // Check for lowest donation
-        if (donationAmount < lowestDonation) {
-            lowestDonation = donationAmount;
-            lowestDonee = donee;
-        }
-    }
-
-    if (totalDonees > 0) {
-        averageDonation = totalDonations / totalDonees;
-    }
-
+    
     System.out.println("=== Donee Summary Report ===");
     System.out.println("Total Number of Donees: " + totalDonees);
-    System.out.println("Total Donation Amount: RM" + String.format("%.2f", totalDonations));
-    System.out.println("Average Donation Amount: RM" + String.format("%.2f", averageDonation));
 
-    if (highestDonee != null) {
-        System.out.println("Highest Donation: RM" + String.format("%.2f", highestDonation) +
-                " by " + highestDonee.getDoneeName() + " (ID: " + highestDonee.getDoneeID() + ")");
-    }
-
-    if (lowestDonee != null) {
-        System.out.println("Lowest Donation: RM" + String.format("%.2f", lowestDonation) +
-                " by " + lowestDonee.getDoneeName() + " (ID: " + lowestDonee.getDoneeID() + ")");
-    }
 
     System.out.println("============================");
 }
