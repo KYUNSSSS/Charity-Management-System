@@ -88,6 +88,8 @@ public class DoneeManagement {
     Donee newDonee = doneeUI.inputDoneeDetails();
     newDonee.setDoneeID(newDoneeID);
     doneeList.add(newDonee);
+    doneeUI.listDonee(newDonee);
+    MessageUI.pressAnyKeyToContinue();
     doneeMap.put(newDonee.getDoneeID(), newDonee);
     doneeDAO.saveToFile(getAllDonee());
   }
@@ -148,9 +150,10 @@ public class DoneeManagement {
         String doneeID = doneeUI.inputDoneeID();
         Donee foundDonee = searchDoneeByID(doneeID);
         if (foundDonee != null) {
-            System.out.println(foundDonee);
+           doneeUI.listDonee(foundDonee);
         } else {
             System.out.println("Donee not found.");
+            MessageUI.pressAnyKeyToContinue();
         }
     }
          public void listDoneeDonation() {

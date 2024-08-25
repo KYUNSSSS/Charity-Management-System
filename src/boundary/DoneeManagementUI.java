@@ -90,7 +90,7 @@ public class DoneeManagementUI {
     }
 
     public String inputDoneeEmail() {
-        System.out.print("Enter Donee Email (example@gmail.com: ");
+        System.out.print("Enter Donee Email (example@gmail.com): ");
         String email = scanner.nextLine();
         return email;
     }
@@ -129,7 +129,6 @@ public class DoneeManagementUI {
         String email = inputDoneeEmail();
         String location = inputDoneeLocation();
         System.out.println("Donee Details Registered.");
-        MessageUI.pressAnyKeyToContinue();
         return new Donee("DE000", type, name, phone, email,location);
     }
 
@@ -173,6 +172,9 @@ public class DoneeManagementUI {
             }
         }
         MessageUI.pressAnyKeyToContinue();
+    }
+    public void listDonee(Donee donee){
+        System.out.println("***Profile***\nDonee ID: "+donee.getDoneeID()+"\nName: "+donee.getDoneeName()+"\nType: "+donee.getDoneeType()+"\nPhone Number: "+donee.getDoneePhoneNum()+"\nEmail: "+donee.getDoneeEmail()+"\nLocation: "+donee.getDoneeLocation()+"\n**********");
     }
 
 }
