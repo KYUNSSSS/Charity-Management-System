@@ -7,7 +7,7 @@ import dao.*;
 import adt.*;
 import boundary.*;
 import utility.*;
-import entity.Donee;
+import entity.*;
 import java.time.LocalDate;
 /**
  *
@@ -17,9 +17,28 @@ public class DoneeManagement {
     private ListInterface<Donee> doneeList = new LinkedList<>();
     private DoneeDAO doneeDAO = new DoneeDAO();
     private DoneeManagementUI doneeUI = new DoneeManagementUI();
+    private ListInterface<Distribution> distributeList = new LinkedList<>();
+    private DistributionDAO distributeDAO = new DistributionDAO();
+    private HashMap<String, Donee> doneeMap = new HashMap<>();
+    private HashMap<String, ListInterface<Distribution>> donationMap = new HashMap<>();
     
     public DoneeManagement() {
     doneeList = doneeDAO.retrieveFromFile();
+     distributeList = distributeDAO.retrieveFromFile();
+     for (int i = 1; i <= doneeList.getNumberOfEntries(); i++) {
+            Donee donee = doneeList.getEntry(i);
+            doneeMap.put(donee.getDoneeID(), donee); // Populate HashMap
+        }
+     for (int i = 1; i <= distributeList.getNumberOfEntries(); i++) {
+        Distribution distribution = distributeList.getEntry(i);
+        String doneeID = distribution.getDoneeID();
+        
+        if (!donationMap.containsKey(doneeID)) {
+            donationMap.put(doneeID, new LinkedList<Distribution>());
+        }
+        
+        donationMap.get(doneeID).add(distribution); // Populate HashMap for Donations
+    }
   }
     
     public void runDoneeManagement() {
@@ -43,7 +62,7 @@ public class DoneeManagement {
              //doneeUI.listAllDonees(getAllDonee());
               break;
              case 4:
-             // doneeUI.listAllDonees(getAllDonee());
+             listDoneeDonation();
               break;
              case 5:
               filterDonees();
@@ -65,6 +84,7 @@ public class DoneeManagement {
     public void addNewDonee() {
     Donee newDonee = doneeUI.inputDoneeDetails();
     doneeList.add(newDonee);
+    doneeMap.put(newDonee.getDoneeID(), newDonee);
     doneeDAO.saveToFile(getAllDonee());
   }
     
@@ -128,15 +148,25 @@ public class DoneeManagement {
             System.out.println("Donee not found.");
         }
     }
-    
-    public Donee searchDoneeByID(String doneeID) {
-    for (int i = 1; i <= doneeList.getNumberOfEntries(); i++) {
-        Donee donee = doneeList.getEntry(i);
-        if (donee.getDoneeID().equals(doneeID)) {
-            return donee;
-        }
+         public void listDoneeDonation() {
+        String doneeID = doneeUI.inputDoneeID();
+        listDonationsByDoneeID(doneeID);
     }
-    return null; // Return null if not found
+    public void listDonationsByDoneeID(String doneeID) {
+    ListInterface<Distribution> donations = donationMap.get(doneeID);
+    
+    if (donations != null && !donations.isEmpty()) {
+        System.out.println("=== Donations for Donee ID: " + doneeID + " ===");
+        for (int i = 1; i <= donations.getNumberOfEntries(); i++) {
+            System.out.println(donations.getEntry(i));
+        }
+        System.out.println("==========================================");
+    } else {
+        System.out.println("No donations found for Donee ID: " + doneeID);
+    }
+}
+    public Donee searchDoneeByID(String doneeID) {
+     return doneeMap.get(doneeID);
 }
     public String getAllDonee() {
     String outputStr = "";
