@@ -1,8 +1,12 @@
 
 package adt;
 
+import java.time.LocalDate;
+import java.util.NoSuchElementException;
+import java.util.function.Predicate;
 import java.io.Serializable;
 import entity.*;
+import java.util.Iterator;
 /**
  * LinkedList.java A class that implements the ADT List using a chain of nodes,
  * with the node implemented as an inner class.
@@ -212,20 +216,74 @@ public class LinkedList<T> implements ListInterface<T>,Serializable {
 //        currentNode = currentNode.next;
 //    }
 //    return filteredList;
-//}
-public ListInterface<T> filterByDoneeType(String doneeType) {
-    ListInterface<T> filteredList = new LinkedList<>();
-    Node currentNode = firstNode;
+//} 
+  
+    @Override
+    public LinkedList<T> filterByDateRange(LocalDate startDate, LocalDate endDate) {
+        LinkedList<T> filteredList = new LinkedList<>();
+        Iterator<T> iterator = this.iterator();
 
-    while (currentNode != null) {
-        Donee donee = (Donee) currentNode.data;
-        if (donee.getDoneeType().equalsIgnoreCase(doneeType)) {
-            filteredList.add(currentNode.data);
+        while (iterator.hasNext()) {
+            T item = iterator.next();
+            if (item instanceof DonationManagement) {
+                DonationManagement donation = (DonationManagement) item;
+                LocalDate donationDate = donation.getDonationDate();
+                if ((donationDate.isEqual(startDate) || donationDate.isAfter(startDate)) &&
+                    (donationDate.isEqual(endDate) || donationDate.isBefore(endDate))) {
+                    filteredList.add(item);
+                }
+            }
         }
-        currentNode = currentNode.next;
+        return filteredList;
     }
-    return filteredList;
-}
+
+    public ListInterface<T> filterByDoneeType(String doneeType) {
+        ListInterface<T> filteredList = new LinkedList<>();
+        Node currentNode = firstNode;
+
+        while (currentNode != null) {
+            Donee donee = (Donee) currentNode.data;
+            if (donee.getDoneeType().equalsIgnoreCase(doneeType)) {
+                filteredList.add(currentNode.data);
+            }
+            currentNode = currentNode.next;
+        }
+        return filteredList;
+    }
+    
+    private class LinkedListIterator implements Iterator<T> {
+        private Node currentNode;
+
+        LinkedListIterator() {
+            this.currentNode = firstNode;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return currentNode != null;
+        }
+
+        @Override
+        public T next() {
+            if (!hasNext()) {
+                throw new NoSuchElementException("No more elements in the list");
+            }
+            T data = currentNode.data;
+            currentNode = currentNode.next;
+            return data;
+        }
+
+        @Override
+        public void remove() {
+            throw new UnsupportedOperationException("Remove operation is not supported");
+        }
+    }
+
+    @Override
+    public Iterator<T> iterator() {
+        return new LinkedListIterator();
+    }
+    
   private class Node {
 
     private T data;
