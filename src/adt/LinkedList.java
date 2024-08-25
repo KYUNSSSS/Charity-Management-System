@@ -218,38 +218,26 @@ public class LinkedList<T> implements ListInterface<T>,Serializable {
 //    return filteredList;
 //} 
   
-    @Override
-    public LinkedList<T> filterByDateRange(LocalDate startDate, LocalDate endDate) {
-        LinkedList<T> filteredList = new LinkedList<>();
-        Iterator<T> iterator = this.iterator();
+//    @Override
+//    public LinkedList<T> filterByDateRange(LocalDate startDate, LocalDate endDate) {
+//        LinkedList<T> filteredList = new LinkedList<>();
+//        Iterator<T> iterator = this.iterator();
+//
+//        while (iterator.hasNext()) {
+//            T item = iterator.next();
+//            if (item instanceof DonationManagement) {
+//                DonationManagement donation = (DonationManagement) item;
+//                LocalDate donationDate = donation.getDonationDate();
+//                if ((donationDate.isEqual(startDate) || donationDate.isAfter(startDate)) &&
+//                    (donationDate.isEqual(endDate) || donationDate.isBefore(endDate))) {
+//                    filteredList.add(item);
+//                }
+//            }
+//        }
+//        return filteredList;
+//    }
 
-        while (iterator.hasNext()) {
-            T item = iterator.next();
-            if (item instanceof DonationManagement) {
-                DonationManagement donation = (DonationManagement) item;
-                LocalDate donationDate = donation.getDonationDate();
-                if ((donationDate.isEqual(startDate) || donationDate.isAfter(startDate)) &&
-                    (donationDate.isEqual(endDate) || donationDate.isBefore(endDate))) {
-                    filteredList.add(item);
-                }
-            }
-        }
-        return filteredList;
-    }
-
-    public ListInterface<T> filterByDoneeType(String doneeType) {
-        ListInterface<T> filteredList = new LinkedList<>();
-        Node currentNode = firstNode;
-
-        while (currentNode != null) {
-            Donee donee = (Donee) currentNode.data;
-            if (donee.getDoneeType().equalsIgnoreCase(doneeType)) {
-                filteredList.add(currentNode.data);
-            }
-            currentNode = currentNode.next;
-        }
-        return filteredList;
-    }
+    
     
     private class LinkedListIterator implements Iterator<T> {
         private Node currentNode;
