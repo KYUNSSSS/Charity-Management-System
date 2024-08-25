@@ -3,6 +3,7 @@ package adt;
 
 import java.io.Serializable;
 import entity.*;
+import java.time.LocalDate;
 /**
  * LinkedList.java A class that implements the ADT List using a chain of nodes,
  * with the node implemented as an inner class.
@@ -213,7 +214,8 @@ public class LinkedList<T> implements ListInterface<T>,Serializable {
 //    }
 //    return filteredList;
 //}
-public ListInterface<T> filterByDoneeType(String doneeType) {
+  @Override
+  public ListInterface<T> filterByDoneeType(String doneeType) {
     ListInterface<T> filteredList = new LinkedList<>();
     Node currentNode = firstNode;
 
@@ -226,6 +228,16 @@ public ListInterface<T> filterByDoneeType(String doneeType) {
     }
     return filteredList;
 }
+
+    @Override
+    public ListInterface<T> filterByAmountRange(double minAmount, double maxAmount) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public ListInterface<T> filterByDateRange(LocalDate startDate, LocalDate endDate) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
   private class Node {
 
     private T data;
