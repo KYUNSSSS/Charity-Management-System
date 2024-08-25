@@ -188,7 +188,7 @@ public class DoneeManagementUI {
         if (donations.isEmpty()) {
             System.out.println("No matching donees found.");
         } else {
-            System.out.println("**************");
+            System.out.println("Donation for "+"**************");
             System.out.printf("%-15s %-20s %-15s %-10s %-10s %-10s %-20s\n",
                     "Distribution ID", "Item Name", "Category",
                     "Quantity", "Amount", "Status", "Distribution Date");
