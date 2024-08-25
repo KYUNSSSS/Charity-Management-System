@@ -10,7 +10,7 @@ package control;
 
 import adt.LinkedList;
 import dao.DonationManagementDAO;
-import entity.DonationManagement;
+import entity.Donation;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -30,7 +30,7 @@ public class DonationManagementController {
         for (String item : itemsArray) {
             items.add(item);
         }
-        DonationManagement donation = new DonationManagement(donationID, donorID, items, donationType);
+        Donation donation = new Donation(donationID, donorID, items, donationType);
         return donationDAO.addDonation(donation);
     }
 
@@ -38,7 +38,7 @@ public class DonationManagementController {
         return donationDAO.removeDonation(donationID);
     }
 
-    public DonationManagement getDonationById(String donationID) {
+    public Donation getDonationById(String donationID) {
         return donationDAO.getDonationById(donationID);
     }
     
@@ -46,13 +46,13 @@ public class DonationManagementController {
         return donationDAO.getItemsByCategory(category);
     }
 
-    public LinkedList<DonationManagement> listDonationsByDonor(String donorID) {
+    public LinkedList<Donation> listDonationsByDonor(String donorID) {
         // Implement logic to filter donations by donor ID
-        LinkedList<DonationManagement> filteredDonations = new LinkedList<>();
-        LinkedList<DonationManagement> allDonations = donationDAO.getAllDonations();
+        LinkedList<Donation> filteredDonations = new LinkedList<>();
+        LinkedList<Donation> allDonations = donationDAO.getAllDonations();
 
         for (int i = 1; i <= allDonations.getNumberOfEntries(); i++) {
-            DonationManagement donation = allDonations.getEntry(i);
+            Donation donation = allDonations.getEntry(i);
             if (donation.getDonorID().equals(donorID)) {
                 filteredDonations.add(donation);
             }
@@ -61,16 +61,16 @@ public class DonationManagementController {
         return filteredDonations;
     }
 
-    public LinkedList<DonationManagement> getDonationsByDonor(String donorID) {
-        LinkedList<DonationManagement> donations = donationDAO.getDonationsByDonor(donorID);
+    public LinkedList<Donation> getDonationsByDonor(String donorID) {
+        LinkedList<Donation> donations = donationDAO.getDonationsByDonor(donorID);
         return donations;
     }
 
-    public LinkedList<DonationManagement> getAllDonations() {
+    public LinkedList<Donation> getAllDonations() {
         return donationDAO.getAllDonations();
     }
     
-    public LinkedList<DonationManagement> listAllDonations() {
+    public LinkedList<Donation> listAllDonations() {
         return donationDAO.getAllDonations();
     }
 
@@ -91,7 +91,7 @@ public class DonationManagementController {
             }
 
             // Fetch all donations from the DAO
-            LinkedList<DonationManagement> donations = donationDAO.getAllDonations();
+            LinkedList<Donation> donations = donationDAO.getAllDonations();
 
             // Write the report content
             reportContent.append("*****Donation Summary Report*****\n");
@@ -101,7 +101,7 @@ public class DonationManagementController {
             reportContent.append("Total Number of Donations : ").append(donations.getNumberOfEntries()).append("\n\n");
 
             for (int i = 1; i <= donations.getNumberOfEntries(); i++) {
-                DonationManagement donation = donations.getEntry(i);
+                Donation donation = donations.getEntry(i);
                 reportContent.append("Donation ID   : ").append(donation.getDonationID()).append("\n");
                 reportContent.append("Donor ID      : ").append(donation.getDonorID()).append("\n");
                 reportContent.append("Donation Type : ").append(donation.getDonationType()).append("\n");

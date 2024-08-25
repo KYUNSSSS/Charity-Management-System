@@ -8,13 +8,13 @@ import adt.LinkedList;
  *
  * @author haojuan
  */
-public class DonationManagement {
+public class Donation {
     private String donationID;
     private String donorID;
     private LinkedList<String> items;
     private String donationType;
 
-    public DonationManagement(String donationID, String donorID, LinkedList<String> items, String donationType) {
+    public Donation(String donationID, String donorID, LinkedList<String> items, String donationType) {
         this.donationID = donationID;
         this.donorID = donorID;
         this.items = items;

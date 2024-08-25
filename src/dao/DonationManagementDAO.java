@@ -9,18 +9,18 @@
 package dao;
 
 import adt.LinkedList;
-import entity.DonationManagement;
+import entity.Donation;
 
 public class DonationManagementDAO {
-    private LinkedList<DonationManagement> donationList = new LinkedList<>();
+    private LinkedList<Donation> donationList = new LinkedList<>();
 
-    public boolean addDonation(DonationManagement donation) {
+    public boolean addDonation(Donation donation) {
         return donationList.add(donation);
     }
 
     public boolean removeDonation(String donationID) {
         for (int i = 1; i <= donationList.getNumberOfEntries(); i++) {
-            DonationManagement donation = donationList.getEntry(i);
+            Donation donation = donationList.getEntry(i);
             if (donation.getDonationID().equals(donationID)) {
                 donationList.remove(i);
                 return true;
@@ -33,7 +33,7 @@ public class DonationManagementDAO {
         LinkedList<String> itemsInCategory = new LinkedList<>();
 
         for (int i = 1; i <= donationList.getNumberOfEntries(); i++) {
-            DonationManagement donation = donationList.getEntry(i);
+            Donation donation = donationList.getEntry(i);
 
             // Assuming that each donation has a list of items
             LinkedList<String> items = donation.getItems();
@@ -51,9 +51,9 @@ public class DonationManagementDAO {
         return itemsInCategory;
     }
 
-    public DonationManagement getDonationById(String donationID) {
+    public Donation getDonationById(String donationID) {
         for (int i = 1; i <= donationList.getNumberOfEntries(); i++) {
-            DonationManagement donation = donationList.getEntry(i);
+            Donation donation = donationList.getEntry(i);
             if (donation.getDonationID().equals(donationID)) {
                 return donation;
             }
@@ -61,10 +61,10 @@ public class DonationManagementDAO {
         return null;
     }
 
-    public LinkedList<DonationManagement> getDonationsByDonor(String donorID) {
-        LinkedList<DonationManagement> result = new LinkedList<>();
+    public LinkedList<Donation> getDonationsByDonor(String donorID) {
+        LinkedList<Donation> result = new LinkedList<>();
         for (int i = 1; i <= donationList.getNumberOfEntries(); i++) {
-            DonationManagement donation = donationList.getEntry(i);
+            Donation donation = donationList.getEntry(i);
             if (donation.getDonorID().equals(donorID)) {
                 result.add(donation);
             }
@@ -72,7 +72,7 @@ public class DonationManagementDAO {
         return result;
     }
 
-    public LinkedList<DonationManagement> getAllDonations() {
+    public LinkedList<Donation> getAllDonations() {
         return donationList;
     }
 }

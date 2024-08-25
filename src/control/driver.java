@@ -5,7 +5,6 @@
 package control;
 import boundary.*;
 import utility.MessageUI;
-import entity.Donee;
 /**
  *
  * @author Hp
