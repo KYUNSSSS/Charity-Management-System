@@ -24,6 +24,7 @@ public interface FilterInterface<F> {
     
     public ListInterface<F> filterByEntityType(ListInterface<F> list, String type);
 
+    public ListInterface<F> filterByLocation(ListInterface<F> list, String type);
 
 
     

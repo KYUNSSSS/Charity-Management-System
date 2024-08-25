@@ -83,6 +83,17 @@ public class Filter<F> implements FilterInterface<F> {
         }
         return filteredList;
     }
+    @Override
+    public ListInterface<F> filterByLocation(ListInterface<F> list, String type) {
+        ListInterface<F> filteredList = new LinkedList<>();
+        for (int i = 1; i <= list.getNumberOfEntries(); i++) {
+            F entity = list.getEntry(i);
+            if (((Donee) entity).getDoneeLocation().equalsIgnoreCase(type)) {
+                filteredList.add(entity);
+            }
+        }
+        return filteredList;
+    }
 
     private boolean isWithinDateRange(LocalDate date, LocalDate startDate, LocalDate endDate) {
         // Implement date comparison logic
