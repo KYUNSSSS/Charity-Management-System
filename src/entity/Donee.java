@@ -14,21 +14,21 @@ public class Donee implements Serializable{
   private String doneeName;
   private int doneePhoneNum;
   private String doneeEmail;
-  private double donationAmount;
-  private LocalDate donationDate;
+  private String doneeLocation;
 
   public Donee() {
   }
 
-    public Donee(String doneeID, String doneeType, String doneeName, int doneePhoneNum, String doneeEmail, double donationAmount, LocalDate donationDate) {
+    public Donee(String doneeID, String doneeType, String doneeName, int doneePhoneNum, String doneeEmail, String doneeLocation) {
         this.doneeID = doneeID;
         this.doneeType = doneeType;
         this.doneeName = doneeName;
         this.doneePhoneNum = doneePhoneNum;
         this.doneeEmail = doneeEmail;
-        this.donationAmount = donationAmount;
-        this.donationDate = donationDate;
+        this.doneeLocation = doneeLocation;
     }
+
+    
 
     public Donee(String doneeID) {
         this.doneeID = doneeID;
@@ -76,21 +76,14 @@ public class Donee implements Serializable{
         this.doneeEmail = doneeEmail;
     }
 
-    public double getDonationAmount() {
-        return donationAmount;
+    public String getDoneeLocation() {
+        return doneeLocation;
     }
 
-    public void setDonationAmount(double donationAmount) {
-        this.donationAmount = donationAmount;
+    public void setDoneeLocation(String doneeLocation) {
+        this.doneeLocation = doneeLocation;
     }
-
-    public LocalDate getDonationDate() {
-        return donationDate;
-    }
-
-    public void setDonationDate(LocalDate donationDate) {
-        this.donationDate = donationDate;
-    }
+    
 
  
 
@@ -120,7 +113,7 @@ public class Donee implements Serializable{
 //
   @Override
   public String toString() {
-    return String.format("%s, %s, %s,%d,%s,%f,%s", doneeID, doneeType,doneeName, doneePhoneNum,doneeEmail,donationAmount,donationDate);
+    return String.format("%s, %s, %s,%d,%s,%s", doneeID, doneeType,doneeName, doneePhoneNum,doneeEmail,doneeLocation);
   }
   
   
