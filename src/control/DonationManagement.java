@@ -1,53 +1,38 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-/**
- *
- * @author haojuan
- */
 package control;
 
 import adt.LinkedList;
 import dao.DonationDAO;
 import entity.Donation;
 import boundary.DonationManagementUI;
-
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import utility.MessageUI;
+import java.nio.file.*;
 
 public class DonationManagement {
     private DonationDAO donationDAO = new DonationDAO();
+    public LinkedList<Donation> donationList;
     private DonationManagementUI ui;
 
-    // Constructor with DonationManagementUI
     public DonationManagement(DonationManagementUI ui) {
         this.ui = ui;
+        this.donationList = donationDAO.loadDonationsFromFile(); // Load donations from file on initialization
     }
 
-    // Default constructor
     public DonationManagement() {
-        // Default constructor
+        this.donationList = donationDAO.loadDonationsFromFile();
     }
 
-    // Set the UI (if needed)
     public void setUI(DonationManagementUI ui) {
         this.ui = ui;
     }
-    
+
     public void runDonationManagement() {
         int choice;
-        
         do {
             choice = ui.getMenuChoice();
-
             switch (choice) {
                 case 1:
                     ui.addDonation();
@@ -59,7 +44,8 @@ public class DonationManagement {
                     ui.searchDonationById();
                     break;
                 case 4:
-                    ui.amendDonorsDetails();
+                    ui.amendDonorsDetails(); // Implement this method if needed
+                    break;
                 case 5:
                     ui.trackDonation();
                     break;
@@ -79,106 +65,111 @@ public class DonationManagement {
                     System.err.println("Invalid choice. Please select an option between 0 and 8.");
             }
         } while (choice != 0);
-      }
+    }
 
-    public boolean addDonation(String donationID, String donorID, String[] itemsArray, String donationType) {
-        LinkedList<String> items = new LinkedList<>();
-        for (String item : itemsArray) {
-            items.add(item);
+
+    public boolean addDonation(String donationID, String donorID, String itemCategory, String item, double amount, LocalDate donationDate) {
+        Donation donation = new Donation(donationID, donorID, itemCategory,item, amount, donationDate);
+        boolean isAdded = donationList.add(donation);
+        if (isAdded) {
+            donationDAO.saveDonationListToFile(donationList);
         }
-        Donation donation = new Donation(donationID, donorID, items, donationType);
-        return donationDAO.addDonation(donation);
+        return isAdded;
     }
 
     public boolean removeDonation(String donationID) {
-        return donationDAO.removeDonation(donationID);
+        for (int i = 1; i <= donationList.getNumberOfEntries(); i++) {
+            Donation donation = donationList.getEntry(i);
+            if (donation.getDonationID().equals(donationID)) {
+                donationList.remove(i);
+                donationDAO.saveDonationListToFile(donationList); // Save the updated list to file
+                return true;
+            }
+        }
+        return false;
     }
 
     public Donation getDonationById(String donationID) {
-        return donationDAO.getDonationById(donationID);
-    }
-    
-    public LinkedList<String> trackDonationByCategory(String category) {
-        return donationDAO.getItemsByCategory(category);
-    }
-
-    public LinkedList<Donation> listDonationsByDonor(String donorID) {
-        LinkedList<Donation> filteredDonations = new LinkedList<>();
-        LinkedList<Donation> allDonations = donationDAO.getAllDonations();
-
-        for (int i = 1; i <= allDonations.getNumberOfEntries(); i++) {
-            Donation donation = allDonations.getEntry(i);
-            if (donation.getDonorID().equals(donorID)) {
-                filteredDonations.add(donation);
+        for (int i = 1; i <= donationList.getNumberOfEntries(); i++) {
+            Donation donation = donationList.getEntry(i);
+            if (donation.getDonationID().equals(donationID)) {
+                return donation;
             }
         }
-
-        return filteredDonations;
+        return null;
     }
 
-    public LinkedList<Donation> getDonationsByDonor(String donorID) {
-        return donationDAO.getDonationsByDonor(donorID);
+    public LinkedList<String> trackDonationByCategory(String itemCategory) {
+        LinkedList<String> itemsInCategory = new LinkedList<>();
+        
+
+        for (int i = 1; i <= donationList.getNumberOfEntries(); i++) {
+            Donation donation = donationList.getEntry(i);
+
+            if (donation.getItemCategory().equalsIgnoreCase(itemCategory)) {
+                String itemWithAmount = donation.getItem() + " (Amount: " + donation.getAmount() + ")";
+                itemsInCategory.add(itemWithAmount);
+            }
+        }
+        return itemsInCategory;
     }
 
-    public LinkedList<Donation> getAllDonations() {
-        return donationDAO.getAllDonations();
+
+    public LinkedList<Donation> listDonationsByDonor(String donorID) {
+        LinkedList<Donation> result = new LinkedList<>();
+        for (int i = 1; i <= donationList.getNumberOfEntries(); i++) {
+            Donation donation = donationList.getEntry(i);
+            if (donation.getDonorID().equals(donorID)) {
+                result.add(donation);
+            }
+        }
+        return result;
     }
-    
-    public LinkedList<Donation> listAllDonations() {
-        return donationDAO.getAllDonations();
+
+    public LinkedList<Donation> listDonations() {
+        return donationList;
     }
 
     public String generateReport() {
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-
         String fileName = "donation_summary_report_" + dateFormatter.format(LocalDate.now()) + ".txt";
         StringBuilder reportContent = new StringBuilder();
 
         try {
             Path downloadsFolder = Paths.get(System.getProperty("user.home"), "Downloads");
             Path filePath = downloadsFolder.resolve(fileName);
-
             if (!Files.exists(filePath)) {
                 Files.createFile(filePath);
             }
 
-            LinkedList<Donation> donations = donationDAO.getAllDonations();
-
             reportContent.append("*****Donation Summary Report*****\n");
             reportContent.append("Date Generated    : ").append(LocalDate.now().format(dateFormatter)).append("\n\n");
-
             reportContent.append("Summary Report :\n");
-            reportContent.append("Total Number of Donations : ").append(donations.getNumberOfEntries()).append("\n\n");
+            reportContent.append("Total Number of Donations : ").append(donationList.getNumberOfEntries()).append("\n\n");
 
-            for (int i = 1; i <= donations.getNumberOfEntries(); i++) {
-                Donation donation = donations.getEntry(i);
+            for (int i = 1; i <= donationList.getNumberOfEntries(); i++) {
+                Donation donation = donationList.getEntry(i);
                 reportContent.append("Donation ID   : ").append(donation.getDonationID()).append("\n");
-                reportContent.append("Donor ID      : ").append(donation.getDonorID()).append("\n");
-                reportContent.append("Donation Type : ").append(donation.getDonationType()).append("\n");
-                reportContent.append("Items         : ").append(donation.getItems().toString()).append("\n");
-                reportContent.append("-------------------------------------------------------\n");
+                reportContent.append("Donors ID     : ").append(donation.getDonorID()).append("\n");
+                reportContent.append("Item          : ").append(donation.getItem()).append("\n");
+                reportContent.append("Donation Type : ").append(donation.getItemCategory()).append("\n");
+                reportContent.append("Donation Date : ").append(donation.getDonationDate()).append("\n");
+                reportContent.append("--------------------------------------------\n");
             }
 
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath.toFile()))) {
-                writer.write(reportContent.toString());
-                System.out.println("Summary report is downloaded to : " + filePath);
-            } catch (IOException e) {
-                System.err.println("Error writing summary report to file : " + e.getMessage());
-            }
+            Files.write(filePath, reportContent.toString().getBytes());
 
         } catch (IOException e) {
-            System.err.println("Error creating summary report file : " + e.getMessage());
+            e.printStackTrace();
         }
 
-        return reportContent.toString();
+        return fileName;
     }
 
     public static void main(String[] args) {
         DonationManagement controller = new DonationManagement();
         DonationManagementUI ui = new DonationManagementUI(controller);
-        // Create the controller with the UI
         controller.setUI(ui);
         controller.runDonationManagement();
     }
 }
-
