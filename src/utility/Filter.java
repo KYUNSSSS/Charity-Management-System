@@ -162,4 +162,28 @@ public class Filter<F> implements FilterInterface<F> {
         }
         return filteredList;
     }
+
+    @Override
+    public ListInterface<F> filterByVolunteerType(ListInterface<F> list, String type) {
+        ListInterface<F> filteredList = new LinkedList<>();
+        for (int i = 1; i <= list.getNumberOfEntries(); i++) {
+            F volunteer = list.getEntry(i);
+            if (((Volunteer) volunteer).getVolunteerType().equalsIgnoreCase(type)) {
+                filteredList.add(volunteer);
+            }
+        }
+        return filteredList;
+    }
+    
+    @Override
+    public ListInterface<F> filterByEvent(ListInterface<F> list, String event) {
+        ListInterface<F> filteredList = new LinkedList<>();
+        for (int i = 1; i <= list.getNumberOfEntries(); i++) {
+            F volunteer = list.getEntry(i);
+            if (((Volunteer) volunteer).getEventAssigned().contains(event)) {
+                filteredList.add(volunteer);
+            }
+        }
+        return filteredList;
+    }
 }
