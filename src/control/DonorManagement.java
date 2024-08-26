@@ -398,7 +398,7 @@ public class DonorManagement {
             publicAverage = publicTotal / publicCount;
 
         }
-        System.out.println("*********Donor Type Summary Report*********");
+        System.out.println("************************************Donor Type Summary Report************************************");
         System.out.println("-------------------------------------------------------------------------------------------------");
         System.out.println("Donor Type | Number of Donors | Percentage |    Total    |   Average   | Max Amount | Min Amount ");
         System.out.println("-------------------------------------------------------------------------------------------------");
