@@ -1,7 +1,9 @@
 package control;
 
+import adt.HashMap;
 import adt.LinkedList;
 import adt.ListInterface;
+import adt.MapInterface;
 import dao.DonationDAO;
 import entity.Donation;
 import boundary.DonationManagementUI;
@@ -16,6 +18,10 @@ public class DonationManagement {
     public LinkedList<Donation> donationList;
     private DonationManagementUI ui;
     private Filter<Donation> filter;
+    private HashMap<String, Double> categoryTotals = new HashMap<>();
+    private HashMap<String, Double> itemTotals = new HashMap<>();
+    private double cashTotal = 0.0;
+    private Donation donation;
 
     public DonationManagement(DonationManagementUI ui) {
         this.ui = ui;
@@ -62,7 +68,19 @@ public class DonationManagement {
     }
 
     public boolean addDonation(String donationID, String donorID, String itemCategory, String item, double amount, LocalDate donationDate) {
-        Donation donation = new Donation(donationID, donorID, itemCategory,item, amount, donationDate);
+        Donation donation;
+
+        // Check if the itemCategory is cash
+        if (itemCategory.equalsIgnoreCase("Cash")) {
+            // For cash donations, directly use the double amount
+            donation = new Donation(donationID, donorID, itemCategory, item, amount, donationDate);
+        } else {
+            // For non-cash donations, convert the amount to int
+            int nonCashAmount = (int) amount;
+            donation = new Donation(donationID, donorID, itemCategory, item, nonCashAmount, donationDate);
+        }
+
+        // Add the donation to the list and save if successful
         boolean isAdded = donationList.add(donation);
         if (isAdded) {
             donationDAO.saveDonationListToFile(donationList);
@@ -91,9 +109,9 @@ public class DonationManagement {
         }
         return null;
     }
+
     
     public void amendDonationDetails(String donationID, String newDonorID, String newItemCategory, String newItem, Double newAmount) {
-        // Retrieve the donation entry to be amended
         Donation donation = getDonationById(donationID);
         if (donation == null) {
             System.err.println("Donation not found.");
@@ -101,17 +119,21 @@ public class DonationManagement {
         }
 
         // Update the details if new values are provided
-        if (!newDonorID.isEmpty()) {
+        if (newDonorID != null && !newDonorID.isEmpty()) {
             donation.setDonorID(newDonorID);
         }
-        if (!newItemCategory.isEmpty()) {
+        if (newItemCategory != null && !newItemCategory.isEmpty()) {
             donation.setItemCategory(newItemCategory);
         }
-        if (!newItem.isEmpty()) {
+        if (newItem != null && !newItem.isEmpty()) {
             donation.setItem(newItem);
         }
         if (newAmount != null) {
-            donation.setAmount(newAmount);
+            if (newItemCategory.equalsIgnoreCase("Cash")) {
+                donation.setCashAmount(newAmount);
+            } else {
+                donation.setAmount(newAmount.intValue()); // Convert Double to int for non-cash donations
+            }
         }
 
         // Save the updated donation list back to the file
@@ -119,20 +141,41 @@ public class DonationManagement {
     }
 
 
+    public double trackTotalCashDonations() {
+        double totalCashAmount = 0.0;
+        LinkedList<Donation> allDonations = listDonations();
+
+        for (int i = 1; i <= allDonations.getNumberOfEntries(); i++) {
+            Donation donation = allDonations.getEntry(i);
+
+            if (donation.getItemCategory().equalsIgnoreCase("Cash")) {
+                totalCashAmount += donation.getCashAmount(); // Use getCashAmount() for cash donations
+            } 
+        }
+
+        return totalCashAmount;
+    }
+
+
     public LinkedList<String> trackDonationByCategory(String itemCategory) {
         LinkedList<String> itemsInCategory = new LinkedList<>();
-        
 
         for (int i = 1; i <= donationList.getNumberOfEntries(); i++) {
             Donation donation = donationList.getEntry(i);
 
             if (donation.getItemCategory().equalsIgnoreCase(itemCategory)) {
-                String itemWithAmount = donation.getItem() + " (Amount: " + donation.getAmount() + ")";
+                String itemWithAmount;
+                if (donation.getItemCategory().equalsIgnoreCase("Cash")) {
+                    itemWithAmount = donation.getItem() + " (Amount: RM " + String.format("%.2f", donation.getCashAmount()) + ")";
+                } else {
+                    itemWithAmount = donation.getItem() + " (Amount: " + donation.getAmount() + ")";
+                }
                 itemsInCategory.add(itemWithAmount);
             }
         }
         return itemsInCategory;
     }
+
 
 
     public LinkedList<Donation> listDonationsByDonor(String donorID) {
@@ -145,6 +188,7 @@ public class DonationManagement {
         }
         return result;
     }
+    
     public void handleFilterChoice() {
         int choice;
         do{
@@ -179,6 +223,32 @@ public class DonationManagement {
     public LinkedList<Donation> listDonations() {
         return donationList;
     }
+    
+    // Get donations categorized by item within a specific category
+    private MapInterface<String, Double> getItemTotalsByCategory(String category) {
+        MapInterface<String, Double> itemTotals = new HashMap<>();
+
+        for (int i = 1; i <= donationList.getNumberOfEntries(); i++) {
+            Donation donation = donationList.getEntry(i);
+
+            if (donation.getItemCategory().equalsIgnoreCase(category)) {
+                String item = donation.getItem();
+                double amount;
+
+                // Check if the category is "cash" or non-cash
+                if (category.equalsIgnoreCase("Cash")) {
+                    amount = donation.getCashAmount(); // Use cash amount for cash donations
+                } else {
+                    amount = donation.getAmount(); // Use non-cash amount for other categories
+                }
+
+                double currentTotal = itemTotals.get(item) != null ? itemTotals.get(item) : 0;
+                itemTotals.put(item, currentTotal + amount);
+            }
+        }
+        return itemTotals;
+    }
+
 
     public String generateReport() {
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
@@ -194,18 +264,27 @@ public class DonationManagement {
 
             reportContent.append("*****Donation Summary Report*****\n");
             reportContent.append("Date Generated    : ").append(LocalDate.now().format(dateFormatter)).append("\n\n");
-            reportContent.append("Summary Report :\n");
-            reportContent.append("Total Number of Donations : ").append(donationList.getNumberOfEntries()).append("\n\n");
 
-            for (int i = 1; i <= donationList.getNumberOfEntries(); i++) {
-                Donation donation = donationList.getEntry(i);
-                reportContent.append("Donation ID   : ").append(donation.getDonationID()).append("\n");
-                reportContent.append("Donors ID     : ").append(donation.getDonorID()).append("\n");
-                reportContent.append("Item          : ").append(donation.getItem()).append("\n");
-                reportContent.append("Donation Type : ").append(donation.getItemCategory()).append("\n");
-                reportContent.append("Donation Date : ").append(donation.getDonationDate()).append("\n");
-                reportContent.append("--------------------------------------------\n");
+            // Calculate totals
+            calculateCategoryTotals();
+            calculateItemTotals();
+
+            // Output totals for each category
+            for (String category : categoryTotals.keySet()) {
+                double totalAmount = categoryTotals.get(category);
+                reportContent.append("Total ").append(category).append(" : ").append(totalAmount).append("\n");
+
+                for (String item : itemTotals.keySet()) {
+                    if (item.startsWith(category)) {
+                        double itemTotal = itemTotals.get(item);
+                        reportContent.append("1. Total ").append(item.substring(category.length() + 2)).append(" : ").append(itemTotal).append("\n");
+                    }
+                }
+                reportContent.append("--------------------------------------\n");
             }
+
+            // Output total cash donations
+            reportContent.append("Total Amount of Cash : RM ").append(String.format("%.2f", cashTotal)).append("\n");
 
             Files.write(filePath, reportContent.toString().getBytes());
 
@@ -215,6 +294,84 @@ public class DonationManagement {
 
         return fileName;
     }
+
+
+    public String generateDetailedReport() {
+        StringBuilder report = new StringBuilder();
+        report.append("***** Detailed Report *****\n");
+        report.append("Date Generated: ").append(LocalDate.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))).append("\n\n");
+
+        for (int i = 1; i <= donationList.getNumberOfEntries(); i++) {
+            Donation donation = donationList.getEntry(i);
+            report.append("Donation ID     : ").append(donation.getDonationID()).append("\n");
+            report.append("Donor ID        : ").append(donation.getDonorID()).append("\n");
+            report.append("Donation Date   : ").append(donation.getDonationDate()).append("\n");
+            report.append("Category        : ").append(donation.getItemCategory()).append("\n");
+            report.append("Items           : ").append(donation.getItem()).append("\n");
+
+            // Display amount based on donation category
+            if (donation.getItemCategory().equalsIgnoreCase("Cash")) {
+                report.append("Cash Amount     : RM ").append(String.format("%.2f", donation.getCashAmount())).append("\n");
+            } else {
+                report.append("Amount          : ").append(donation.getAmount()).append("\n");
+            }
+
+            report.append("-----------------------------------------\n");
+        }
+
+        return report.toString();
+    }
+
+    // Method to calculate totals by category
+    private void calculateCategoryTotals() {
+        cashTotal = 0.0; // Reset cash total
+        categoryTotals.clear(); // Clear previous totals
+
+        for (int i = 1; i <= donationList.getNumberOfEntries(); i++) {
+            Donation donation = donationList.getEntry(i);
+            String category = donation.getItemCategory();
+            double amount;
+
+            // Determine amount based on category
+            if (category.equalsIgnoreCase("Cash")) {
+                amount = donation.getCashAmount(); // Use cash amount for cash donations
+                cashTotal += amount;
+            } else {
+                amount = donation.getAmount(); // Use regular amount for non-cash donations
+            }
+
+            // Update category totals
+            categoryTotals.put(category, categoryTotals.getOrDefault(category, 0.0) + amount);
+        }
+
+        // Ensure the total cash amount is included in the category totals
+        categoryTotals.put("Total Amount of Cash", cashTotal);
+    }
+
+    
+    private void calculateItemTotals() {
+        itemTotals.clear(); // Clear previous totals
+
+        for (int i = 1; i <= donationList.getNumberOfEntries(); i++) {
+            Donation donation = donationList.getEntry(i);
+            String category = donation.getItemCategory();
+            String item = donation.getItem();
+            double amount;
+
+            // Determine amount based on category
+            if (category.equalsIgnoreCase("Cash")) {
+                amount = donation.getCashAmount(); // Use cash amount for cash donations
+            } else {
+                amount = donation.getAmount(); // Use regular amount for non-cash donations
+            }
+
+            String itemKey = category + ": " + item;
+            itemTotals.put(itemKey, itemTotals.getOrDefault(itemKey, 0.0) + amount);
+        }
+    }
+
+
+
 
     public static void main(String[] args) {
         DonationManagement controller = new DonationManagement();
