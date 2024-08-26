@@ -105,6 +105,5 @@ public interface ListInterface<T> {
    */
   public boolean isFull();
   public Iterator<T> iterator();
-//  public LinkedList<T> filterByDateRange(LocalDate startDate, LocalDate endDate);
-//  public ListInterface<T> filterByDoneeType(String doneeType);
+
 }

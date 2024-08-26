@@ -8,7 +8,10 @@ import adt.LinkedList;
 import adt.ListInterface;
 import boundary.VolunteerManagementUI;
 import dao.VolunteerDAO;
+import entity.Distribution;
 import entity.Volunteer;
+import utility.Filter;
+import utility.FilterInterface;
 import utility.MessageUI;
 
 /**
@@ -19,6 +22,7 @@ public class VolunteerManagement {
     private ListInterface<Volunteer> volunteerList = new LinkedList<>();
     private VolunteerDAO VolunteerDAO = new VolunteerDAO();
     private VolunteerManagementUI volunteerUI = new VolunteerManagementUI();
+    private FilterInterface<Volunteer> filterVolunteer = new Filter<>();
     
     public VolunteerManagement() {
         volunteerList = VolunteerDAO.retrieveFromFile();
@@ -131,7 +135,7 @@ public class VolunteerManagement {
         switch (filterChoice) {
             case 1:
                 String volunteerType = volunteerUI.inputVolunteerType();
-//                filteredVolunteers = volunteerList.filterByVolunteerType(volunteerType);
+                filteredVolunteers = filterVolunteer.filterByVolunteerType(volunteerList,volunteerType);
                 break;
     //        case 2:
     //            LocalDate startDate = doneeUI.inputStartDate();

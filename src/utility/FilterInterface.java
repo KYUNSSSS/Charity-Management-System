@@ -5,6 +5,7 @@
 package utility;
 
 import adt.*;
+import entity.*;
 import java.time.LocalDate;
 
 /**
@@ -22,4 +23,13 @@ public interface FilterInterface<F> {
     public ListInterface<F> filterByDonationItem(ListInterface<F> list, String item);
     
     public ListInterface<F> filterByEntityType(ListInterface<F> list, String type);
+
+    public ListInterface<F> filterByLocation(ListInterface<F> list, String type);
+    
+    public ListInterface<Distribution> filterByDateAndDoneeID(ListInterface<Distribution> list, LocalDate startDate, LocalDate endDate, String doneeID);
+    
+    public ListInterface<F> filterByAmountAndDoneeID(ListInterface<F> list, double minAmount, double maxAmount, String doneeID);
+
+
+    
 }

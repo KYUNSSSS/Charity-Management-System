@@ -261,17 +261,23 @@ public class DonationDistribution {
     }
     
     public void generateReport() {
-        // Initialize summary variables
         int totalPendingItems = 0;
         int totalDeliveredItems = 0;
         int totalReceivedItems = 0;
         double totalPendingCash = 0.0;
         double totalDeliveredCash = 0.0;
         double totalReceivedCash = 0.0;
-        double totalReceivedAmount = 0.0;
+        double totalDistributedCash = 0.0;
         int totalItemsDistributed = 0;
         int highestQuantity = 0;
         String highestCategory = "";
+        String highestItemLocation = "";
+        int highestItemQuantity = 0;
+        String highestCashLocation = "";
+        double highestCashAmount = 0.0;
+
+        Map<String, Integer> locationItemCounts = new HashMap<>();
+        Map<String, Double> locationCashCounts = new HashMap<>();
 
         for (int i = 1; i <= distributeList.getNumberOfEntries(); i++) {
             Distribution dist = distributeList.getEntry(i);
@@ -296,25 +302,60 @@ public class DonationDistribution {
                 case "received":
                     if (isCash) {
                         totalReceivedCash += dist.getAmount();
-                        totalReceivedAmount += dist.getAmount();
                     } else {
                         totalReceivedItems += dist.getQuantity();
                     }
                     break;
             }
-            
+
+            // Track total distributed items and cash across all statuses
+            if (isCash) {
+                totalDistributedCash += dist.getAmount(); 
+            } else {
+                totalItemsDistributed += dist.getQuantity(); 
+            }
+
+            // Track item and cash distributions by location
+            String location = doneeLocationCache.getOrDefault(dist.getDoneeID(), "Unknown");
+            locationItemCounts.put(location, locationItemCounts.getOrDefault(location, 0) + dist.getQuantity());
+            locationCashCounts.put(location, locationCashCounts.getOrDefault(location, 0.0) + dist.getAmount());
+
             if (dist.getQuantity() > highestQuantity) {
                 highestQuantity = dist.getQuantity();
                 highestCategory = dist.getCategory();
             }
         }
-        
-        totalItemsDistributed = totalPendingItems + totalDeliveredItems + totalReceivedItems;
-        totalReceivedAmount = totalPendingCash + totalDeliveredCash + totalReceivedCash;
-        distributeUI.displaySummaryReport(totalPendingItems,totalDeliveredItems,totalReceivedItems,totalPendingCash,totalDeliveredCash,totalReceivedCash,totalReceivedAmount,totalItemsDistributed,highestQuantity,highestCategory
+
+        // Find highest quantity and cash location
+        for (Map.Entry<String, Integer> itemEntry : locationItemCounts.entrySet()) {
+            String location = itemEntry.getKey();
+            int itemCount = itemEntry.getValue();
+
+            if (itemCount > highestItemQuantity) {
+                highestItemLocation = location;
+                highestItemQuantity = itemCount;
+            }
+        }
+
+        for (Map.Entry<String, Double> cashEntry : locationCashCounts.entrySet()) {
+            String location = cashEntry.getKey();
+            double cashAmount = cashEntry.getValue();
+
+            if (cashAmount > highestCashAmount) {
+                highestCashLocation = location;
+                highestCashAmount = cashAmount;
+            }
+        }
+
+        distributeUI.displaySummaryReport(
+            totalPendingItems, totalDeliveredItems, totalReceivedItems, 
+            totalPendingCash, totalDeliveredCash, totalReceivedCash, 
+            totalDistributedCash, totalItemsDistributed, highestQuantity, 
+            highestCategory, highestItemLocation, highestItemQuantity, 
+            highestCashLocation, highestCashAmount
         );
     }
-
+    
     private boolean isCash(Distribution dist) {
         return dist.getCategory().equalsIgnoreCase("cash");
     }

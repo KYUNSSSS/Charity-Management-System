@@ -1,10 +1,7 @@
 package adt;
 
-import java.time.LocalDate;
 import java.util.NoSuchElementException;
-import java.util.function.Predicate;
 import java.io.Serializable;
-import entity.*;
 import java.util.Iterator;
 
 /**
@@ -229,29 +226,14 @@ public class LinkedList<T> implements ListInterface<T>, Serializable {
 //            if (item instanceof DonationManagement) {
 //                DonationManagement donation = (DonationManagement) item;
 //                LocalDate donationDate = donation.getDonationDate();
-//                if ((donationDate.isEqual(startDate) || donationDate.isAfter(startDate))
-//                        && (donationDate.isEqual(endDate) || donationDate.isBefore(endDate))) {
+//                if ((donationDate.isEqual(startDate) || donationDate.isAfter(startDate)) &&
+//                    (donationDate.isEqual(endDate) || donationDate.isBefore(endDate))) {
 //                    filteredList.add(item);
 //                }
 //            }
 //        }
 //        return filteredList;
 //    }
-//
-//    public ListInterface<T> filterByDoneeType(String doneeType) {
-//        ListInterface<T> filteredList = new LinkedList<>();
-//        Node currentNode = firstNode;
-//
-//        while (currentNode != null) {
-//            Donee donee = (Donee) currentNode.data;
-//            if (donee.getDoneeType().equalsIgnoreCase(doneeType)) {
-//                filteredList.add(currentNode.data);
-//            }
-//            currentNode = currentNode.next;
-//        }
-//        return filteredList;
-//    }
-
     private class LinkedListIterator implements Iterator<T> {
 
         private Node currentNode;
@@ -301,4 +283,5 @@ public class LinkedList<T> implements ListInterface<T>, Serializable {
             this.next = next;
         }
     }
+
 }

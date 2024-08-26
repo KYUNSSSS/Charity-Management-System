@@ -205,7 +205,7 @@ public class DonationDistributionUI {
         return location;
     }
 
-    public void displaySummaryReport(int totalPendingItems, int totalDeliveredItems, int totalReceivedItems, double totalPendingCash, double totalDeliveredCash, double totalReceivedCash, double totalReceivedAmount, int totalItemsDistributed, int highestQuantity, String highestCategory) {
+    public void displaySummaryReport(int totalPendingItems, int totalDeliveredItems, int totalReceivedItems, double totalPendingCash, double totalDeliveredCash, double totalReceivedCash, double totalReceivedAmount, int totalItemsDistributed, int highestQuantity, String highestCategory,   String highestItemLocation, int highestItemQuantity,String highestCashLocation, double highestCashAmount) {
         StringBuilder report = new StringBuilder();
         report.append("============= Distribution Summary Report =============\n");
         report.append("Total Pending Distribution Items: ").append(totalPendingItems).append("\n");
@@ -217,10 +217,13 @@ public class DonationDistributionUI {
         report.append("\nTotal Cash Distributed: RM ").append(String.format("%.2f", totalReceivedAmount)).append("\n");
         report.append("Total Items Distributed: ").append(totalItemsDistributed).append("\n");
         report.append("Category with Highest Quantity: ").append(highestCategory).append(" (").append(highestQuantity).append(" items)").append("\n");
+        report.append("Location with Highest Distributed Items: ").append(highestItemLocation).append(" (").append(highestItemQuantity).append(" items)").append("\n");
+    report.append("Location with Highest Distributed Cash: ").append(highestCashLocation).append(" (RM ").append(String.format("%.2f", highestCashAmount)).append(")").append("\n");
         report.append("=======================================================\n");
         System.out.println(report.toString());
     }
 }
+
 
 
 

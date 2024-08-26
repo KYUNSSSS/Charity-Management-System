@@ -90,7 +90,7 @@ public class VolunteerManagementUI {
         return choice;
    }
     
-    public void displayFilteredDonees(ListInterface<Volunteer> volunteers) {
+    public void displayFilteredVolunteers(ListInterface<Volunteer> volunteers) {
         if (volunteers.isEmpty()) {
             System.out.println("No matching volunteers found.");
         } else {

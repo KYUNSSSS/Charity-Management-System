@@ -9,6 +9,8 @@ import entity.Donor;
 import java.io.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -32,7 +34,16 @@ public class DonorDAO implements Serializable {
     public ListInterface<Donor> retrieveFromFile() {
         LinkedList<Donor> donorList = new LinkedList<>();
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
+        
+        File file = new File(fileName);
+        if(!file.exists()) {
+            try {
+                file.createNewFile();
+            } catch (IOException ex) {
+                Logger.getLogger(DonorDAO.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
             String line;
             while ((line = reader.readLine()) != null) {

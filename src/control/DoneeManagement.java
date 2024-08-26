@@ -9,6 +9,8 @@ import adt.*;
 import boundary.*;
 import utility.*;
 import entity.*;
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDate;
 
 /**
@@ -24,9 +26,27 @@ public class DoneeManagement {
     private DistributionDAO distributeDAO = new DistributionDAO();
     private HashMap<String, Donee> doneeMap = new HashMap<>();
     private HashMap<String, ListInterface<Distribution>> donationMap = new HashMap<>();
+    private FilterInterface<Donee> filterDonee = new Filter<>();
+    private FilterInterface<Distribution> filterDonation = new Filter<>();
+
     private int lastDoneeNumber = 0;
 
     public DoneeManagement() {
+        File file = new File("Donee.txt");
+        if (!file.exists()) {
+            try {
+                if (file.createNewFile()) {
+                    System.out.println("File not found. A new file has been created.");
+                } else {
+                    System.out.println("Failed to create a new file.");
+                    return;
+                }
+            } catch (IOException e) {
+                System.out.println("Error creating new file: " + e.getMessage());
+                e.printStackTrace();
+                return;
+            }
+        }
         doneeList = doneeDAO.retrieveFromFile();
         distributeList = distributeDAO.retrieveFromFile();
         for (int i = 1; i <= doneeList.getNumberOfEntries(); i++) {
@@ -52,7 +72,8 @@ public class DoneeManagement {
             choice = doneeUI.getMenuChoice();
             switch (choice) {
                 case 0:
-                    MessageUI.displayExitMessage();
+                    driver driver = new driver();
+                    driver.runDriver();
                     break;
                 case 1:
                     addNewDonee();//done
@@ -68,6 +89,7 @@ public class DoneeManagement {
                     break;
                 case 4:
                     listDoneeDonation();//done
+
                     break;
                 case 5:
                     filterDonees();
@@ -75,10 +97,11 @@ public class DoneeManagement {
                     break;
                 case 6:
                     removeDonee();
-                    doneeUI.listAllDonees(getAllDonee());
+                    MessageUI.pressAnyKeyToContinue();
                     break;
                 case 7:
                     generateSummaryReport();
+                    MessageUI.pressAnyKeyToContinue();
                     break;
                 default:
                     MessageUI.displayInvalidChoiceMessage();
@@ -113,18 +136,17 @@ public class DoneeManagement {
                 removed = true;
                 break;
             }
-
-            if (removed) {
-                doneeDAO.saveToFile(getAllDonee());
-                System.out.println("Donee with ID " + doneeID + " has been removed.");
-            } else {
-                System.out.println("Donee with ID " + doneeID + " not found.");
-            }
-
-            return removed;
         }
 
-    
+        if (removed) {
+            doneeDAO.saveToFile(getAllDonee());
+            System.out.println("Donee with ID " + doneeID + " has been removed.");
+        } else {
+            System.out.println("Donee with ID " + doneeID + " not found.");
+        }
+
+        return removed;
+    }
 
     public void updateDoneeDetails() {
         String doneeID = doneeUI.inputDoneeID();
@@ -174,11 +196,40 @@ public class DoneeManagement {
         ListInterface<Distribution> donations = donationMap.get(doneeID);
 
         if (donations != null && !donations.isEmpty()) {
-            System.out.println("=== Donations for Donee ID: " + doneeID + " ===");
+            System.out.println("Donation For " + doneeMap.get(doneeID).getDoneeName() + "\n**************");
+            System.out.printf("%-15s %-20s %-15s %-10s %-10s %-10s %-20s\n",
+                    "Distribution ID", "Item Name", "Category",
+                    "Quantity", "Amount", "Status", "Distribution Date");
+            System.out.println("**************");
+
+            double totalDonations = 0;
+            int totalGoods = 0;
+            double totalCash = 0;
+
             for (int i = 1; i <= donations.getNumberOfEntries(); i++) {
-                System.out.println(donations.getEntry(i));
+                Distribution donation = donations.getEntry(i);
+
+                System.out.printf("%-15s %-20s %-15s %-10d %-10.2f %-10s %-20s\n",
+                        donation.getDistributionID(),
+                        donation.getItemName(),
+                        donation.getCategory(),
+                        donation.getQuantity(),
+                        donation.getAmount(),
+                        donation.getStatus(),
+                        donation.getDistributionDate().toString());
+
+                totalDonations++;
+                totalGoods += donation.getQuantity();
+                totalCash += donation.getAmount();
             }
-            System.out.println("==========================================");
+
+            System.out.println("**************");
+            System.out.println("Total Donations: " + totalDonations);
+            System.out.println("Total Donated Goods: " + totalGoods);
+            System.out.println("Total Donated Cash: " + String.format("%.2f", totalCash));
+            System.out.println("**************");
+            MessageUI.pressAnyKeyToContinue();
+
         } else {
             System.out.println("No donations found for Donee ID: " + doneeID);
         }
@@ -197,30 +248,44 @@ public class DoneeManagement {
     }
 
     public void filterDonees() {
+        String doneeID;
         int filterChoice = doneeUI.getFilterChoice(); // Prompt user to choose filter type
-        ListInterface<Donee> filteredDonees = null;
+        ListInterface<Donee> filteredDonees;
+        ListInterface<Distribution> filteredInfoByDoneeID = null;
 
         switch (filterChoice) {
             case 1:
                 String doneeType = doneeUI.inputDoneeType();
-//                filteredDonees = doneeList.filterByType(doneeList, doneeType);
+                filteredDonees = filterDonee.filterByType(doneeList, doneeType);
+                System.out.println("Donation for " + doneeType + " Category");
+                doneeUI.displayFilteredDonees(filteredDonees);
                 break;
             case 2:
+                doneeID = doneeUI.inputDoneeID();
                 LocalDate startDate = doneeUI.inputStartDate();
                 LocalDate endDate = doneeUI.inputEndDate();
-                //filteredDonees = doneeList.filterByDateRange(startDate, endDate);
+                filteredInfoByDoneeID = filterDonation.filterByDateAndDoneeID(distributeList, startDate, endDate, doneeID);
+                System.out.println("Donation for " + doneeMap.get(doneeID).getDoneeName() + " between " + startDate + " and " + endDate);
+                doneeUI.displayFilteredDoneesByDoneeID(filteredInfoByDoneeID);
                 break;
             case 3:
+                doneeID = doneeUI.inputDoneeID();
                 double minAmount = doneeUI.inputMinAmount();
                 double maxAmount = doneeUI.inputMaxAmount();
-                //filteredDonees = doneeList.filterByAmountRange(minAmount, maxAmount);
+                filteredInfoByDoneeID = filterDonation.filterByAmountAndDoneeID(distributeList, minAmount, maxAmount, doneeID);
+                System.out.println("Donation for " + doneeMap.get(doneeID).getDoneeName() + " between " + minAmount + " and " + maxAmount);
+                doneeUI.displayFilteredDoneesByDoneeID(filteredInfoByDoneeID);
+                break;
+            case 4:
+                String doneeLocation = doneeUI.inputDoneeLocation();
+                filteredDonees = filterDonee.filterByLocation(doneeList, doneeLocation);
+                doneeUI.displayFilteredDonees(filteredDonees);
                 break;
             default:
                 MessageUI.displayInvalidChoiceMessage();
-                return;
+                filterDonees();
         }
 
-        doneeUI.displayFilteredDonees(filteredDonees);
     }
 
     public void generateSummaryReport() {
