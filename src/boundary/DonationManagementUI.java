@@ -8,24 +8,25 @@ import control.DonationManagement;
 import entity.Donation;
 
 import java.util.Scanner;
-import adt.LinkedList; 
+import adt.LinkedList;
 import utility.MessageUI;
 import java.time.LocalDate;
 
 public class DonationManagementUI {
+
     Scanner scanner = new Scanner(System.in);
     private DonationManagement controller;
 
     // Constructor that takes DonationManagement as a parameter
     public DonationManagementUI(DonationManagement controller) {
         this.controller = controller;
-    } 
+    }
     // ANSI escape code for green text
     String greenText = "\u001B[32m";
 
     // ANSI escape code to reset to default color
     String resetText = "\u001B[0m";
-    
+
     public int getMenuChoice() {
         System.out.println("*****Donation Management System Menu*****");
         System.out.println("1. Add Donation");
@@ -49,7 +50,7 @@ public class DonationManagementUI {
         }
         return choice;
     }
-    
+
     public String DonationItemCategory() {
         String itemCategory = "";
         int choice = 0;
@@ -64,38 +65,44 @@ public class DonationManagementUI {
             choice = scanner.nextInt();
             scanner.nextLine();
             switch (choice) {
-                case 1 -> itemCategory = "Clothing";
-                case 2 -> itemCategory = "Food and Beverage";
-                case 3 -> itemCategory = "Books";
-                case 4 -> itemCategory = "Electronic Devices";
-                case 5 -> itemCategory = "Cash";
-                default -> MessageUI.displayInvalidChoiceMessage();
+                case 1 ->
+                    itemCategory = "Clothing";
+                case 2 ->
+                    itemCategory = "Food and Beverage";
+                case 3 ->
+                    itemCategory = "Books";
+                case 4 ->
+                    itemCategory = "Electronic Devices";
+                case 5 ->
+                    itemCategory = "Cash";
+                default ->
+                    MessageUI.displayInvalidChoiceMessage();
             }
         } while (choice < 1 || choice > 5);
 
         return itemCategory;
     }
-    
+
     private String generateNextDonationID() {
-    int nextID = 1; // Default starting ID
-    LinkedList<Donation> donations = controller.listDonations();
-    if (donations.getNumberOfEntries() > 0) {
-        Donation lastDonation = donations.getEntry(donations.getNumberOfEntries());
-        String lastID = lastDonation.getDonationID();
-        nextID = Integer.parseInt(lastID.replace("DNT", "")) + 1;
+        int nextID = 1; // Default starting ID
+        LinkedList<Donation> donations = controller.listDonations();
+        if (donations.getNumberOfEntries() > 0) {
+            Donation lastDonation = donations.getEntry(donations.getNumberOfEntries());
+            String lastID = lastDonation.getDonationID();
+            nextID = Integer.parseInt(lastID.replace("DNT", "")) + 1;
+        }
+        return String.format("DNT%05d", nextID); // Format as DNT00001, DNT00002, etc.
     }
-    return String.format("DNT%05d", nextID); // Format as DNT00001, DNT00002, etc.
-}
-    
+
     public void addDonation() {
         System.out.println("*****Add Donation*****");
-            
+
         LocalDate donationDate = LocalDate.now();
         System.out.println("Date        : " + donationDate);
-        
+
         String donationID = generateNextDonationID();
         System.out.println("Donation ID : " + donationID);
-        
+
         System.out.print("Enter Donor ID    : ");
         String donorID = scanner.nextLine();
 
@@ -103,7 +110,7 @@ public class DonationManagementUI {
 
         String itemsInput = "";
         int choice = 0;
-        if("Clothing".equals(itemCategory)){
+        if ("Clothing".equals(itemCategory)) {
             do {
                 System.out.println("1. Clothes");
                 System.out.println("2. Pants");
@@ -114,16 +121,22 @@ public class DonationManagementUI {
                 choice = scanner.nextInt();
                 scanner.nextLine();
                 switch (choice) {
-                    case 1 -> itemsInput = "Clothes";
-                    case 2 -> itemsInput = "Pants";
-                    case 3 -> itemsInput = "Shoes";
-                    case 4 -> itemsInput = "Mask";
-                    case 5 -> itemsInput = "Hat";
-                    default -> MessageUI.displayInvalidChoiceMessage();
+                    case 1 ->
+                        itemsInput = "Clothes";
+                    case 2 ->
+                        itemsInput = "Pants";
+                    case 3 ->
+                        itemsInput = "Shoes";
+                    case 4 ->
+                        itemsInput = "Mask";
+                    case 5 ->
+                        itemsInput = "Hat";
+                    default ->
+                        MessageUI.displayInvalidChoiceMessage();
                 }
             } while (choice < 1 || choice > 5);
-            
-        }else if("Food and Beverage".equals(itemCategory)){
+
+        } else if ("Food and Beverage".equals(itemCategory)) {
             do {
                 System.out.println("1. Noodles");
                 System.out.println("2. Rice");
@@ -134,16 +147,22 @@ public class DonationManagementUI {
                 choice = scanner.nextInt();
                 scanner.nextLine();
                 switch (choice) {
-                    case 1 -> itemsInput = "Noodle";
-                    case 2 -> itemsInput = "Rice";
-                    case 3 -> itemsInput = "Vegetable";
-                    case 4 -> itemsInput = "Meat";
-                    case 5 -> itemsInput = "Drinking Water";
-                    default -> MessageUI.displayInvalidChoiceMessage();
+                    case 1 ->
+                        itemsInput = "Noodle";
+                    case 2 ->
+                        itemsInput = "Rice";
+                    case 3 ->
+                        itemsInput = "Vegetable";
+                    case 4 ->
+                        itemsInput = "Meat";
+                    case 5 ->
+                        itemsInput = "Drinking Water";
+                    default ->
+                        MessageUI.displayInvalidChoiceMessage();
                 }
             } while (choice < 1 || choice > 5);
-            
-        }else if("Books".equals(itemCategory)){
+
+        } else if ("Books".equals(itemCategory)) {
             do {
                 System.out.println("1. Novel");
                 System.out.println("2. Magazine");
@@ -154,15 +173,21 @@ public class DonationManagementUI {
                 choice = scanner.nextInt();
                 scanner.nextLine();
                 switch (choice) {
-                    case 1 -> itemsInput = "Novel";
-                    case 2 -> itemsInput = "Magazine";
-                    case 3 -> itemsInput = "Textbook";
-                    case 4 -> itemsInput = "Comics";
-                    case 5 -> itemsInput = "Biography";
-                    default -> MessageUI.displayInvalidChoiceMessage();
+                    case 1 ->
+                        itemsInput = "Novel";
+                    case 2 ->
+                        itemsInput = "Magazine";
+                    case 3 ->
+                        itemsInput = "Textbook";
+                    case 4 ->
+                        itemsInput = "Comics";
+                    case 5 ->
+                        itemsInput = "Biography";
+                    default ->
+                        MessageUI.displayInvalidChoiceMessage();
                 }
             } while (choice < 1 || choice > 5);
-        }else if("Electrical Devices".equals(itemCategory)){
+        } else if ("Electrical Devices".equals(itemCategory)) {
             do {
                 System.out.println("1. Mobile Phone");
                 System.out.println("2. Computer");
@@ -173,15 +198,21 @@ public class DonationManagementUI {
                 choice = scanner.nextInt();
                 scanner.nextLine();
                 switch (choice) {
-                    case 1 -> itemsInput = "Mobile Phone";
-                    case 2 -> itemsInput = "Computer";
-                    case 3 -> itemsInput = "Refrigerator";
-                    case 4 -> itemsInput = "Washing Machine";
-                    case 5 -> itemsInput = "Rice Cooker";
-                    default -> MessageUI.displayInvalidChoiceMessage();
+                    case 1 ->
+                        itemsInput = "Mobile Phone";
+                    case 2 ->
+                        itemsInput = "Computer";
+                    case 3 ->
+                        itemsInput = "Refrigerator";
+                    case 4 ->
+                        itemsInput = "Washing Machine";
+                    case 5 ->
+                        itemsInput = "Rice Cooker";
+                    default ->
+                        MessageUI.displayInvalidChoiceMessage();
                 }
             } while (choice < 1 || choice > 5);
-        }else if("Cash".equals(itemCategory)){
+        } else if ("Cash".equals(itemCategory)) {
             itemsInput = "-";
         }
         double amount = 0.0;
@@ -206,7 +237,7 @@ public class DonationManagementUI {
         System.out.println(greenText + "Press any key to continue..." + resetText);
         scanner.nextLine();
     }
-    
+
     public void removeDonation() {
         System.out.println("*****Remove Donation*****");
 
@@ -255,19 +286,18 @@ public class DonationManagementUI {
         }
     }
 
-    public void amendDonorsDetails(){
+    public void amendDonorsDetails() {
         System.out.println("*****Amend Donors Details*****");
-        
+
         System.out.print("Enter Donor ID: ");
         String donorID = scanner.nextLine();
-        
+
         // Retrieve donor details from donor management
-        
         System.out.print("Confirm Amend Donor Details (Y): ");
         // If the user enters Y/y/yes/Yes/YEs/YeS/yEs/yES/... to confirm remove else cancel the action
         // No need to implement this now
     }
-    
+
     public void trackDonation() {
         System.out.println("*****Track Donated Items in Categories*****");
         String itemCategory = DonationItemCategory();
@@ -286,7 +316,7 @@ public class DonationManagementUI {
         System.out.println(greenText + "Press any key to continue..." + resetText);
         scanner.nextLine();
     }
-    
+
     public void listDonationsByDonors() {
         System.out.println("*****List Donation by Different Donor*****");
 
@@ -334,4 +364,3 @@ public class DonationManagementUI {
         System.out.println(report);
     }
 }
- 

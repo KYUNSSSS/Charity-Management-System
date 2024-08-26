@@ -19,8 +19,6 @@ public class Donor implements Serializable {
     private String email;
     private String type; //government, private, public
     private String entityType; //Organisation, individual
-//    private Donation donations; // one donor can have more than one donations
-//    private LocalDate donationDate;
 
     public Donor(String donorID, String name, int contactNo, String email, String type, String entityType) {
         this.donorID = donorID;
@@ -29,8 +27,6 @@ public class Donor implements Serializable {
         this.email = email;
         this.type = type;
         this.entityType = entityType;
-//        this.donations = donations;
-//        this.donationDate = donationDate;
     }
     
     public String getDonorID() {
@@ -80,22 +76,6 @@ public class Donor implements Serializable {
     public void setEntityType(String entityType) {
         this.entityType = entityType;
     }
-        
-//    public double getDonations() {
-//        return donations;
-//    }
-//
-//    public void setDonations(double donations) {
-//        this.donations = donations;
-//    }
-
-//    public LocalDate getDonationDate() {
-//        return donationDate;
-//    }
-//
-//    public void setDonationDate(LocalDate donationDate) {
-//        this.donationDate = donationDate;
-//    }
            
     @Override
     public boolean equals(Object obj) {

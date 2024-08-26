@@ -21,4 +21,9 @@ public interface MapInterface<K, V> {
     public boolean isEmpty();
 
     public int size();
+
+    public int capacity();
+
+    public K getKey(int index);
+
 }

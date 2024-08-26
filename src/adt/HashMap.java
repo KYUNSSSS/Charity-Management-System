@@ -85,6 +85,11 @@ public class HashMap<K, V> implements MapInterface<K, V> {
         return size;
     }
 
+    @Override
+    public int capacity() {
+        return table.length;
+    }
+
     private int getIndex(K key) {
         return Math.abs(key.hashCode() % table.length);
     }
@@ -100,7 +105,20 @@ public class HashMap<K, V> implements MapInterface<K, V> {
         }
     }
 
-    private static class MapEntry<K, V> {
+    public MapEntry<K, V> getEntry(int index) {
+        if (index >= 0 && index < table.length) {
+            return table[index];
+        }
+        return null;
+    }
+
+    @Override
+    public K getKey(int index) {
+        MapEntry<K, V> entry = getEntry(index);
+        return (entry != null) ? entry.key : null;
+    }
+
+    public static class MapEntry<K, V> {
 
         private final K key;
         private V value;

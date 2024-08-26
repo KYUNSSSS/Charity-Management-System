@@ -188,52 +188,7 @@ public class LinkedList<T> implements ListInterface<T>, Serializable {
         }
         return outputStr;
     }
-//  public ListInterface<T> filterByAmountRange(double minAmount, double maxAmount) {
-//    ListInterface<T> filteredList = new LinkedList<>();
-//    Node currentNode = firstNode;
-//
-//    while (currentNode != null) {
-//        Donee donee = (Donee) currentNode.data;
-//        if (donee.getDonationAmount() >= minAmount && donee.getDonationAmount() <= maxAmount) {
-//            filteredList.add(currentNode.data);
-//        }
-//        currentNode = currentNode.next;
-//    }
-//    return filteredList;
-//}
-//public ListInterface<T> filterByDateRange(LocalDate startDate, LocalDate endDate) {
-//    ListInterface<T> filteredList = new LinkedList<>();
-//    Node currentNode = firstNode;
-//
-//    while (currentNode != null) {
-//        Donee donee = (Donee) currentNode.data;
-//        if ((donee.getDonationDate().isEqual(startDate) || donee.getDonationDate().isAfter(startDate)) &&
-//            (donee.getDonationDate().isEqual(endDate) || donee.getDonationDate().isBefore(endDate))) {
-//            filteredList.add(currentNode.data);
-//        }
-//        currentNode = currentNode.next;
-//    }
-//    return filteredList;
-//} 
 
-//    @Override
-//    public LinkedList<T> filterByDateRange(LocalDate startDate, LocalDate endDate) {
-//        LinkedList<T> filteredList = new LinkedList<>();
-//        Iterator<T> iterator = this.iterator();
-//
-//        while (iterator.hasNext()) {
-//            T item = iterator.next();
-//            if (item instanceof DonationManagement) {
-//                DonationManagement donation = (DonationManagement) item;
-//                LocalDate donationDate = donation.getDonationDate();
-//                if ((donationDate.isEqual(startDate) || donationDate.isAfter(startDate)) &&
-//                    (donationDate.isEqual(endDate) || donationDate.isBefore(endDate))) {
-//                    filteredList.add(item);
-//                }
-//            }
-//        }
-//        return filteredList;
-//    }
     private class LinkedListIterator implements Iterator<T> {
 
         private Node currentNode;

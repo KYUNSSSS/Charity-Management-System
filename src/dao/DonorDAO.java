@@ -24,7 +24,7 @@ public class DonorDAO implements Serializable {
         File file = new File(fileName);
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
             writer.write(donorList);
-            System.out.println("Donor added successfully.");
+//            System.out.println("Donor added successfully.");
         } catch (IOException ex) {
             System.out.println("Error saving string to file: " + ex.getMessage());
             ex.printStackTrace();
