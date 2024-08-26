@@ -134,4 +134,32 @@ public class Filter<F> implements FilterInterface<F> {
         }
         return filteredList;
     }
+
+        @Override
+    public ListInterface<F> filterByDateRange(ListInterface<F> list, LocalDate startDate, LocalDate endDate) {
+        ListInterface<F> filteredList = new LinkedList<>();
+        for (int i = 1; i <= list.getNumberOfEntries(); i++) {
+            F entity = list.getEntry(i);
+            if (entity instanceof Donation donation) {
+                if (isWithinDateRange(donation.getDonationDate(), startDate, endDate)) {
+                    filteredList.add(entity);
+                }
+            }
+        }
+        return filteredList;
+    }
+
+    @Override
+    public ListInterface<F> filterByDonationAmountRange(ListInterface<F> list, double minAmount, double maxAmount) {
+        ListInterface<F> filteredList = new LinkedList<>();
+        for (int i = 1; i <= list.getNumberOfEntries(); i++) {
+            F entity = list.getEntry(i);
+            if (entity instanceof Donation donation) {
+                if (isWithinAmountRange(donation.getAmount(), minAmount, maxAmount)) {
+                    filteredList.add(entity);
+                }
+            }
+        }
+        return filteredList;
+    }
 }
