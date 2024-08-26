@@ -7,7 +7,7 @@ package control;
 import adt.*;
 import entity.*;
 import boundary.DonorManagementUI;
-import dao.DonorDAO;
+import dao.*;
 import java.time.LocalDate;
 import utility.*;
 
@@ -18,17 +18,23 @@ import utility.*;
 public class DonorManagement {
 
     private ListInterface<Donor> donorList = new LinkedList<>();
+    private ListInterface<Donation> donationList = new LinkedList<>();
     private DonorDAO donorDAO = new DonorDAO();
+    private DonationDAO donationDAO = new DonationDAO();
     private DonorManagementUI donorUI = new DonorManagementUI();
-    private MapInterface<String, LinkedList<Donor>> categorisedDonors;
+    private MapInterface<String, LinkedList<Donor>> categorisedDonors = new HashMap<>();
+    private MapInterface<String, Donor> donorMap = new HashMap<>();
+    private MapInterface<String, ListInterface<Donation>> donorDonations = new HashMap<>();
     private FilterInterface<Donor> filterDonor = new Filter<>();
 
     public DonorManagement() {
         donorList = donorDAO.retrieveFromFile();
-        categorisedDonors = new HashMap<>();
+        donationList = donationDAO.retrieveFromFile();
         categorisedDonors.put("government", new LinkedList<>());
         categorisedDonors.put("private", new LinkedList<>());
         categorisedDonors.put("public", new LinkedList<>());
+        
+        
     }
 
     public void runDonorManagement() {
@@ -53,7 +59,6 @@ public class DonorManagement {
                     break;
                 case 4:
                     searchDonorDetails();
-                    donorUI.listAllDonors(getAllDonors());
                     break;
                 case 5:
                     listDonorWithDonations();
@@ -79,6 +84,7 @@ public class DonorManagement {
     public void addNewDonor() {
         Donor newDonor = donorUI.inputDonorDetails();
         donorList.add(newDonor);
+        donorMap.put(newDonor.getDonorID(), newDonor);
         donorDAO.saveToFile(getAllDonors());
     }
 
@@ -97,6 +103,7 @@ public class DonorManagement {
     // Remove a donor by donorID
     public void removeDonor() {
         String donorID = donorUI.inputDonorID();
+        donorMap.remove(donorID);
         boolean donorFound = false;
         for (int i = 1; i <= donorList.getNumberOfEntries(); i++) {
             if (donorList.getEntry(i).getDonorID().equals(donorID)) {
@@ -116,6 +123,7 @@ public class DonorManagement {
     public void updateDonorDetails() {
         String donorID = donorUI.inputDonorID();
         Donor updatedDonor = donorUI.inputDonorDetails();
+        donorMap.put(donorID, updatedDonor);
         boolean donorFound = false;
         for (int i = 1; i <= donorList.getNumberOfEntries(); i++) {
             if (donorList.getEntry(i).getDonorID().equals(donorID)) {
@@ -137,15 +145,19 @@ public class DonorManagement {
         }
     }
 
-    public Donor searchDonorDetails() {
+    public void searchDonorDetails() {
         String donorID = donorUI.inputDonorID();
-        for (int i = 1; i <= donorList.getNumberOfEntries(); i++) {
-            if (donorList.getEntry(i).getDonorID().equals(donorID)) {
-                return donorList.getEntry(i);
-            }
-        }
-        System.err.println("Donor ID not found.");
-        return null;
+//        for (int i = 1; i <= donorList.getNumberOfEntries(); i++) {
+//            if (donorList.getEntry(i).getDonorID().equals(donorID)) {
+//                return donorList.getEntry(i);
+//            }
+//        }
+//        System.err.println("Donor ID not found.");
+//        return null;
+        if (donorMap.containsKey(donorID))
+            System.out.println(donorMap.get(donorID));
+        else
+            System.err.println("Donor not found.");     
     }
 
     public void listDonorWithDonations() {
@@ -155,7 +167,7 @@ public class DonorManagement {
     // Filter donor by type
     public void filterDonor() {
         int filterChoice = donorUI.getFilterChoice(); // Prompt user to choose filter type
-        ListInterface<Donor> filteredDonors = null;
+        ListInterface<Donor> filteredDonors;
 
         switch (filterChoice) {
             case 1:
