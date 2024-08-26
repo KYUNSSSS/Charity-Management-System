@@ -5,7 +5,6 @@
 package entity;
 
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.util.Objects;
 
 /**
@@ -20,19 +19,14 @@ public class Donor implements Serializable {
     private String email;
     private String type; //government, private, public
     private String entityType; //Organisation, individual
-//    private ListInterface<Donation> donations;
-    private double donations; // one donor can have more than one donations
-    private LocalDate donationDate;
 
-    public Donor(String donorID, String name, int contactNo, String email, String type, String entityType, double donations, LocalDate donationDate) {
+    public Donor(String donorID, String name, int contactNo, String email, String type, String entityType) {
         this.donorID = donorID;
         this.name = name;
         this.contactNo = contactNo;
         this.email = email;
         this.type = type;
         this.entityType = entityType;
-        this.donations = donations;
-        this.donationDate = donationDate;
     }
     
     public String getDonorID() {
@@ -82,34 +76,6 @@ public class Donor implements Serializable {
     public void setEntityType(String entityType) {
         this.entityType = entityType;
     }
-        
-//    public void addDonation(Donation donation) {
-//        donations.add(donation);
-//    }
-
-//    public void removeDonation(Donation donation) {
-//        donations.remove(donation);
-//    }
-//
-//    public ListInterface<Donation> getDonations() {
-//        return donations;
-//    }
-
-    public double getDonations() {
-        return donations;
-    }
-
-    public void setDonations(double donations) {
-        this.donations = donations;
-    }
-
-    public LocalDate getDonationDate() {
-        return donationDate;
-    }
-
-    public void setDonationDate(LocalDate donationDate) {
-        this.donationDate = donationDate;
-    }
            
     @Override
     public boolean equals(Object obj) {
@@ -128,6 +94,6 @@ public class Donor implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("%-10s, %-15s, %-15d, %-15s, %-10s, %-15s, %-15s, %-10s", donorID, name, contactNo, email, type, entityType, donations, donationDate);
+        return String.format("%-10s, %-15s, %-15d, %-15s, %-10s, %-15s", donorID, name, contactNo, email, type, entityType);
     }
 }
