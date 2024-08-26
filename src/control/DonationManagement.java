@@ -1,20 +1,22 @@
 package control;
 
 import adt.LinkedList;
+import adt.ListInterface;
 import dao.DonationDAO;
 import entity.Donation;
 import boundary.DonationManagementUI;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.nio.file.*;
+import java.util.InputMismatchException;
+import utility.*;
 
 public class DonationManagement {
     private DonationDAO donationDAO = new DonationDAO();
     public LinkedList<Donation> donationList;
     private DonationManagementUI ui;
+    private Filter<Donation> filter;
 
     public DonationManagement(DonationManagementUI ui) {
         this.ui = ui;
@@ -34,35 +36,17 @@ public class DonationManagement {
         do {
             choice = ui.getMenuChoice();
             switch (choice) {
-                case 1:
-                    ui.addDonation();
-                    break;
-                case 2:
-                    ui.removeDonation();
-                    break;
-                case 3:
-                    ui.searchDonationById();
-                    break;
-                case 4:
-                    ui.amendDonorsDetails(); // Implement this method if needed
-                    break;
-                case 5:
-                    ui.trackDonation();
-                    break;
-                case 6:
-                    ui.listDonationsByDonors();
-                    break;
-                case 7:
-                    ui.listDonations();
-                    break;
-                case 8:
-                    ui.donationsReports();
-                    break;
-                case 0:
-                    System.out.println("Exiting Donation Management System.");
-                    break;
-                default:
-                    System.err.println("Invalid choice. Please select an option between 0 and 8.");
+                case 1 -> ui.addDonation();
+                case 2 -> ui.removeDonation();
+                case 3 -> ui.searchDonationById();
+                case 4 -> ui.amendDonationDetails();
+                case 5 -> ui.trackDonation();
+                case 6 -> ui.listDonationsByDonors();
+                case 7 -> ui.listDonations();
+                case 8 -> handleFilterChoice();//base on criteria
+                case 9 -> ui.donationsReports();
+                case 0 -> System.out.println("Exiting Donation Management System.");
+                default -> System.err.println("Invalid choice. Please select an option between 0 and 9.");
             }
         } while (choice != 0);
     }
@@ -98,6 +82,24 @@ public class DonationManagement {
         }
         return null;
     }
+    
+    public void amendDonationDetails(String donationID, String newDonorID, String newItemCategory, String newItem, Double newAmount) {
+        Donation donation = getDonationById(donationID);
+        if (donation == null) {
+            System.err.println("Donation not found.");
+            return;
+        }
+
+        // Update the details if new values are provided
+        if (!newDonorID.isEmpty()) donation.setDonorID(newDonorID);
+        if (!newItemCategory.isEmpty()) donation.setItemCategory(newItemCategory);
+        if (!newItem.isEmpty()) donation.setItem(newItem);
+        if (newAmount != null) donation.setAmount(newAmount);
+
+        // Save the updated donation list back to the file
+        donationDAO.saveDonationListToFile(donationList);
+    }
+
 
     public LinkedList<String> trackDonationByCategory(String itemCategory) {
         LinkedList<String> itemsInCategory = new LinkedList<>();
@@ -124,6 +126,33 @@ public class DonationManagement {
             }
         }
         return result;
+    }
+    public void handleFilterChoice() {
+        int choice;
+        do{
+            choice = ui.displayFilterOptions();
+            switch (choice) {
+            case 1:
+                ui.filterByDateRange();
+                break;
+            case 2:
+                ui.filterByDonationAmountRange();
+                break;
+            case 3:
+                ui.filterByDateAndAmountRange();
+                break;
+            default:
+                System.err.println("Invalid choice. Please enter a number between 1 and 3.");
+            }   
+        }while (choice != 0);
+    }
+    
+    public ListInterface<Donation> filterDonationsByDateRange(LocalDate startDate, LocalDate endDate) {
+        return filter.filterByDateRange(donationList, startDate, endDate);
+    }
+
+    public ListInterface<Donation> filterDonationsByAmountRange(double minAmount, double maxAmount) {
+        return filter.filterByDonationAmountRange(donationList, minAmount, maxAmount);
     }
 
     public LinkedList<Donation> listDonations() {
