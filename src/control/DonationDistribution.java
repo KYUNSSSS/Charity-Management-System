@@ -10,6 +10,8 @@ import dao.DistributionDAO;
 import dao.DoneeDAO;
 import utility.MessageUI;
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -18,6 +20,7 @@ import java.time.LocalDate;
 public class DonationDistribution {
     private ListInterface<Donee> doneeList = new LinkedList<>();
     private DoneeDAO doneeDAO = new DoneeDAO(); 
+    private Map<String, String> doneeLocationCache = new HashMap<>();
     private ListInterface<Distribution> distributeList = new LinkedList<>();
     private DistributionDAO distributeDAO = new DistributionDAO();
     private DonationDistributionUI distributeUI = new DonationDistributionUI();
@@ -25,14 +28,16 @@ public class DonationDistribution {
     public DonationDistribution(){
         doneeList = doneeDAO.retrieveFromFile();
         distributeList = distributeDAO.retrieveFromFile();
-        
-////        for (Donee donee : doneeList) {
-//            String doneeID = donee.getDoneeID(); 
-////            String doneeLocation = donee.getLocation(); 
-//            System.out.println("Donee ID: " + doneeID);
-////            System.out.println("Donee Location: " + doneeLocation);
-//        }
+        loadDoneeLocations();
     }
+
+    private void loadDoneeLocations() {
+        for (int i = 1; i <= doneeList.getNumberOfEntries(); i++) {
+            Donee donee = doneeList.getEntry(i);
+            doneeLocationCache.put(donee.getDoneeID(), donee.getDoneeLocation());
+        }
+    }
+
     public void runDonationDistribution() {
         int choice = 0;
         do {
@@ -139,7 +144,7 @@ public class DonationDistribution {
                     trackByStatus();
                     break;
                 case 5:
-                    //trackByLocation();
+                    trackByLocation();
                     break;
                 default:
                     MessageUI.displayInvalidChoiceMessage();
@@ -147,11 +152,13 @@ public class DonationDistribution {
         } while (choices != 0); 
         
     }
-    
-    private void trackByCriteria(String criteria, String type) {
+
+   private void trackByCriteria(String criteria, String type) {
         StringBuilder result = new StringBuilder();
         String title = "";
+        boolean includeDoneeID = false;
 
+        // Set the title and header based on the type of criteria
         switch (type) {
             case "DoneeID":
                 title = "Donation Details for Donee ID: " + criteria;
@@ -165,14 +172,19 @@ public class DonationDistribution {
             case "Status":
                 title = "Donation Details for Status: " + criteria;
                 break;
+            case "Location":
+                title = "Donation Details for Location: " + criteria;
+                includeDoneeID = true; // Set flag to include Donee ID
+                break;
             default:
                 System.out.println("Unknown type.");
                 return;
         }
 
-        result.append(DonationDistributionUI.formatHeader(title));
+        result.append(DonationDistributionUI.formatHeader(title, includeDoneeID));
+        boolean hasMatchingRecords = false;
 
-        boolean hasMatchingRecords = false;  // Track if there are any matches
+        // Iterate through the distributeList
         for (int i = 1; i <= distributeList.getNumberOfEntries(); i++) {
             Distribution dist = distributeList.getEntry(i);
 
@@ -190,22 +202,34 @@ public class DonationDistribution {
                 case "Status":
                     match = dist.getStatus().equalsIgnoreCase(criteria);
                     break;
+                case "Location":
+                    for (Map.Entry<String, String> entry : doneeLocationCache.entrySet()) {
+                        if (entry.getValue().equalsIgnoreCase(criteria)) {
+                            if (dist.getDoneeID().equalsIgnoreCase(entry.getKey())) {
+                                match = true;
+                                break;
+                            }
+                        }
+                    }
+                    break;
             }
 
             if (match) {
-                hasMatchingRecords = true;  // Set to true if any match is found
-                result.append(String.format("%-20s%-15s%-15d%-15.2f%-20s%-20s\n",
-                    dist.getItemName(),
-                    dist.getCategory(),
-                    dist.getQuantity(),
-                    dist.getAmount(),
-                    dist.getStatus(),
-                    dist.getDistributionDate()));
+                hasMatchingRecords = true;
+
+                if (includeDoneeID) {
+                    result.append(String.format("%-20s%-15s%-15d%-15.2f%-20s%-20s%-20s\n",
+                        dist.getItemName(),dist.getCategory(),dist.getQuantity(),dist.getAmount(),dist.getStatus(),dist.getDistributionDate(),dist.getDoneeID())); 
+                }else {
+                    result.append(String.format("%-20s%-15s%-15d%-15.2f%-20s%-20s%-50s\n",
+                        dist.getItemName(),dist.getCategory(),dist.getQuantity(),dist.getAmount(),dist.getStatus(),dist.getDistributionDate(),
+                        doneeLocationCache.getOrDefault(dist.getDoneeID(), "Unknown"))); 
+                }
             }
         }
 
         if (!hasMatchingRecords) {
-            result.append("No matching records found.\n");  // Add a message if no matches are found
+            result.append("No matching records found.\n");
         }
 
         distributeUI.listAllDistribute(result.toString());
@@ -229,6 +253,11 @@ public class DonationDistribution {
     private void trackByStatus() {
         String status = distributeUI.inputStatus();
         trackByCriteria(status, "Status");
+    }
+    
+    private void trackByLocation() {
+        String location = distributeUI.inputLocation();
+        trackByCriteria(location, "Location");
     }
     
     public void generateReport() {
@@ -303,6 +332,12 @@ public class DonationDistribution {
         distribute.runDonationDistribution();
   }
 }
+
+
+
+
+
+
 
 
 

@@ -56,7 +56,7 @@ public class DonationDistributionUI {
             String id = scanner.nextLine();
 
             if (Validator.isValidID(id)) {
-                return id;
+                return id.toUpperCase();
             }
             System.out.println("\nInvalid Input. Please enter a valid Distribution ID without symbols. [Eg. A001].");
         }
@@ -68,7 +68,7 @@ public class DonationDistributionUI {
             String itemName = scanner.nextLine();
 
             if (Validator.isAlphabetic(itemName)) {
-                return itemName;
+                return itemName.toUpperCase();
             }
             System.out.println("\nInvalid Input. Please enter a valid Item Name containing only letters and spaces.");
         }
@@ -80,7 +80,7 @@ public class DonationDistributionUI {
             String category = scanner.nextLine();
 
             if (Validator.isAlphabetic(category)) {
-                return category;
+                return category.toUpperCase();
             }
             System.out.println("\nInvalid Input. Please enter a valid Item Category containing only letters and spaces.");
         }
@@ -105,7 +105,7 @@ public class DonationDistributionUI {
             String doneeId = scanner.nextLine();
 
             if (Validator.isValidID(doneeId)) {
-                return doneeId;
+                return doneeId.toUpperCase();
             }
             System.out.println("\nInvalid Input. Please enter a valid Distribution ID without symbols. [Eg. A001].");
         }
@@ -125,7 +125,7 @@ public class DonationDistributionUI {
                 System.out.println("\nInvalid Status. Please enter one of the following: Pending, Delivered, Received.");
             }
         }
-        return status;
+        return status.toUpperCase();
     }
     
     public LocalDate inputDistributionDate() {
@@ -145,12 +145,16 @@ public class DonationDistributionUI {
         return date;
     }
     
-    public static String formatHeader(String title) {
+    public static String formatHeader(String title, boolean includeDoneeID) {
         StringBuilder header = new StringBuilder();
         header.append(title).append("\n");
-        header.append("========================================================================================================\n");
-        header.append(String.format("%-20s%-15s%-15s%-15s%-20s%-20s\n", "Item", "Category", "Quantity", "Amount", "Status", "Distribution Date"));
-        header.append("========================================================================================================\n");
+        header.append("=====================================================================================================================\n");
+        if (includeDoneeID) {
+            header.append(String.format("%-20s%-15s%-15s%-15s%-20s%-20s%-20s\n", "Item", "Category", "Quantity", "Amount", "Status", "Distribution Date", "Donee ID"));
+        } else {
+            header.append(String.format("%-20s%-15s%-15s%-15s%-20s%-20s%-50s\n", "Item", "Category", "Quantity", "Amount", "Status", "Distribution Date", "Location"));
+        }
+        header.append("=====================================================================================================================\n");
         return header.toString();
     }
     
@@ -190,6 +194,16 @@ public class DonationDistributionUI {
             System.out.println("\nInvalid Input. Please enter a positive integer greater than 0.");
         }
     }
+    
+     public String inputLocation() {
+        String location;
+        do {
+            System.out.print("Enter location: ");
+            location = scanner.nextLine().toUpperCase().trim(); 
+        } while (!Validator.isAlphabetic(location)); 
+
+        return location;
+    }
 
     public void displaySummaryReport(int totalPendingItems, int totalDeliveredItems, int totalReceivedItems, double totalPendingCash, double totalDeliveredCash, double totalReceivedCash, double totalReceivedAmount, int totalItemsDistributed, int highestQuantity, String highestCategory) {
         StringBuilder report = new StringBuilder();
@@ -207,6 +221,16 @@ public class DonationDistributionUI {
         System.out.println(report.toString());
     }
 }
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -9,6 +9,8 @@ import adt.*;
 import java.time.LocalDate;
 
 import java.util.Scanner;
+import utility.MessageUI;
+import utility.Validator;
 
 /**
  *
@@ -45,51 +47,89 @@ public class DoneeManagementUI {
     }
 
     public String inputDoneeID() {
-        System.out.print("Enter Donee ID: ");
-        String id = scanner.nextLine();
-        return id;
+        while (true) {
+            System.out.print("Enter Donee ID: ");
+            String id = scanner.nextLine();
+
+            if (Validator.isValidID(id)) {
+                return id;
+            }
+            System.out.println("\nInvalid Input. Please enter a valid Distribution ID without symbols. [Eg. A001].");
+        }
     }
 
     public String inputDoneeType() {
-        System.out.print("Enter Donee Type(Organisation/Family/Individual): ");
-        String type = scanner.nextLine();
+        String type;
+        while (true) {
+            System.out.print("O - Organisation\nF - Family\nI - Individual\nEnter Donee Type(O/F/I): ");
+            type = scanner.nextLine().trim(); 
+
+            if (type.equalsIgnoreCase("O") || 
+                type.equalsIgnoreCase("F") || 
+                type.equalsIgnoreCase("I")) {
+                break;
+            } else {
+                System.out.println("\nInvalid Type.Enter O/F/I only.");
+            }
+        }
         return type;
+        
+      
     }
 
     public String inputDoneeName() {
-        System.out.print("Enter Donee Name: ");
-        String name = scanner.nextLine();
-        return name;
+        while (true) {
+            System.out.print("Enter  Name (Ali bin Abu): ");
+            String name = scanner.nextLine();
+
+            if (Validator.isAlphabetic(name)) {
+                return name;
+            }
+            System.out.println("Please enter alphabet only.");
+        }
     }
 
     public String inputDoneeEmail() {
-        System.out.print("Enter Donee Email: ");
+        System.out.print("Enter Donee Email (example@gmail.com): ");
         String email = scanner.nextLine();
         return email;
     }
 
     public int inputPhoneNum() {
-        System.out.print("Enter Phone Number: ");
-        int phone = scanner.nextInt();
-        scanner.nextLine();
-        return phone;
+        while (true){
+        System.out.print("Enter Phone Number(0123456789): ");
+        String phone = scanner.nextLine();
+        if (Validator.isValidPhoneNumber(phone)){
+            return Integer.parseInt(phone);
+        }
+            System.out.println("Please enter a valid phone number.");
+        }
     }
     
     public String inputDoneeLocation() {
-        System.out.print("Enter Donee Location: ");
-        String location = scanner.nextLine();
-        return location;
+        while (true) {
+            System.out.print("Enter Donee Location (KL): ");
+            String location = scanner.nextLine();
+
+            if (Validator.isAlphabetic(location)) {
+                return location;
+            }
+            System.out.println("Please enter alphabet only.");
+        }
+        
+        
+        
     }
     
     public Donee inputDoneeDetails() {
-        String id = inputDoneeID();
+        //String id = inputDoneeID();
         String type = inputDoneeType();
         String name = inputDoneeName();
         int phone = inputPhoneNum();
         String email = inputDoneeEmail();
         String location = inputDoneeLocation();
-        System.out.println();
-        return new Donee(id, type, name, phone, email,location);
+        System.out.println("Donee Details Registered.");
+        return new Donee("DE000", type, name, phone, email,location);
     }
 
     public int getFilterChoice() {
@@ -131,6 +171,10 @@ public class DoneeManagementUI {
                 System.out.println(donees.getEntry(i));
             }
         }
+        MessageUI.pressAnyKeyToContinue();
+    }
+    public void listDonee(Donee donee){
+        System.out.println("***Profile***\nDonee ID: "+donee.getDoneeID()+"\nName: "+donee.getDoneeName()+"\nType: "+donee.getDoneeType()+"\nPhone Number: "+donee.getDoneePhoneNum()+"\nEmail: "+donee.getDoneeEmail()+"\nLocation: "+donee.getDoneeLocation()+"\n**********");
     }
 
 }

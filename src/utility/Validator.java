@@ -36,6 +36,13 @@ public class Validator {
             return false; 
         }
     }
+        public static boolean isValidPhoneNumber(String input) {
+        // Remove any leading or trailing whitespace from the input
+        String trimmedInput = input.trim();
+
+        // Check if the input consists only of digits and has a length of 9 or 10
+        return trimmedInput.matches("\\d{9,10}");
+    }
     
 }
 

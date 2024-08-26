@@ -22,7 +22,7 @@ public class DonorDAO implements Serializable {
         File file = new File(fileName);
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
             writer.write(donorList);
-            System.out.println("String saved successfully.");
+            System.out.println("Donor added successfully.");
         } catch (IOException ex) {
             System.out.println("Error saving string to file: " + ex.getMessage());
             ex.printStackTrace();
@@ -39,7 +39,7 @@ public class DonorDAO implements Serializable {
                 // Split the line by commas
                 String[] parts = line.split(",");
 
-                if (parts.length == 7) {
+                if (parts.length == 6) {
                     // Parse the data
                     String donorID = parts[0].trim();
                     String donorName = parts[1].trim();

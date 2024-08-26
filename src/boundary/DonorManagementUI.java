@@ -51,7 +51,7 @@ public class DonorManagementUI {
         String type = "";
         int choice = 0;
         do {
-            System.out.print("Choose Donor Type: ");
+            System.out.print("Choose Donor Type: \n");
             System.out.println("1. Government");
             System.out.println("2. Private");
             System.out.println("3. Public");
@@ -60,13 +60,13 @@ public class DonorManagementUI {
             scanner.nextLine();
             switch (choice) {
                 case 1:
-                    type = "government";
+                    type = "Government";
                     break;
                 case 2:
-                    type = "private";
+                    type = "Private";
                     break;
                 case 3:
-                    type = "public";
+                    type = "Public";
                     break;
                 default:
                     MessageUI.displayInvalidChoiceMessage();
@@ -94,7 +94,7 @@ public class DonorManagementUI {
         scanner.nextLine();
         return phone;
     }
-    
+
     public void inputDonation() {
         System.out.println("Donations: ");
         System.out.println("1. Donate Money");
@@ -168,7 +168,7 @@ public class DonorManagementUI {
         }
         return date;
     }
-    
+
     public String inputEntityType() {
         String entity = "";
         System.out.println("Type of Entity: ");
@@ -193,12 +193,12 @@ public class DonorManagementUI {
 
     public Donor inputDonorDetails() {
         String id = inputDonorID();
-        String type = inputDonorType();
         String name = inputDonorName();
         int phone = inputPhoneNum();
         String email = inputDonorEmail();
 //        double donation = inputDonationAmount();
 //        LocalDate date = inputDonationDate();
+        String type = inputDonorType();
         String entity = inputEntityType();
         System.out.println();
         return new Donor(id, name, phone, email, type, entity);

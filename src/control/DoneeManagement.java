@@ -24,6 +24,7 @@ public class DoneeManagement {
     private DistributionDAO distributeDAO = new DistributionDAO();
     private HashMap<String, Donee> doneeMap = new HashMap<>();
     private HashMap<String, ListInterface<Distribution>> donationMap = new HashMap<>();
+    private int lastDoneeNumber = 0;
 
     public DoneeManagement() {
         doneeList = doneeDAO.retrieveFromFile();
@@ -31,6 +32,7 @@ public class DoneeManagement {
         for (int i = 1; i <= doneeList.getNumberOfEntries(); i++) {
             Donee donee = doneeList.getEntry(i);
             doneeMap.put(donee.getDoneeID(), donee); // Populate HashMap
+            updateLastDoneeNumber(donee.getDoneeID());
         }
         for (int i = 1; i <= distributeList.getNumberOfEntries(); i++) {
             Distribution distribution = distributeList.getEntry(i);
@@ -53,19 +55,19 @@ public class DoneeManagement {
                     MessageUI.displayExitMessage();
                     break;
                 case 1:
-                    addNewDonee();
+                    addNewDonee();//done
                     doneeUI.listAllDonees(getAllDonee());
                     break;
                 case 2:
-                    updateDoneeDetails();
+                    updateDoneeDetails();//done
                     doneeUI.listAllDonees(getAllDonee());
                     break;
                 case 3:
-                    searchDoneeDetails();
+                    searchDoneeDetails();//done
                     //doneeUI.listAllDonees(getAllDonee());
                     break;
                 case 4:
-                    listDoneeDonation();
+                    listDoneeDonation();//done
                     break;
                 case 5:
                     filterDonees();
@@ -85,8 +87,12 @@ public class DoneeManagement {
     }
 
     public void addNewDonee() {
+        String newDoneeID = generateNextDoneeID();
         Donee newDonee = doneeUI.inputDoneeDetails();
+        newDonee.setDoneeID(newDoneeID);
         doneeList.add(newDonee);
+        doneeUI.listDonee(newDonee);
+        MessageUI.pressAnyKeyToContinue();
         doneeMap.put(newDonee.getDoneeID(), newDonee);
         doneeDAO.saveToFile(getAllDonee());
     }
@@ -103,20 +109,22 @@ public class DoneeManagement {
             Donee donee = doneeList.getEntry(i);
             if (donee.getDoneeID().equalsIgnoreCase(doneeID)) {
                 doneeList.remove(i);
+                doneeMap.remove(doneeID);
                 removed = true;
                 break;
             }
+
+            if (removed) {
+                doneeDAO.saveToFile(getAllDonee());
+                System.out.println("Donee with ID " + doneeID + " has been removed.");
+            } else {
+                System.out.println("Donee with ID " + doneeID + " not found.");
+            }
+
+            return removed;
         }
 
-        if (removed) {
-            doneeDAO.saveToFile(getAllDonee());
-            System.out.println("Donee with ID " + doneeID + " has been removed.");
-        } else {
-            System.out.println("Donee with ID " + doneeID + " not found.");
-        }
-
-        return removed;
-    }
+    
 
     public void updateDoneeDetails() {
         String doneeID = doneeUI.inputDoneeID();
@@ -150,9 +158,10 @@ public class DoneeManagement {
         String doneeID = doneeUI.inputDoneeID();
         Donee foundDonee = searchDoneeByID(doneeID);
         if (foundDonee != null) {
-            System.out.println(foundDonee);
+            doneeUI.listDonee(foundDonee);
         } else {
             System.out.println("Donee not found.");
+            MessageUI.pressAnyKeyToContinue();
         }
     }
 
@@ -223,11 +232,19 @@ public class DoneeManagement {
         System.out.println("============================");
     }
 
-//    public void updateNewProduct() {
-//    Donee newProduct = DoneeManagementUI.inputDoneeDetails();
-//    productList.add(newProduct);
-//    productDAO.saveToFile(productList);
-//  }
+    private void updateLastDoneeNumber(String doneeID) {
+        String numberPart = doneeID.substring(2); // Extract the numeric part (e.g., "001" from "DE001")
+        int number = Integer.parseInt(numberPart);
+        if (number > lastDoneeNumber) {
+            lastDoneeNumber = number;
+        }
+    }
+
+    private String generateNextDoneeID() {
+        lastDoneeNumber++;
+        return String.format("DE%03d", lastDoneeNumber); // Format as DE001, DE002, etc.
+    }
+
     public static void main(String[] args) {
         DoneeManagement doneeMaintenance = new DoneeManagement();
         doneeMaintenance.runDoneeManagement();

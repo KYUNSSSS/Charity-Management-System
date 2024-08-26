@@ -10,8 +10,9 @@ package dao;
 
 import adt.LinkedList;
 import entity.Donation;
+import java.time.LocalDate;
 
-public class DonationManagementDAO {
+public class DonationDAO {
     private LinkedList<Donation> donationList = new LinkedList<>();
 
     public boolean addDonation(Donation donation) {
@@ -74,5 +75,28 @@ public class DonationManagementDAO {
 
     public LinkedList<Donation> getAllDonations() {
         return donationList;
+    }
+    
+    public LinkedList<Donation> filterDonationsByAmount(double minAmount, double maxAmount) {
+        LinkedList<Donation> filteredDonations = new LinkedList<>();
+        for (int i = 1; i <= donationList.getNumberOfEntries(); i++) {
+            Donation donation = donationList.getEntry(i);
+            if (donation.getAmount() >= minAmount && donation.getAmount() <= maxAmount) {
+                filteredDonations.add(donation);
+            }
+        }
+        return filteredDonations;
+    }
+    
+    public LinkedList<Donation> filterDonationsByDate(LocalDate startDate, LocalDate endDate) {
+        LinkedList<Donation> filteredDonations = new LinkedList<>();
+        for (int i = 1; i <= donationList.getNumberOfEntries(); i++) {
+            Donation donation = donationList.getEntry(i);
+            if ((donation.getDonationDate().isEqual(startDate) || donation.getDonationDate().isAfter(startDate)) &&
+                (donation.getDonationDate().isEqual(endDate) || donation.getDonationDate().isBefore(endDate))) {
+                filteredDonations.add(donation);
+            }
+        }
+        return filteredDonations;
     }
 }

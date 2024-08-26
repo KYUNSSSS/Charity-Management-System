@@ -7,7 +7,7 @@ package control;
 import adt.*;
 import entity.*;
 import boundary.DonorManagementUI;
-import dao.DonorDAO;
+import dao.*;
 import java.time.LocalDate;
 import utility.*;
 
@@ -18,17 +18,22 @@ import utility.*;
 public class DonorManagement {
 
     private ListInterface<Donor> donorList = new LinkedList<>();
+    private ListInterface<Donation> donationList = new LinkedList<>();
     private DonorDAO donorDAO = new DonorDAO();
+    private DonationDAO donationDAO = new DonationDAO();
     private DonorManagementUI donorUI = new DonorManagementUI();
     private MapInterface<String, LinkedList<Donor>> categorisedDonors = new HashMap<>();
     private MapInterface<String, Donor> donorMap = new HashMap<>();
+    private MapInterface<String, ListInterface<Donation>> donorDonations = new HashMap<>();
     private FilterInterface<Donor> filterDonor = new Filter<>();
 
     public DonorManagement() {
         donorList = donorDAO.retrieveFromFile();
+        donationList = donationDAO.retrieveFromFile();
         categorisedDonors.put("government", new LinkedList<>());
         categorisedDonors.put("private", new LinkedList<>());
         categorisedDonors.put("public", new LinkedList<>());
+        
         
     }
 
