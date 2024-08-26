@@ -10,7 +10,7 @@ import boundary.DonorManagementUI;
 import dao.*;
 import java.time.LocalDate;
 import utility.*;
-
+import java.lang.Iterable;
 /**
  *
  * @author xuan
@@ -25,16 +25,33 @@ public class DonorManagement {
     private MapInterface<String, LinkedList<Donor>> categorisedDonors = new HashMap<>();
     private MapInterface<String, Donor> donorMap = new HashMap<>();
     private MapInterface<String, ListInterface<Donation>> donorDonations = new HashMap<>();
-    private FilterInterface<Donor> filterDonor = new Filter<>();
+    private FilterInterface<Donor> donorFilter = new Filter<>();
+    private FilterInterface<Donation> donationFilter = new Filter<>();
 
     public DonorManagement() {
         donorList = donorDAO.retrieveFromFile();
-        donationList = donationDAO.retrieveFromFile();
+//        donationList = donationDAO.retrieveFromFile();
         categorisedDonors.put("government", new LinkedList<>());
         categorisedDonors.put("private", new LinkedList<>());
         categorisedDonors.put("public", new LinkedList<>());
         
+        for (int i = 1; i <= donorList.getNumberOfEntries(); i++) {
+            Donor donor = donorList.getEntry(i);
+            donorMap.put(donor.getDonorID(), donor);
+            
+        }
         
+        for (int i = 1; i <= donationList.getNumberOfEntries(); i++) {
+            Donation donation = donationList.getEntry(i);
+            String donationID = donation.getDonationID();
+
+            if (!donorDonations.containsKey(donationID)) {
+                donorDonations.put(donationID, new LinkedList<>());
+            }
+
+            donorDonations.get(donationID).add(donation); //get the donation list from the key and add donation
+        }
+
     }
 
     public void runDonorManagement() {
@@ -62,11 +79,11 @@ public class DonorManagement {
                     break;
                 case 5:
                     listDonorWithDonations();
-                    donorUI.listAllDonors(getAllDonors());
+//                    donorUI.listAllDonors(getAllDonors());
                     break;
                 case 6:
                     filterDonor();
-                    donorUI.listAllDonors(getAllDonors());
+//                    donorUI.listAllDonors(getAllDonors());
                     break;
                 case 7:
                     categoriseDonors();
@@ -168,21 +185,23 @@ public class DonorManagement {
     public void filterDonor() {
         int filterChoice = donorUI.getFilterChoice(); // Prompt user to choose filter type
         ListInterface<Donor> filteredDonors;
+        ListInterface<Donation> filteredDonations;
 
         switch (filterChoice) {
             case 1:
                 String donorType = donorUI.inputDonorType();
-                filteredDonors = filterDonor.filterByType(donorList, donorType);
+                filteredDonors = donorFilter.filterByType(donorList, donorType);
                 break;
             case 2:
                 LocalDate startDate = donorUI.inputStartDate();
                 LocalDate endDate = donorUI.inputEndDate();
-                filteredDonors = filterDonor.filterByDate(donorList, startDate, endDate);
+                filteredDonations = donationFilter.filterByDate(donationList, startDate, endDate);
+                
                 break;
             case 3:
                 double minAmount = donorUI.inputMinAmount();
                 double maxAmount = donorUI.inputMaxAmount();
-                filteredDonors = filterDonor.filterByAmountRange(donorList, minAmount, maxAmount);
+                filteredDonations = donationFilter.filterByAmountRange(donationList, minAmount, maxAmount);
                 break;
             default:
                 MessageUI.displayInvalidChoiceMessage();
@@ -233,44 +252,7 @@ public class DonorManagement {
     }
 
     public void generateReport() {
-        ListInterface<Donor> donors = donorList;
-
-        LinkedList<Donor> governmentList = new LinkedList<>();
-        LinkedList<Donor> publicList = new LinkedList<>();
-        LinkedList<Donor> privateList = new LinkedList<>();
-
-        // Iterate through the donor list
-        for (int i = 1; i <= donors.getNumberOfEntries(); i++) {
-            Donor donor = donors.getEntry(i);
-            if (donor.getType().equalsIgnoreCase("Government")) {
-                governmentList.add(donor);
-            } else if (donor.getType().equalsIgnoreCase("Public")) {
-                publicList.add(donor);
-            } else if (donor.getType().equalsIgnoreCase("Private")) {
-                privateList.add(donor);
-            }
-        }
-
-        // Print the report
-        System.out.println("Government Donors:");
-        printDonors(governmentList);
-
-        System.out.println("Public Donors:");
-        printDonors(publicList);
-
-        System.out.println("Private Donors:");
-        printDonors(privateList);
-    }
-
-    // Helper method to print donor information
-    private void printDonors(LinkedList<Donor> list) {
-        if (list.getNumberOfEntries() == 0) {
-            System.out.println("No donors in this category.");
-            return;
-        }
-        for (int i = 0; i < list.getNumberOfEntries(); i++) {
-            System.out.println(list.getEntry(i));
-        }
+        
     }
 
     private boolean validateDonor(Donor donor) {
