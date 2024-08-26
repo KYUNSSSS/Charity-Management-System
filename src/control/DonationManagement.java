@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.nio.file.*;
-import java.util.InputMismatchException;
 import utility.*;
 
 public class DonationManagement {
@@ -50,7 +49,17 @@ public class DonationManagement {
             }
         } while (choice != 0);
     }
-
+    
+    public String generateNextDonationID() {
+        int nextID = 1; // Default starting ID
+        LinkedList<Donation> donations = listDonations();
+        if (donations.getNumberOfEntries() > 0) {
+            Donation lastDonation = donations.getEntry(donations.getNumberOfEntries());
+            String lastID = lastDonation.getDonationID();
+            nextID = Integer.parseInt(lastID.replace("DNT", "")) + 1;
+        }
+        return String.format("DNT%05d", nextID); // Format as DNT00001, DNT00002, etc.
+    }
 
     public boolean addDonation(String donationID, String donorID, String itemCategory, String item, double amount, LocalDate donationDate) {
         Donation donation = new Donation(donationID, donorID, itemCategory,item, amount, donationDate);
@@ -84,6 +93,7 @@ public class DonationManagement {
     }
     
     public void amendDonationDetails(String donationID, String newDonorID, String newItemCategory, String newItem, Double newAmount) {
+        // Retrieve the donation entry to be amended
         Donation donation = getDonationById(donationID);
         if (donation == null) {
             System.err.println("Donation not found.");
@@ -91,10 +101,18 @@ public class DonationManagement {
         }
 
         // Update the details if new values are provided
-        if (!newDonorID.isEmpty()) donation.setDonorID(newDonorID);
-        if (!newItemCategory.isEmpty()) donation.setItemCategory(newItemCategory);
-        if (!newItem.isEmpty()) donation.setItem(newItem);
-        if (newAmount != null) donation.setAmount(newAmount);
+        if (!newDonorID.isEmpty()) {
+            donation.setDonorID(newDonorID);
+        }
+        if (!newItemCategory.isEmpty()) {
+            donation.setItemCategory(newItemCategory);
+        }
+        if (!newItem.isEmpty()) {
+            donation.setItem(newItem);
+        }
+        if (newAmount != null) {
+            donation.setAmount(newAmount);
+        }
 
         // Save the updated donation list back to the file
         donationDAO.saveDonationListToFile(donationList);
@@ -141,8 +159,11 @@ public class DonationManagement {
             case 3:
                 ui.filterByDateAndAmountRange();
                 break;
+            case 0:
+                runDonationManagement();
+                break;
             default:
-                System.err.println("Invalid choice. Please enter a number between 1 and 3.");
+                System.err.println("Invalid choice. Please enter a number between 0 and 3.");
             }   
         }while (choice != 0);
     }
