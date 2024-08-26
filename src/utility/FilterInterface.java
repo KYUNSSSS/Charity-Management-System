@@ -33,5 +33,9 @@ public interface FilterInterface<F> {
     public ListInterface<F> filterByDateRange(ListInterface<F> list, LocalDate startDate, LocalDate endDate);
     
     public ListInterface<F> filterByDonationAmountRange(ListInterface<F> list, double minAmount, double maxAmount);
+
+    public ListInterface<F> filterByVolunteerType(ListInterface<F> list, String type);
+    
+    public ListInterface<F> filterByEvent(ListInterface<F> list, String event);
     
 }
