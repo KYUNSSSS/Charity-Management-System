@@ -9,6 +9,8 @@ import entity.Donor;
 import java.io.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -22,7 +24,7 @@ public class DonorDAO implements Serializable {
         File file = new File(fileName);
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
             writer.write(donorList);
-            System.out.println("String saved successfully.");
+            System.out.println("Donor added successfully.");
         } catch (IOException ex) {
             System.out.println("Error saving string to file: " + ex.getMessage());
             ex.printStackTrace();
@@ -32,14 +34,23 @@ public class DonorDAO implements Serializable {
     public ListInterface<Donor> retrieveFromFile() {
         LinkedList<Donor> donorList = new LinkedList<>();
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
+        
+        File file = new File(fileName);
+        if(!file.exists()) {
+            try {
+                file.createNewFile();
+            } catch (IOException ex) {
+                Logger.getLogger(DonorDAO.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 // Split the line by commas
                 String[] parts = line.split(",");
 
-                if (parts.length == 7) {
+                if (parts.length == 6) {
                     // Parse the data
                     String donorID = parts[0].trim();
                     String donorName = parts[1].trim();
@@ -47,11 +58,10 @@ public class DonorDAO implements Serializable {
                     String donorEmail = parts[3].trim();
                     String donorType = parts[4].trim();
                     String donorEntity = parts[5].trim();
-                    double donationAmount = Double.parseDouble(parts[6].trim());
-                    LocalDate donationDate = LocalDate.parse(parts[7].trim(), dateFormatter);
+//                    LocalDate donationDate = LocalDate.parse(parts[6].trim(), dateFormatter);
 
                     // Create a Donee object and add it to the list
-                    Donor donor = new Donor(donorID, donorName, donorPhoneNum, donorEmail, donorType, donorEntity, donationAmount, donationDate);
+                    Donor donor = new Donor(donorID, donorName, donorPhoneNum, donorEmail, donorType, donorEntity);
                     donorList.add(donor);
                 } else {
                     System.out.println("Skipping invalid line: " + line);
