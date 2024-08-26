@@ -1,102 +1,75 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-/**
- *
- * @author haojuan
- */
 package dao;
 
 import adt.LinkedList;
 import entity.Donation;
+import java.io.*;
 import java.time.LocalDate;
 
 public class DonationDAO {
-    private LinkedList<Donation> donationList = new LinkedList<>();
-
-    public boolean addDonation(Donation donation) {
-        return donationList.add(donation);
-    }
-
-    public boolean removeDonation(String donationID) {
-        for (int i = 1; i <= donationList.getNumberOfEntries(); i++) {
-            Donation donation = donationList.getEntry(i);
-            if (donation.getDonationID().equals(donationID)) {
-                donationList.remove(i);
-                return true;
+    private String fileName = "donations.txt";
+    // Save the donation list to file in the specified format
+    public void saveDonationListToFile(LinkedList<Donation> donationList) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
+            for (int i = 1; i <= donationList.getNumberOfEntries(); i++) {
+                Donation donation = donationList.getEntry(i);
+                writer.write(donationToString(donation));
+                writer.newLine();
+                writer.write("-------------------------------------------");
+                writer.newLine();
             }
+        } catch (IOException e) {
+            System.err.println("Error saving donations to file: " + e.getMessage());
         }
-        return false;
     }
-    
-    public LinkedList<String> getItemsByCategory(String category) {
-        LinkedList<String> itemsInCategory = new LinkedList<>();
 
-        for (int i = 1; i <= donationList.getNumberOfEntries(); i++) {
-            Donation donation = donationList.getEntry(i);
+    // Load the donation list from file
+    public LinkedList<Donation> loadDonationsFromFile() {
+        LinkedList<Donation> donationList = new LinkedList<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
+            String line;
+            String donationID = "", donorID = "", item = "", itemCategory = "";
+            LocalDate donationDate = null;
+            double amount = 0.0;
 
-            // Assuming that each donation has a list of items
-            LinkedList<String> items = donation.getItems();
+            while ((line = reader.readLine()) != null) {
+                if (line.startsWith("Donation Date:")) {
+                    donationDate = LocalDate.parse(line.substring(14).trim());
+                } else if (line.startsWith("Donation ID:")) {
+                    donationID = line.substring(12).trim();
+                } else if (line.startsWith("Donors ID:")) {
+                    donorID = line.substring(10).trim();
+                } else if (line.startsWith("Donation Type:")) {
+                    itemCategory = line.substring(14).trim();
+                } else if (line.startsWith("Item:")) {
+                    item = line.substring(6).trim(); // Changed
+                } else if (line.startsWith("Amount:")) {
+                    amount = Double.parseDouble(line.substring(8).trim());
+                } else if (line.startsWith("-------------------------------------------")) {
+                    Donation donation = new Donation(donationID, donorID,itemCategory,item, amount, donationDate);
+                    donationList.add(donation);
 
-            // Iterate through items and check if they belong to the specified category
-            for (int j = 1; j <= items.getNumberOfEntries(); j++) {
-                String item = items.getEntry(j);
-                
-                // Assuming that the category is part of the item's string (e.g., "Clothing - Jacket")
-                if (item.contains(category)) {
-                    itemsInCategory.add(item);
+                    // Reset variables for the next donation
+                    donationID = "";
+                    donorID = "";
+                    itemCategory = "";
+                    item = "";
+                    donationDate = null;
+                    amount = 0.0;
                 }
             }
+        } catch (IOException e) {
+            System.err.println("Error loading donations from file: " + e.getMessage());
         }
-        return itemsInCategory;
-    }
-
-    public Donation getDonationById(String donationID) {
-        for (int i = 1; i <= donationList.getNumberOfEntries(); i++) {
-            Donation donation = donationList.getEntry(i);
-            if (donation.getDonationID().equals(donationID)) {
-                return donation;
-            }
-        }
-        return null;
-    }
-
-    public LinkedList<Donation> getDonationsByDonor(String donorID) {
-        LinkedList<Donation> result = new LinkedList<>();
-        for (int i = 1; i <= donationList.getNumberOfEntries(); i++) {
-            Donation donation = donationList.getEntry(i);
-            if (donation.getDonorID().equals(donorID)) {
-                result.add(donation);
-            }
-        }
-        return result;
-    }
-
-    public LinkedList<Donation> getAllDonations() {
         return donationList;
     }
-    
-    public LinkedList<Donation> filterDonationsByAmount(double minAmount, double maxAmount) {
-        LinkedList<Donation> filteredDonations = new LinkedList<>();
-        for (int i = 1; i <= donationList.getNumberOfEntries(); i++) {
-            Donation donation = donationList.getEntry(i);
-            if (donation.getAmount() >= minAmount && donation.getAmount() <= maxAmount) {
-                filteredDonations.add(donation);
-            }
-        }
-        return filteredDonations;
-    }
-    
-    public LinkedList<Donation> filterDonationsByDate(LocalDate startDate, LocalDate endDate) {
-        LinkedList<Donation> filteredDonations = new LinkedList<>();
-        for (int i = 1; i <= donationList.getNumberOfEntries(); i++) {
-            Donation donation = donationList.getEntry(i);
-            if ((donation.getDonationDate().isEqual(startDate) || donation.getDonationDate().isAfter(startDate)) &&
-                (donation.getDonationDate().isEqual(endDate) || donation.getDonationDate().isBefore(endDate))) {
-                filteredDonations.add(donation);
-            }
-        }
-        return filteredDonations;
+
+    // Convert Donation object to string in the specified format
+    private String donationToString(Donation donation) {
+        return "Donation Date: " + donation.getDonationDate().toString() + "\n" +
+               "Donation ID: " + donation.getDonationID() + "\n" +
+               "Donors ID: " + donation.getDonorID() + "\n" +
+               "Donation Type: " + donation.getItemCategory() + "\n" +
+               "Item: " + donation.getItem() + "\n" +
+               "Amount: " + donation.getAmount();
     }
 }
