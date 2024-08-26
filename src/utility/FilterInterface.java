@@ -30,6 +30,8 @@ public interface FilterInterface<F> {
     
     public ListInterface<F> filterByAmountAndDoneeID(ListInterface<F> list, double minAmount, double maxAmount, String doneeID);
 
-
+    public ListInterface<F> filterByDateRange(ListInterface<F> list, LocalDate startDate, LocalDate endDate);
+    
+    public ListInterface<F> filterByDonationAmountRange(ListInterface<F> list, double minAmount, double maxAmount);
     
 }
