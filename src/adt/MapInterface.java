@@ -4,6 +4,8 @@
  */
 package adt;
 
+import java.util.Set;
+
 /**
  *
  * @author xuan
@@ -21,4 +23,13 @@ public interface MapInterface<K, V> {
     public boolean isEmpty();
 
     public int size();
+    
+    public Set<K> keySet();
+    
+    public V getOrDefault(K key, V defaultValue);
+    
+    /**
+     * Removes all mappings from the map.
+     */
+    void clear();
 }
