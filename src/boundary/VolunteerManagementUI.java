@@ -6,8 +6,6 @@ package boundary;
 
 import adt.ListInterface;
 import entity.Volunteer;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 
 /**
@@ -47,7 +45,13 @@ public class VolunteerManagementUI {
   }
   
   public String inputVolunteerType() {
-    System.out.print("Enter Volunteer Type(Registration/Support/Logistic/Crowd Control): ");
+    System.out.println("""
+                       Reg - Registration
+                       Sup - Support
+                       Log - Logistic
+                       Crc - Crowd Control
+                       Enter Volunteer Type(Eg: Reg/Sup/Log/Crc): 
+                       """);
     String type = scanner.nextLine();
     return  type;
   }
@@ -70,20 +74,47 @@ public class VolunteerManagementUI {
     return phone;
   }
   
+  public String inputEventAssigned() {
+      return "None";
+  }
+  
+  public String inputEvent() {
+      System.out.println("""
+                        1. Acts of Kindness Fund
+                        2. Share the Love Project
+                        3. Together for Change
+                       Enter event number(eg: 1/2/3): """);
+      int event = scanner.nextInt();
+      String eventName = null;
+      switch(event) {
+          case 1:
+              eventName = "Acts of Kindness Fund";
+              break;
+          case 2:
+              eventName = "Share the Love Project";
+              break;
+          case 3:
+              eventName = "Together for Change";
+              break;
+          default:
+                System.out.println("Invalid event number. Please enter 1, 2, or 3.");
+      }
+      return eventName;
+  }
+  
   public Volunteer inputVolunteerDetails() {
-    String id = inputVolunteerID();
-    String type = inputVolunteerType();
-    String name = inputVolunteerName();
-    int phone = inputPhoneNum();
-    String email = inputVolunteerEmail();
-    System.out.println();
-    return new Volunteer(id,type,name,phone,email);
+        String type = inputVolunteerType();
+        String name = inputVolunteerName();
+        int phone = inputPhoneNum();
+        String email = inputVolunteerEmail();
+        String eventAssigned = inputEventAssigned();
+        System.out.println("Volunteer Details Registered.");
+        return new Volunteer("V000", type, name, phone, email, eventAssigned);
   }
     public int getFilterChoice() {
         System.out.println("Filter by: ");
         System.out.println("1. Volunteer Type");
-//      System.out.println("2. Date Range");
-//      System.out.println("3. Donation Amount Range");
+        System.out.println("2. Event");
         System.out.print("Enter your choice: ");
         int choice = scanner.nextInt();
         scanner.nextLine();
@@ -98,5 +129,9 @@ public class VolunteerManagementUI {
                 System.out.println(volunteers.getEntry(i));
             }
         }
+    }
+    
+        public void listVolunteer(Volunteer volunteer) {
+        System.out.println("***Profile***\nVolunteer ID: " + volunteer.getVolunteerID() + "\nName: " + volunteer.getVolunteerName() + "\nType: " + volunteer.getVolunteerType() + "\nPhone Number: " + volunteer.getVolunteerPhoneNum() + "\nEmail: " + volunteer.getVolunteerEmail() + "\nEvent Assigned: " + volunteer.getEventAssigned() +  "\n**********");
     }
 }

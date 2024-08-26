@@ -5,7 +5,6 @@
 package entity;
 
 import java.io.Serializable;
-import java.time.LocalDate;
 
 /**
  *
@@ -17,17 +16,20 @@ public class Volunteer implements Serializable{
   private String volunteerName;
   private int volunteerPhoneNum;
   private String volunteerEmail;
+  private String eventAssigned;
 
   public Volunteer() {
   }
 
-    public Volunteer(String volunteerID, String volunteerType, String volunteerName, int volunteerPhoneNum, String volunteerEmail) {
+    public Volunteer(String volunteerID, String volunteerType, String volunteerName, int volunteerPhoneNum, String volunteerEmail, String eventAssigned) {
         this.volunteerID = volunteerID;
         this.volunteerType = volunteerType;
         this.volunteerName = volunteerName;
         this.volunteerPhoneNum = volunteerPhoneNum;
         this.volunteerEmail = volunteerEmail;
+        this.eventAssigned = eventAssigned;
     }
+
 
     public String getVolunteerID() {
         return volunteerID;
@@ -69,6 +71,19 @@ public class Volunteer implements Serializable{
         this.volunteerEmail = volunteerEmail;
     }
 
+    public String getEventAssigned() {
+        return eventAssigned;
+    }
+
+    public void setEventAssigned(String eventAssigned) {
+        this.eventAssigned = eventAssigned;
+    }
+    
+    public void addEventAssigned(String eventAssigned) {
+        this.eventAssigned = this.eventAssigned + ", " + eventAssigned;
+    }
+
+    
 //  @Override
 //  public int hashCode() {
 //    int hash = 3;
@@ -95,7 +110,7 @@ public class Volunteer implements Serializable{
 //
     @Override
     public String toString() {
-        return String.format("%s, %s, %s, %d, %s", volunteerID, volunteerType, volunteerName, volunteerPhoneNum, volunteerEmail);
+        return String.format("%s, %s, %s, %d, %s, %s", volunteerID, volunteerType, volunteerName, volunteerPhoneNum, volunteerEmail, eventAssigned);
     }
 }
 

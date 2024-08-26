@@ -6,7 +6,6 @@ package dao;
 
 import adt.LinkedList;
 import adt.ListInterface;
-import entity.Donee;
 import entity.Volunteer;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -14,8 +13,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 /**
  *
@@ -51,10 +48,11 @@ public class VolunteerDAO {
                     String volunteerName = parts[2].trim();
                     int volunteerPhoneNum = Integer.parseInt(parts[3].trim());
                     String volunteerEmail = parts[4].trim();
+                    String eventAssigned = parts[5].trim();
 
                     // Create a Volunteer object and add it to the list
-//                    Volunteer volunteer = new Volunteer(volunteerID, volunteerType, volunteerName, volunteerPhoneNum, volunteerEmail);
-//                    volunteerList.add(volunteer);
+                    Volunteer volunteer = new Volunteer(volunteerID, volunteerType, volunteerName, volunteerPhoneNum, volunteerEmail, eventAssigned);
+                    volunteerList.add(volunteer);
                 } else {
                     System.out.println("Skipping invalid line: " + line);
                 }

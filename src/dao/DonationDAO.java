@@ -7,6 +7,7 @@ import java.time.LocalDate;
 
 public class DonationDAO {
     private String fileName = "donations.txt";
+
     // Save the donation list to file in the specified format
     public void saveDonationListToFile(LinkedList<Donation> donationList) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
@@ -29,7 +30,8 @@ public class DonationDAO {
             String line;
             String donationID = "", donorID = "", item = "", itemCategory = "";
             LocalDate donationDate = null;
-            double amount = 0.0;
+            int amount = 0;
+            double cashAmount = 0.0;
 
             while ((line = reader.readLine()) != null) {
                 if (line.startsWith("Donation Date:")) {
@@ -41,11 +43,20 @@ public class DonationDAO {
                 } else if (line.startsWith("Donation Type:")) {
                     itemCategory = line.substring(14).trim();
                 } else if (line.startsWith("Item:")) {
-                    item = line.substring(6).trim(); // Changed
+                    item = line.substring(6).trim();
                 } else if (line.startsWith("Amount:")) {
-                    amount = Double.parseDouble(line.substring(8).trim());
+                    if (itemCategory.equalsIgnoreCase("Cash")) {
+                        cashAmount = Double.parseDouble(line.substring(8).trim());
+                    } else {
+                        amount = Integer.parseInt(line.substring(8).trim());
+                    }
                 } else if (line.startsWith("-------------------------------------------")) {
-                    Donation donation = new Donation(donationID, donorID,itemCategory,item, amount, donationDate);
+                    Donation donation;
+                    if (itemCategory.equalsIgnoreCase("Cash")) {
+                        donation = new Donation(donationID, donorID, itemCategory, item, cashAmount, donationDate);
+                    } else {
+                        donation = new Donation(donationID, donorID, itemCategory, item, amount, donationDate);
+                    }
                     donationList.add(donation);
 
                     // Reset variables for the next donation
@@ -54,7 +65,8 @@ public class DonationDAO {
                     itemCategory = "";
                     item = "";
                     donationDate = null;
-                    amount = 0.0;
+                    amount = 0;
+                    cashAmount = 0.0;
                 }
             }
         } catch (IOException e) {
@@ -70,6 +82,8 @@ public class DonationDAO {
                "Donors ID: " + donation.getDonorID() + "\n" +
                "Donation Type: " + donation.getItemCategory() + "\n" +
                "Item: " + donation.getItem() + "\n" +
-               "Amount: " + donation.getAmount();
+               "Amount: " + (donation.getItemCategory().equalsIgnoreCase("Cash") 
+                   ? String.format("%.2f", donation.getCashAmount()) 
+                   : donation.getAmount());
     }
 }
