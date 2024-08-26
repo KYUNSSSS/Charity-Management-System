@@ -12,24 +12,17 @@ import java.time.LocalDate;
 public class Donation {
     private String donationID;
     private String donorID;
-    private LinkedList<String> items;
-    private String donationType;
+    private String itemCategory;
+    private String item;
     private double amount;
     private LocalDate donationDate;
-
-    public Donation(String donationID, String donorID, LinkedList<String> items, String donationType) {
-        this.donationID = donationID;
-        this.donorID = donorID;
-        this.items = items;
-        this.donationType = donationType;
-    }
     
     
-    public Donation(String donationID, String donorID, LinkedList<String> items, String donationType, double amount, LocalDate donationDate) {
+    public Donation(String donationID, String donorID, String itemCategory, String item, double amount, LocalDate donationDate) {
         this.donationID = donationID;
         this.donorID = donorID;
-        this.items = items;
-        this.donationType = donationType;
+        this.itemCategory = itemCategory;
+        this.item = item;
         this.amount = amount;
         this.donationDate = donationDate;
     }
@@ -51,27 +44,27 @@ public class Donation {
         this.donorID = donorID;
     }
 
-    public LinkedList<String> getItems() {
-        return items;
+    public String getItem() {
+        return item;
     }
 
-    public void setItems(LinkedList<String> items) {
-        this.items = items;
+    public void setItem(String item) {
+        this.item = item;
     }
 
-    public String getDonationType() {
-        return donationType;
+    public String getItemCategory() {
+        return itemCategory;
     }
 
-    public void setDonationType(String donationType) {
-        this.donationType = donationType;
-    }
-        public double getAmount() {
-        return amount;
+    public void setItemCategory(String itemCategory) {
+        this.itemCategory = itemCategory;
     }
 
-    public void setAmount(double amount) {
-        this.amount = amount;
+    public double getAmount() {
+        return amount; 
+    }
+    public void setAmount(double amount) { 
+        this.amount = amount; 
     }
 
     public LocalDate getDonationDate() {
@@ -85,6 +78,8 @@ public class Donation {
     
     @Override
     public String toString() {
-        return String.format("%5s, %15s, %15s, %15s, %10.2f, %s", donationID, donorID, items, donationType, amount, donationDate.toString());
+        return String.format("Donation ID : %s\nDonor ID : %s\nCategory: %s\nItem : %s\nAmount : %.2f\nDate : %s",
+                             donationID, donorID, itemCategory, item, amount, donationDate.toString());
     }
+
 }
