@@ -19,10 +19,11 @@ public class DonationDistribution {
     private ListInterface<Distribution> distributeList = new LinkedList<>();
     private ListInterface<KeyValuePair> doneeLocationList = new LinkedList<>(); // Use LinkedList of KeyValuePair
     private DoneeDAO doneeDAO = new DoneeDAO();
-    private DonationDAO danationDAO = new DonationDAO();
     private DistributionDAO distributeDAO = new DistributionDAO();
     private DonationDistributionUI distributeUI = new DonationDistributionUI();
     private int lastDistributionNumber = 0;
+    private int quantity = 0;
+    private double amount = 0.0;
     
     public DonationDistribution(){
         File file = new File("DonationDistribution.txt");
@@ -96,7 +97,7 @@ public class DonationDistribution {
     
     public void addNewDistribute() {
         String newDistributionID =  generateNextDistributionID();
-        Distribution newDistribute = distributeUI.inputDistributionDetails();
+        Distribution newDistribute = inputDistributionDetails();
         newDistribute.setDistributionID(newDistributionID);
         if (newDistribute != null) {
             distributeList.add(newDistribute);
@@ -132,7 +133,7 @@ public class DonationDistribution {
         String distributionID = distributeUI.inputDistributionID();
         int index = findDistributionIndexById(distributionID);
         if (index != -1) {
-            Distribution updatedDistribute = distributeUI.inputDistributionDetails();
+            Distribution updatedDistribute = inputDistributionDetails();
             distributeList.replace(index, updatedDistribute);
             distributeDAO.saveToFile(getAllDistribute());
 
@@ -212,7 +213,6 @@ public class DonationDistribution {
         result.append(DonationDistributionUI.formatHeader(title, includeDoneeID));
         boolean hasMatchingRecords = false;
 
-        // Iterate through the distributeList
         for (int i = 1; i <= distributeList.getNumberOfEntries(); i++) {
             Distribution dist = distributeList.getEntry(i);
 
@@ -301,7 +301,6 @@ public class DonationDistribution {
         String highestCashLocation = "";
         double highestCashAmount = 0.0;
 
-        // Lists to hold location-wise item counts and cash amounts
         ListInterface<KeyValuePair<String, Integer>> locationItemCounts = new LinkedList<>();
         ListInterface<KeyValuePair<String, Double>> locationCashCounts = new LinkedList<>();
 
@@ -309,7 +308,6 @@ public class DonationDistribution {
             Distribution dist = distributeList.getEntry(i);
             boolean isCash = dist.getCategory().equalsIgnoreCase("cash");
 
-            // Categorize by status
             switch (dist.getStatus().toLowerCase()) {
                 case "pending":
                     if (isCash) {
@@ -334,30 +332,24 @@ public class DonationDistribution {
                     break;
             }
 
-            // Track total distributed items and cash across all statuses
             if (isCash) {
                 totalDistributedCash += dist.getAmount();
             } else {
                 totalItemsDistributed += dist.getQuantity();
             }
 
-            // Retrieve location for doneeID
             String location = getDoneeLocationByID(dist.getDoneeID());
-
-            // Update item count or cash amount for the location
             if (isCash) {
                 updateLocationCash(locationCashCounts, location, dist.getAmount());
             } else {
                 updateLocationItems(locationItemCounts, location, dist.getQuantity());
             }
-
             // Track highest quantity and category
             if (dist.getQuantity() > highestQuantity) {
                 highestQuantity = dist.getQuantity();
                 highestCategory = dist.getCategory();
             }
         }
-
         // Find the location with the highest item quantity
         for (int i = 1; i <= locationItemCounts.getNumberOfEntries(); i++) {
             KeyValuePair<String, Integer> itemEntry = locationItemCounts.getEntry(i);
@@ -366,7 +358,6 @@ public class DonationDistribution {
                 highestItemQuantity = itemEntry.getValue();
             }
         }
-
         // Find the location with the highest cash amount
         for (int i = 1; i <= locationCashCounts.getNumberOfEntries(); i++) {
             KeyValuePair<String, Double> cashEntry = locationCashCounts.getEntry(i);
@@ -375,8 +366,7 @@ public class DonationDistribution {
                 highestCashAmount = cashEntry.getValue();
             }
         }
-
-        // Display the summary report
+        
         distributeUI.displaySummaryReport(
                 totalPendingItems, totalDeliveredItems, totalReceivedItems,
                 totalPendingCash, totalDeliveredCash, totalReceivedCash,
@@ -389,7 +379,6 @@ public class DonationDistribution {
     private void updateLocationItems(ListInterface<KeyValuePair<String, Integer>> locationItemCounts, String location, int quantity) {
         boolean locationFound = false;
 
-        // Search and update if the location exists
         for (int i = 1; i <= locationItemCounts.getNumberOfEntries(); i++) {
             KeyValuePair<String, Integer> entry = locationItemCounts.getEntry(i);
             if (entry.getKey().equalsIgnoreCase(location)) {
@@ -399,7 +388,6 @@ public class DonationDistribution {
             }
         }
 
-        // If location is not found, add a new entry
         if (!locationFound) {
             locationItemCounts.add(new KeyValuePair<>(location, quantity));
         }
@@ -407,8 +395,7 @@ public class DonationDistribution {
 
     private void updateLocationCash(ListInterface<KeyValuePair<String, Double>> locationCashCounts, String location, double amount) {
         boolean locationFound = false;
-
-        // Search and update if the location exists
+        
         for (int i = 1; i <= locationCashCounts.getNumberOfEntries(); i++) {
             KeyValuePair<String, Double> entry = locationCashCounts.getEntry(i);
             if (entry.getKey().equalsIgnoreCase(location)) {
@@ -417,15 +404,63 @@ public class DonationDistribution {
                 break;
             }
         }
-
-        // If location is not found, add a new entry
         if (!locationFound) {
             locationCashCounts.add(new KeyValuePair<>(location, amount));
         }
     }
+    
+    private boolean isCategoryValid(String category, LinkedList<Donation> donationList) {
+        for (int i = 1; i <= donationList.getNumberOfEntries(); i++) {
+            if (donationList.getEntry(i).getItemCategory().equalsIgnoreCase(category)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-    private boolean isCash(Distribution dist) {
-        return dist.getCategory().equalsIgnoreCase("cash");
+    private boolean isItemValid(String item, String category, LinkedList<Donation> donationList) {
+        for (int i = 1; i <= donationList.getNumberOfEntries(); i++) {
+            Donation donation = donationList.getEntry(i);
+            if (donation.getItemCategory().equalsIgnoreCase(category) && donation.getItem().equalsIgnoreCase(item)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private LinkedList<Donation> loadDonationData() {
+        DonationDAO donationDAO = new DonationDAO();
+        return donationDAO.loadDonationsFromFile();
+    }
+    
+    public Distribution inputDistributionDetails() {
+        LinkedList<Donation> donationList = loadDonationData();
+        String category = distributeUI.inputDonationCategories();
+
+        while (!isCategoryValid(category, donationList)) {
+            System.out.println("Invalid Category. Please enter a category that exists in the donation file.");
+            category = distributeUI.inputDonationCategories();
+        }
+
+        String itemName = distributeUI.inputItemName();
+        while (!isItemValid(itemName, category, donationList)) {
+            System.out.println("Invalid Item. Please enter an item that exists for the selected category in the donation file.");
+            itemName = distributeUI.inputItemName();
+        }
+
+        if (category.equalsIgnoreCase("cash")) {
+            amount = distributeUI.inputAmount(); 
+            quantity = 0; 
+        } else {
+            quantity = distributeUI.inputQuantity(); 
+            amount = 0; 
+        }
+
+        String doneeID = distributeUI.inputDoneeID();
+        String status = distributeUI.inputStatus();
+        LocalDate distributionDate = distributeUI.inputDistributionDate();
+
+        return new Distribution("", category, itemName, quantity, amount, doneeID, status, distributionDate); 
     }
 
     public String getAllDistribute() {
