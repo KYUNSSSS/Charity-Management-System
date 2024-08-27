@@ -21,6 +21,7 @@ public class DonationDistribution {
     private DoneeDAO doneeDAO = new DoneeDAO();
     private DistributionDAO distributeDAO = new DistributionDAO();
     private DonationDistributionUI distributeUI = new DonationDistributionUI();
+    private HashMap<String, Distribution> distributeMap = new HashMap<>();
     private int lastDistributionNumber = 0;
     private int quantity = 0;
     private double amount = 0.0;
@@ -99,12 +100,11 @@ public class DonationDistribution {
         String newDistributionID =  generateNextDistributionID();
         Distribution newDistribute = inputDistributionDetails();
         newDistribute.setDistributionID(newDistributionID);
-        if (newDistribute != null) {
-            distributeList.add(newDistribute);
-            distributeDAO.saveToFile(getAllDistribute());
-        } else {
-            System.out.println("Failed to add new distribution due to invalid input.");
-        }
+        distributeList.add(newDistribute);
+        distributeUI.listDistribute(newDistribute);
+        MessageUI.pressAnyKeyToContinue();
+        distributeMap.put(newDistribute.getDistributionID(), newDistribute);
+        distributeDAO.saveToFile(getAllDistribute());
     }
 
     public void removeDistribute() {
@@ -242,11 +242,11 @@ public class DonationDistribution {
                 hasMatchingRecords = true;
 
                 if (includeDoneeID) {
-                    result.append(String.format("%-20s%-15s%-15d%-15.2f%-20s%-20s%-20s\n",
+                    result.append(String.format("%-15s%-25s%-20s%-15s%-15s%-25s%-5s\n",
                         dist.getItemName(),dist.getCategory(),dist.getQuantity(),dist.getAmount(),
                         dist.getStatus(),dist.getDistributionDate(),dist.getDoneeID())); 
                 }else {
-                    result.append(String.format("%-20s%-15s%-15d%-15.2f%-20s%-20s%-50s\n",
+                    result.append(String.format("%-15s%-25s%-20s%-15s%-15s%-25s%-5s\n",
                         dist.getItemName(), dist.getCategory(), dist.getQuantity(), dist.getAmount(),
                         dist.getStatus(), dist.getDistributionDate(), getDoneeLocationByID(dist.getDoneeID())));
                 }
@@ -428,6 +428,21 @@ public class DonationDistribution {
         return false;
     }
 
+    private boolean isDoneeIDValid(String doneeID, ListInterface<Donee> doneeList) {
+        for (int i = 1; i <= doneeList.getNumberOfEntries(); i++) {
+            Donee donee = doneeList.getEntry(i);
+            if (donee.getDoneeID().equalsIgnoreCase(doneeID)) {
+                return true; 
+            }
+        }
+        return false; 
+    }
+
+    private ListInterface<Donee> loadDoneeData(){
+        DoneeDAO doneeDAO = new DoneeDAO();
+        return doneeDAO.retrieveFromFile(); 
+    }
+
     private LinkedList<Donation> loadDonationData() {
         DonationDAO donationDAO = new DonationDAO();
         return donationDAO.loadDonationsFromFile();
@@ -435,6 +450,8 @@ public class DonationDistribution {
     
     public Distribution inputDistributionDetails() {
         LinkedList<Donation> donationList = loadDonationData();
+        ListInterface<Donee> doneeList = loadDoneeData();
+        
         String category = distributeUI.inputDonationCategories();
 
         while (!isCategoryValid(category, donationList)) {
@@ -457,6 +474,11 @@ public class DonationDistribution {
         }
 
         String doneeID = distributeUI.inputDoneeID();
+        while (!isDoneeIDValid(doneeID, doneeList)) {
+            System.out.println("Invalid ID. Please enter a Donee ID from the donee file.");
+            doneeID = distributeUI.inputDoneeID(); 
+        }
+        
         String status = distributeUI.inputStatus();
         LocalDate distributionDate = distributeUI.inputDistributionDate();
 
@@ -482,20 +504,3 @@ public class DonationDistribution {
         
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
