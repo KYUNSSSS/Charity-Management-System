@@ -217,6 +217,41 @@ public class LinkedList<T> implements ListInterface<T>, Serializable {
             throw new UnsupportedOperationException("Remove operation is not supported");
         }
     }
+    
+    public T get(int index) {
+        if (index <= 0 || index > numberOfEntries) {
+            throw new IndexOutOfBoundsException("Index out of bounds");
+        }
+        Node current = firstNode;
+        for (int i = 1; i < index; i++) {
+            current = current.next;
+        }
+        return current.data;
+    }
+    
+    public void set(int index, T data) {
+        if (index <= 0 || index > numberOfEntries) {
+            throw new IndexOutOfBoundsException("Index out of bounds");
+        }
+        Node current = firstNode;
+        for (int i = 1; i < index; i++) {
+            current = current.next;
+        }
+        current.data = data;
+    }
+    
+    public int indexOf(T data) {
+        Node current = firstNode;
+        int index = 1;
+        while (current != null) {
+            if (current.data.equals(data)) {
+                return index;
+            }
+            current = current.next;
+            index++;
+        }
+        return -1; // Not found
+    }
 
     @Override
     public Iterator<T> iterator() {
