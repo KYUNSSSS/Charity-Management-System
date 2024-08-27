@@ -1,13 +1,21 @@
+
+
+
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package boundary;
+import adt.LinkedList;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import entity.Distribution;
 import java.util.Scanner;
 import utility.Validator;
+import java.io.*;
+import dao.*;
+import entity.Donation;
 
 /**
  *
@@ -53,12 +61,12 @@ public class DonationDistributionUI {
     public String inputDistributionID() {
         while (true) {
             System.out.print("Enter Distribution ID: ");
-            String id = scanner.nextLine();
-
+            String id = scanner.nextLine().toUpperCase();
+            
             if (Validator.isValidID(id)) {
-                return id.toUpperCase();
+            } else {
+                System.out.println("\nInvalid Input. Please enter a valid Distribution ID without symbols. [Eg. A001].");
             }
-            System.out.println("\nInvalid Input. Please enter a valid Distribution ID without symbols. [Eg. A001].");
         }
     }
 
@@ -70,7 +78,7 @@ public class DonationDistributionUI {
             if (Validator.isAlphabetic(itemName)) {
                 return itemName.toUpperCase();
             }
-            System.out.println("\nInvalid Input. Please enter a valid Item Name containing only letters and spaces.");
+            System.out.println("\nInvalid Input. Please enter a valid Item Name containing only letters.");
         }
     }
     
@@ -82,7 +90,7 @@ public class DonationDistributionUI {
             if (Validator.isAlphabetic(category)) {
                 return category.toUpperCase();
             }
-            System.out.println("\nInvalid Input. Please enter a valid Item Category containing only letters and spaces.");
+            System.out.println("\nInvalid Input. Please enter a valid Item Category containing only letters.");
         }
     }
     
@@ -157,30 +165,64 @@ public class DonationDistributionUI {
         header.append("=====================================================================================================================\n");
         return header.toString();
     }
-    
-    public Distribution inputDistributionDetails() {
-        String id = inputDistributionID();
-        String itemName = inputItemName();
-        String category = inputDonationCategories();
 
-        int quantity = 0;
-        double amount = 0.0;
-        
-        if (category.equalsIgnoreCase("cash")) {
-            amount = inputAmount(); 
-            quantity = 0; 
-        } else {
-            quantity = inputQuantity(); 
-            amount = 0; 
+    private boolean isCategoryValid(String category, LinkedList<Donation> donationList) {
+        for (int i = 1; i <= donationList.getNumberOfEntries(); i++) {
+            if (donationList.getEntry(i).getItemCategory().equalsIgnoreCase(category)) {
+                return true;
+            }
         }
-
-        String doneeID = inputDoneeID();
-        String status = inputStatus();
-        LocalDate distributionDate = inputDistributionDate();
-
-        System.out.println();
-        return new Distribution(id, itemName, category, quantity, amount, doneeID, status, distributionDate); 
+        return false;
     }
+
+    private boolean isItemValid(String item, String category, LinkedList<Donation> donationList) {
+        for (int i = 1; i <= donationList.getNumberOfEntries(); i++) {
+            Donation donation = donationList.getEntry(i);
+            if (donation.getItemCategory().equalsIgnoreCase(category) && donation.getItem().equalsIgnoreCase(item)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private LinkedList<Donation> loadDonationData() {
+        DonationDAO donationDAO = new DonationDAO();
+        return donationDAO.loadDonationsFromFile();
+    }
+
+    public Distribution inputDistributionDetails() {
+    LinkedList<Donation> donationList = loadDonationData();
+//    String id = inputDistributionID();
+    String category = inputDonationCategories();
+
+    while (!isCategoryValid(category, donationList)) {
+        System.out.println("Invalid Category. Please enter a category that exists in the donation file.");
+        category = inputDonationCategories();
+    }
+
+    String itemName = inputItemName();
+    while (!isItemValid(itemName, category, donationList)) {
+        System.out.println("Invalid Item. Please enter an item that exists for the selected category in the donation file.");
+        itemName = inputItemName();
+    }
+
+    int quantity = 0;
+    double amount = 0.0;
+    
+    if (category.equalsIgnoreCase("cash")) {
+        amount = inputAmount(); 
+        quantity = 0; 
+    } else {
+        quantity = inputQuantity(); 
+        amount = 0; 
+    }
+
+    String doneeID = inputDoneeID();
+    String status = inputStatus();
+    LocalDate distributionDate = inputDistributionDate();
+
+    return new Distribution("", category, itemName, quantity, amount, doneeID, status, distributionDate); 
+}
 
     public double inputAmount() {
         while (true) {
@@ -223,10 +265,6 @@ public class DonationDistributionUI {
         System.out.println(report.toString());
     }
 }
-
-
-
-
 
 
 
