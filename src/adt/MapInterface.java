@@ -26,5 +26,7 @@ public interface MapInterface<K, V> {
     
     public K getKey(int index);
     
+    public V getOrDefault(K key, V defaultValue);
+    
     public void clear();
 }
