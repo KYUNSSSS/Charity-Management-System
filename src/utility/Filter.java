@@ -75,7 +75,7 @@ public class Filter<F> {
 
             for (int j = 1; j <= donations.getNumberOfEntries(); j++) {
                 Donation donation = donations.getEntry(j);
-                double donationAmount = donation.getAmount();
+                double donationAmount = donation.getCashAmount();
 
                 if (isWithinAmountRange(donationAmount, minAmount, maxAmount)) {
                     donorMatches = true;

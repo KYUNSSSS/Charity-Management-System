@@ -38,6 +38,15 @@ public class Validator {
             return false;
         }
     }
+    
+    public static boolean isValidInteger(String input) {
+        try {
+            int number = Integer.parseInt(input.trim());
+            return number >= 0;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
 
     public static boolean isValidAmount(String input) {
         try {

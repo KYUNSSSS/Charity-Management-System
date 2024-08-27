@@ -4,8 +4,6 @@
  */
 package adt;
 
-import java.util.Set;
-
 /**
  *
  * @author xuan
@@ -31,7 +29,5 @@ public interface MapInterface<K, V> {
     public V getOrDefault(K key, V defaultValue);
     
     public void clear();
-    
-    public V getOrDefault(K key, V defaultValue);
     
 }

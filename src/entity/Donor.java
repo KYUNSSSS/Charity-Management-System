@@ -76,7 +76,7 @@ public class Donor implements Serializable {
     public void setEntityType(String entityType) {
         this.entityType = entityType;
     }
-           
+            
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
