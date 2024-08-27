@@ -6,38 +6,62 @@ package control;
 import adt.*;
 import entity.*;
 import boundary.*;
-import dao.DistributionDAO;
-import dao.DoneeDAO;
+import dao.*;
+import java.io.*;
 import utility.MessageUI;
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  *
  * @author SCSM11
  */
 public class DonationDistribution {
-    private ListInterface<Donee> doneeList = new LinkedList<>();
-    private DoneeDAO doneeDAO = new DoneeDAO(); 
-    private Map<String, String> doneeLocationCache = new HashMap<>();
+    private ListInterface<Donee> doneeList = new LinkedList<>(); 
     private ListInterface<Distribution> distributeList = new LinkedList<>();
+    private ListInterface<KeyValuePair> doneeLocationList = new LinkedList<>(); // Use LinkedList of KeyValuePair
+    private DoneeDAO doneeDAO = new DoneeDAO();
+    private DonationDAO danationDAO = new DonationDAO();
     private DistributionDAO distributeDAO = new DistributionDAO();
     private DonationDistributionUI distributeUI = new DonationDistributionUI();
+    private int lastDistributionNumber = 0;
     
     public DonationDistribution(){
+        File file = new File("DonationDistribution.txt");
+        if (!file.exists()) {
+            try {
+                if (file.createNewFile()) {
+                    System.out.println("File not found. A new file has been created.");
+                } else {
+                    System.out.println("Failed to create a new file.");
+                    return;
+                }
+            } catch (IOException e) {
+                System.out.println("Error creating new file: " + e.getMessage());
+                e.printStackTrace();
+                return;
+            }
+        }
         doneeList = doneeDAO.retrieveFromFile();
         distributeList = distributeDAO.retrieveFromFile();
         loadDoneeLocations();
     }
 
-    private void loadDoneeLocations() {
+     private void loadDoneeLocations() {
         for (int i = 1; i <= doneeList.getNumberOfEntries(); i++) {
             Donee donee = doneeList.getEntry(i);
-            doneeLocationCache.put(donee.getDoneeID(), donee.getDoneeLocation());
+            doneeLocationList.add(new KeyValuePair(donee.getDoneeID(), donee.getDoneeLocation()));
         }
     }
 
+    private String getDoneeLocationByID(String doneeID) {
+        for (int i = 1; i <= doneeLocationList.getNumberOfEntries(); i++) {
+            KeyValuePair<String, String> pair = doneeLocationList.getEntry(i);
+            if (pair.getKey().equalsIgnoreCase(doneeID)) {
+                return pair.getValue();
+            }
+        }
+        return "Unknown";
+    }
+    
     public void runDonationDistribution() {
         int choice = 0;
         do {
@@ -60,7 +84,6 @@ public class DonationDistribution {
                     break;
                 case 4:
                     trackDistribute();
-                    //distributeUI.listAllDistribute(getAllDistribute());
                     break;
                 case 5:
                     generateReport();
@@ -71,12 +94,18 @@ public class DonationDistribution {
         } while (choice != 0);
     }
     
-    public void addNewDistribute(){
+    public void addNewDistribute() {
+        String newDistributionID =  generateNextDistributionID();
         Distribution newDistribute = distributeUI.inputDistributionDetails();
-        distributeList.add(newDistribute);
-        distributeDAO.saveToFile(getAllDistribute());
+        newDistribute.setDistributionID(newDistributionID);
+        if (newDistribute != null) {
+            distributeList.add(newDistribute);
+            distributeDAO.saveToFile(getAllDistribute());
+        } else {
+            System.out.println("Failed to add new distribution due to invalid input.");
+        }
     }
-    
+
     public void removeDistribute() {
         String distributionID = distributeUI.inputDistributionID();
         boolean isRemoved = false;
@@ -158,7 +187,6 @@ public class DonationDistribution {
         String title = "";
         boolean includeDoneeID = false;
 
-        // Set the title and header based on the type of criteria
         switch (type) {
             case "DoneeID":
                 title = "Donation Details for Donee ID: " + criteria;
@@ -203,13 +231,9 @@ public class DonationDistribution {
                     match = dist.getStatus().equalsIgnoreCase(criteria);
                     break;
                 case "Location":
-                    for (Map.Entry<String, String> entry : doneeLocationCache.entrySet()) {
-                        if (entry.getValue().equalsIgnoreCase(criteria)) {
-                            if (dist.getDoneeID().equalsIgnoreCase(entry.getKey())) {
-                                match = true;
-                                break;
-                            }
-                        }
+                    String doneeLocation = getDoneeLocationByID(dist.getDoneeID());
+                    if (doneeLocation.equalsIgnoreCase(criteria)) {
+                        match = true;
                     }
                     break;
             }
@@ -219,11 +243,12 @@ public class DonationDistribution {
 
                 if (includeDoneeID) {
                     result.append(String.format("%-20s%-15s%-15d%-15.2f%-20s%-20s%-20s\n",
-                        dist.getItemName(),dist.getCategory(),dist.getQuantity(),dist.getAmount(),dist.getStatus(),dist.getDistributionDate(),dist.getDoneeID())); 
+                        dist.getItemName(),dist.getCategory(),dist.getQuantity(),dist.getAmount(),
+                        dist.getStatus(),dist.getDistributionDate(),dist.getDoneeID())); 
                 }else {
                     result.append(String.format("%-20s%-15s%-15d%-15.2f%-20s%-20s%-50s\n",
-                        dist.getItemName(),dist.getCategory(),dist.getQuantity(),dist.getAmount(),dist.getStatus(),dist.getDistributionDate(),
-                        doneeLocationCache.getOrDefault(dist.getDoneeID(), "Unknown"))); 
+                        dist.getItemName(), dist.getCategory(), dist.getQuantity(), dist.getAmount(),
+                        dist.getStatus(), dist.getDistributionDate(), getDoneeLocationByID(dist.getDoneeID())));
                 }
             }
         }
@@ -276,14 +301,15 @@ public class DonationDistribution {
         String highestCashLocation = "";
         double highestCashAmount = 0.0;
 
-        Map<String, Integer> locationItemCounts = new HashMap<>();
-        Map<String, Double> locationCashCounts = new HashMap<>();
+        // Lists to hold location-wise item counts and cash amounts
+        ListInterface<KeyValuePair<String, Integer>> locationItemCounts = new LinkedList<>();
+        ListInterface<KeyValuePair<String, Double>> locationCashCounts = new LinkedList<>();
 
         for (int i = 1; i <= distributeList.getNumberOfEntries(); i++) {
             Distribution dist = distributeList.getEntry(i);
-
             boolean isCash = dist.getCategory().equalsIgnoreCase("cash");
 
+            // Categorize by status
             switch (dist.getStatus().toLowerCase()) {
                 case "pending":
                     if (isCash) {
@@ -310,52 +336,94 @@ public class DonationDistribution {
 
             // Track total distributed items and cash across all statuses
             if (isCash) {
-                totalDistributedCash += dist.getAmount(); 
+                totalDistributedCash += dist.getAmount();
             } else {
-                totalItemsDistributed += dist.getQuantity(); 
+                totalItemsDistributed += dist.getQuantity();
             }
 
-            // Track item and cash distributions by location
-            String location = doneeLocationCache.getOrDefault(dist.getDoneeID(), "Unknown");
-            locationItemCounts.put(location, locationItemCounts.getOrDefault(location, 0) + dist.getQuantity());
-            locationCashCounts.put(location, locationCashCounts.getOrDefault(location, 0.0) + dist.getAmount());
+            // Retrieve location for doneeID
+            String location = getDoneeLocationByID(dist.getDoneeID());
 
+            // Update item count or cash amount for the location
+            if (isCash) {
+                updateLocationCash(locationCashCounts, location, dist.getAmount());
+            } else {
+                updateLocationItems(locationItemCounts, location, dist.getQuantity());
+            }
+
+            // Track highest quantity and category
             if (dist.getQuantity() > highestQuantity) {
                 highestQuantity = dist.getQuantity();
                 highestCategory = dist.getCategory();
             }
         }
 
-        // Find highest quantity and cash location
-        for (Map.Entry<String, Integer> itemEntry : locationItemCounts.entrySet()) {
-            String location = itemEntry.getKey();
-            int itemCount = itemEntry.getValue();
-
-            if (itemCount > highestItemQuantity) {
-                highestItemLocation = location;
-                highestItemQuantity = itemCount;
+        // Find the location with the highest item quantity
+        for (int i = 1; i <= locationItemCounts.getNumberOfEntries(); i++) {
+            KeyValuePair<String, Integer> itemEntry = locationItemCounts.getEntry(i);
+            if (itemEntry.getValue() > highestItemQuantity) {
+                highestItemLocation = itemEntry.getKey();
+                highestItemQuantity = itemEntry.getValue();
             }
         }
 
-        for (Map.Entry<String, Double> cashEntry : locationCashCounts.entrySet()) {
-            String location = cashEntry.getKey();
-            double cashAmount = cashEntry.getValue();
-
-            if (cashAmount > highestCashAmount) {
-                highestCashLocation = location;
-                highestCashAmount = cashAmount;
+        // Find the location with the highest cash amount
+        for (int i = 1; i <= locationCashCounts.getNumberOfEntries(); i++) {
+            KeyValuePair<String, Double> cashEntry = locationCashCounts.getEntry(i);
+            if (cashEntry.getValue() > highestCashAmount) {
+                highestCashLocation = cashEntry.getKey();
+                highestCashAmount = cashEntry.getValue();
             }
         }
 
+        // Display the summary report
         distributeUI.displaySummaryReport(
-            totalPendingItems, totalDeliveredItems, totalReceivedItems, 
-            totalPendingCash, totalDeliveredCash, totalReceivedCash, 
-            totalDistributedCash, totalItemsDistributed, highestQuantity, 
-            highestCategory, highestItemLocation, highestItemQuantity, 
-            highestCashLocation, highestCashAmount
+                totalPendingItems, totalDeliveredItems, totalReceivedItems,
+                totalPendingCash, totalDeliveredCash, totalReceivedCash,
+                totalDistributedCash, totalItemsDistributed, highestQuantity,
+                highestCategory, highestItemLocation, highestItemQuantity,
+                highestCashLocation, highestCashAmount
         );
     }
-    
+
+    private void updateLocationItems(ListInterface<KeyValuePair<String, Integer>> locationItemCounts, String location, int quantity) {
+        boolean locationFound = false;
+
+        // Search and update if the location exists
+        for (int i = 1; i <= locationItemCounts.getNumberOfEntries(); i++) {
+            KeyValuePair<String, Integer> entry = locationItemCounts.getEntry(i);
+            if (entry.getKey().equalsIgnoreCase(location)) {
+                entry.setValue(entry.getValue() + quantity);
+                locationFound = true;
+                break;
+            }
+        }
+
+        // If location is not found, add a new entry
+        if (!locationFound) {
+            locationItemCounts.add(new KeyValuePair<>(location, quantity));
+        }
+    }
+
+    private void updateLocationCash(ListInterface<KeyValuePair<String, Double>> locationCashCounts, String location, double amount) {
+        boolean locationFound = false;
+
+        // Search and update if the location exists
+        for (int i = 1; i <= locationCashCounts.getNumberOfEntries(); i++) {
+            KeyValuePair<String, Double> entry = locationCashCounts.getEntry(i);
+            if (entry.getKey().equalsIgnoreCase(location)) {
+                entry.setValue(entry.getValue() + amount);
+                locationFound = true;
+                break;
+            }
+        }
+
+        // If location is not found, add a new entry
+        if (!locationFound) {
+            locationCashCounts.add(new KeyValuePair<>(location, amount));
+        }
+    }
+
     private boolean isCash(Distribution dist) {
         return dist.getCategory().equalsIgnoreCase("cash");
     }
@@ -367,10 +435,16 @@ public class DonationDistribution {
         }
         return outputStr;
     }
+    
+    private String generateNextDistributionID() {
+        lastDistributionNumber++;
+        return String.format("DD%03d", lastDistributionNumber); 
+    }
 
     public static void main(String[] args) {
         DonationDistribution distribute = new DonationDistribution();
         distribute.runDonationDistribution();
+        
   }
 }
 
