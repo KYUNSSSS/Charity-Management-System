@@ -5,9 +5,10 @@
 package boundary;
 
 import control.DonationManagement;
-import entity.Donation;
+import entity.*;
 import utility.*;
 import adt.*; 
+import dao.*;
 
 import java.util.Scanner;
 import utility.MessageUI;
@@ -275,7 +276,14 @@ public class DonationManagementUI {
     
 //All method
 //------------------------------------------------------------------------------- 
+    private ListInterface<Donor> loadDonorData() {
+        DonorDAO donorDAO = new DonorDAO();
+        return donorDAO.retrieveFromFile();
+    }
+
     public void addDonation() {
+        ListInterface<Donor> donorList = loadDonorData();
+        String donorID2="";
         System.out.println("*****Add Donation*****");
 
         LocalDate donationDate = LocalDate.now();
@@ -283,9 +291,16 @@ public class DonationManagementUI {
 
         String donationID = controller.generateNextDonationID();
         System.out.println("Donation ID : " + donationID);
-
+        while (true){
         System.out.print("Enter Donor ID    : ");
         String donorID = scanner.nextLine();
+            if(isDonorIDValid(donorID, donorList)){
+                donorID2 = donorID;
+                break;
+            }else{
+                  System.out.println("Enter valid id.");      
+                        }
+        }
 
         String itemCategory = DonationItemCategory();
         String itemsInput = getItemInput(itemCategory);
@@ -302,10 +317,18 @@ public class DonationManagementUI {
             amount = nonCashAmount; // Or use another approach based on your logic
         }
 
-        boolean success = controller.addDonation(donationID, donorID, itemCategory, itemsInput, amount, donationDate);
+        boolean success = controller.addDonation(donationID, donorID2, itemCategory, itemsInput, amount, donationDate);
         System.out.println(success ? greenText + "Donation added successfully!" + resetText : "Failed to add donation.");
         System.out.println(greenText + "Press any key to continue..." + resetText);
         scanner.nextLine();
+    }
+    private boolean isDonorIDValid(String donorID, ListInterface<Donor> donorList) {
+        for (int i = 1; i <= donorList.getNumberOfEntries(); i++) {
+            if (donorList.getEntry(i).getDonorID().equalsIgnoreCase(donorID)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void removeDonation() {
