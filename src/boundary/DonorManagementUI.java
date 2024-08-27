@@ -14,7 +14,7 @@ import utility.Validator;
 
 /**
  *
- * @author xuan
+ * @author Ng Yin Xuan
  */
 public class DonorManagementUI {
 

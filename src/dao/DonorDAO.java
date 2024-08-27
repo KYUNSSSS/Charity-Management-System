@@ -7,14 +7,13 @@ package dao;
 import adt.*;
 import entity.Donor;
 import java.io.*;
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
  *
- * @author xuan
+ * @author Ng Yin Xuan
  */
 public class DonorDAO implements Serializable {
 
@@ -58,9 +57,8 @@ public class DonorDAO implements Serializable {
                     String donorEmail = parts[3].trim();
                     String donorType = parts[4].trim();
                     String donorEntity = parts[5].trim();
-//                    LocalDate donationDate = LocalDate.parse(parts[6].trim(), dateFormatter);
 
-                    // Create a Donee object and add it to the list
+                    // Create a Donor object and add it to the list
                     Donor donor = new Donor(donorID, donorName, donorPhoneNum, donorEmail, donorType, donorEntity);
                     donorList.add(donor);
                 } else {

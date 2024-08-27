@@ -9,7 +9,7 @@ import java.util.Objects;
 
 /**
  *
- * @author xuan
+ * @author Ng Yin Xuan
  */
 public class Donor implements Serializable {
 

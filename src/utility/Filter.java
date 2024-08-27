@@ -10,7 +10,7 @@ import java.time.LocalDate;
 
 /**
  *
- * @author xuan
+ * @author Team
  * @param <F>
  */
 public class Filter<F> {

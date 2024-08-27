@@ -13,7 +13,7 @@ import utility.*;
 
 /**
  *
- * @author xuan
+ * @author Ng Yin Xuan
  */
 public class DonorManagement {
 

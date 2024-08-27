@@ -10,7 +10,7 @@ import java.time.format.DateTimeParseException;
 
 /**
  *
- * @author SCSM11
+ * @author Team
  */
 public class Validator {
 
