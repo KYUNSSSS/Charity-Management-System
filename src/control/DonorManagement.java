@@ -324,6 +324,10 @@ public class DonorManagement {
     }
 
     public void generateReport() {
+        generateDonorTypeSummaryReport();
+    }
+    
+    public void generateDonorTypeSummaryReport() {
 //        LinkedList<Donor> governmentList = categorisedDonors.get("government");
 //        LinkedList<Donor> privateList = categorisedDonors.get("private");
 //        LinkedList<Donor> publicList = categorisedDonors.get("public");
@@ -350,7 +354,7 @@ public class DonorManagement {
             // Calculate total donation amount for this donor
             for (int j = 1; j <= donations.getNumberOfEntries(); j++) {
                 Donation donation = donations.getEntry(j);
-                donorTotal += donation.getAmount();
+                donorTotal += donation.getCashAmount();
             }
 
             // Update statistics based on donor type
@@ -388,7 +392,7 @@ public class DonorManagement {
             }
             
             totalCount = governmentCount + privateCount + publicCount;
-            System.out.println(totalCount);
+
             govPercentage = (double)governmentCount / totalCount * 100;
             privatePercentage = (double)privateCount / totalCount * 100;
             publicPercentage = (double)publicCount / totalCount * 100;
@@ -400,11 +404,12 @@ public class DonorManagement {
         }
         System.out.println("************************************Donor Type Summary Report************************************");
         System.out.println("-------------------------------------------------------------------------------------------------");
-        System.out.println("Donor Type | Number of Donors | Percentage |    Total    |   Average   | Max Amount | Min Amount ");
+        System.out.println("Donor Type | Number of Donors | Percentage | Total Cash Amount | Average Cash Amount | Max Amount | Min Amount ");
         System.out.println("-------------------------------------------------------------------------------------------------");
-        System.out.printf("%-10s | %-16d | %-10s | RM%-9.2f | RM%-9.2f | RM%-8.2f | RM%-8.2f\n", "Government", governmentCount, govPercentage + "%", governmentTotal, governmentAverage, governmentMax, governmentMin);
-        System.out.printf("%-10s | %-16d | %-10s | RM%-9.2f | RM%-9.2f | RM%-8.2f | RM%-8.2f\n", "Private", privateCount, privatePercentage + "%", privateTotal, privateAverage, privateMax, privateMin);
-        System.out.printf("%-10s | %-16d | %-10s | RM%-9.2f | RM%-9.2f | RM%-8.2f | RM%-8.2f\n", "Public", publicCount, publicPercentage + "%", publicTotal, publicAverage, publicMax, publicMin);
+        donorUI.printDonorTypeSummary( "Government", governmentCount, govPercentage, governmentTotal, governmentAverage, governmentMax, governmentMin);      
+        donorUI.printDonorTypeSummary("Private", privateCount, privatePercentage, privateTotal, privateAverage, privateMax, privateMin);
+        donorUI.printDonorTypeSummary("Public", publicCount, publicPercentage, publicTotal, publicAverage, publicMax, publicMin);
+        System.out.println("-------------------------------------------------------------------------------------------------");
     }
 
     public String generateNextDonorID() {
