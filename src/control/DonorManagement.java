@@ -17,6 +17,8 @@ import utility.*;
  */
 public class DonorManagement {
 
+    private driver driver = new driver();
+    
     private ListInterface<Donor> donorList = new LinkedList<>();
     private ListInterface<Donation> donationList = new LinkedList<>();
     private DonorDAO donorDAO = new DonorDAO();
@@ -63,6 +65,7 @@ public class DonorManagement {
             choice = donorUI.getMenuChoice();
             switch (choice) {
                 case 0:
+                    driver.runDriver();
                     MessageUI.displayExitMessage();
                     break;
                 case 1:
