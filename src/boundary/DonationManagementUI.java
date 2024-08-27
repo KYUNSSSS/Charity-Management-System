@@ -50,7 +50,6 @@ public class DonationManagementUI {
         System.out.println("8. Filter donations");
         System.out.println("9. Generate Donation Reports");
         System.out.println("0. Exit");
-        System.out.print("Enter your choice : ");
         int choice = -1;
         while (choice < 0 || choice > 9) {
             System.out.print("Enter choice (0-9) : ");
@@ -65,17 +64,27 @@ public class DonationManagementUI {
 
     public String DonationItemCategory() {
         String itemCategory = "";
+        System.out.println("Choose Donation Category : ");
+        System.out.println("1. Clothing");
+        System.out.println("2. Food and Beverage");
+        System.out.println("3. Books");
+        System.out.println("4. Electronic Devices");
+        System.out.println("5. Cash");
         int choice = 0;
-        do {
-            System.out.println("Choose Donation Category : ");
-            System.out.println("1. Clothing");
-            System.out.println("2. Food and Beverage");
-            System.out.println("3. Books");
-            System.out.println("4. Electronic Devices");
-            System.out.println("5. Cash");
-            System.out.print("Enter choice(1-5) : ");
-            choice = scanner.nextInt();
-            scanner.nextLine();
+        while (choice < 1 || choice > 5){
+            while (true) {
+                System.out.print("Enter choice : ");
+                try {
+                    choice = Integer.parseInt(scanner.nextLine());
+                } catch (NumberFormatException e) {
+                    System.err.println("Invalid input. Please enter a number between 1 and 5.");
+                }
+                
+                if (Validator.isValidPositiveInteger(String.valueOf(choice))) {
+                    break;
+                }
+            }
+            
             switch (choice) {
                 case 1 ->
                     itemCategory = "Clothing";
@@ -90,7 +99,7 @@ public class DonationManagementUI {
                 default ->
                     MessageUI.displayInvalidChoiceMessage();
             }
-        } while (choice < 1 || choice > 5);
+        } 
 
         return itemCategory;
     }
@@ -148,7 +157,7 @@ public class DonationManagementUI {
                 itemsInput = getCategoryItemInput("Mobile Phone", "Computer", "Refrigerator", "Washing Machine", "Rice Cooker");
                 break;
             case "Cash":
-                itemsInput = "";
+                itemsInput = "Cash";
                 break;
         }
         return itemsInput;
