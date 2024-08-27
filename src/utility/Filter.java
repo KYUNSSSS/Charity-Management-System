@@ -42,7 +42,7 @@ public class Filter<F> {
             boolean donorMatches = false;
 
             for (int j = 1; j <= donations.getNumberOfEntries(); j++) {
-                
+
                 Donation donation = donations.getEntry(j);
                 LocalDate donationDate = donation.getDonationDate();
 
@@ -65,11 +65,11 @@ public class Filter<F> {
         ListInterface<Donor> filteredList = new LinkedList<>();
         for (int i = 1; i <= map.capacity(); i++) {
             String donorID = map.getKey(i);
-            
+
             if (donorID == null) {
                 continue; // Skip null donorID
             }
-            
+
             ListInterface<Donation> donations = map.get(donorID);
             boolean donorMatches = false;
 
@@ -166,4 +166,52 @@ public class Filter<F> {
         }
         return filteredList;
     }
+
+    public ListInterface<F> filterByDateRange(ListInterface<F> list, LocalDate startDate, LocalDate endDate) {
+        ListInterface<F> filteredList = new LinkedList<>();
+        for (int i = 1; i <= list.getNumberOfEntries(); i++) {
+            F entity = list.getEntry(i);
+            if (entity instanceof Donation donation) {
+                if (isWithinDateRange(donation.getDonationDate(), startDate, endDate)) {
+                    filteredList.add(entity);
                 }
+            }
+        }
+        return filteredList;
+    }
+
+    public ListInterface<F> filterByDonationAmountRange(ListInterface<F> list, double minAmount, double maxAmount) {
+        ListInterface<F> filteredList = new LinkedList<>();
+        for (int i = 1; i <= list.getNumberOfEntries(); i++) {
+            F entity = list.getEntry(i);
+            if (entity instanceof Donation donation) {
+                if (isWithinAmountRange(donation.getAmount(), minAmount, maxAmount)) {
+                    filteredList.add(entity);
+                }
+            }
+        }
+        return filteredList;
+    }
+
+    public ListInterface<F> filterByVolunteerType(ListInterface<F> list, String type) {
+        ListInterface<F> filteredList = new LinkedList<>();
+        for (int i = 1; i <= list.getNumberOfEntries(); i++) {
+            F volunteer = list.getEntry(i);
+            if (((Volunteer) volunteer).getVolunteerType().equalsIgnoreCase(type)) {
+                filteredList.add(volunteer);
+            }
+        }
+        return filteredList;
+    }
+
+    public ListInterface<F> filterByEvent(ListInterface<F> list, String event) {
+        ListInterface<F> filteredList = new LinkedList<>();
+        for (int i = 1; i <= list.getNumberOfEntries(); i++) {
+            F volunteer = list.getEntry(i);
+            if (((Volunteer) volunteer).getEventAssigned().contains(event)) {
+                filteredList.add(volunteer);
+            }
+        }
+        return filteredList;
+    }
+}
