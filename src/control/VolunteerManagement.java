@@ -12,7 +12,6 @@ import dao.VolunteerDAO;
 import entity.Volunteer;
 import java.util.Scanner;
 import utility.Filter;
-import utility.FilterInterface;
 import utility.MessageUI;
 
 /**
@@ -24,7 +23,7 @@ public class VolunteerManagement {
     private VolunteerDAO volunteerDAO = new VolunteerDAO();
     private VolunteerManagementUI volunteerUI = new VolunteerManagementUI();
     private HashMap<String, Volunteer> volunteerMap = new HashMap<>();
-    private FilterInterface<Volunteer> filterVolunteer = new Filter<>();
+    private Filter<Volunteer> filterVolunteer = new Filter<>();
     
     private int lastDoneeNumber = 0;
     
@@ -55,7 +54,7 @@ public class VolunteerManagement {
                     assignEvents();
                     break;
                 case 5:
-//                     searchEventVolunteer();
+                    searchEventVolunteer();
                     break;
                 case 6:
                     volunteerUI.listAllVolunteers(getAllVolunteer());
@@ -179,6 +178,15 @@ public class VolunteerManagement {
             }
         }
         
+    }
+    
+    public void searchEventVolunteer() {
+        String volunteerID = volunteerUI.inputVolunteerID();
+        if (volunteerMap.containsKey(volunteerID)) {
+            volunteerUI.listEvent(volunteerMap.get(volunteerID));
+        } else {
+            System.err.println("No event assigned.");
+        }
     }
     
     public String getAllVolunteer() {

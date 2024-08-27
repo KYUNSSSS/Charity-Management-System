@@ -7,6 +7,7 @@ import adt.MapInterface;
 import dao.DonationDAO;
 import entity.Donation;
 import boundary.DonationManagementUI;
+import entity.Donor;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -275,18 +276,27 @@ public class DonationManagement {
             calculateCategoryTotals();
             calculateItemTotals();
 
-            // Output totals for each category // TODO: Change keySet
-            for (String category : categoryTotals.keySet()) {
+            ListInterface<Donor> filteredList = new LinkedList<>();
+            for (int i = 1; i <= categoryTotals.capacity(); i++) {
+                String category = categoryTotals.getKey(i);
+
+                if (category == null) {
+    //                System.out.println("Null donorID found at index " + i);
+                    continue; // Skip null donorID
+                }
+
                 double totalAmount = categoryTotals.get(category);
                 reportContent.append("Total ").append(category).append(" : ").append(totalAmount).append("\n");
 
-                for (String item : itemTotals.keySet()) {
+                for (int j = 1; i <= itemTotals.capacity(); j++) {
+                    String item = itemTotals.getKey(j);
                     if (item.startsWith(category)) {
                         double itemTotal = itemTotals.get(item);
                         reportContent.append("1. Total ").append(item.substring(category.length() + 2)).append(" : ").append(itemTotal).append("\n");
                     }
                 }
                 reportContent.append("--------------------------------------\n");
+                
             }
 
             // Output total cash donations
