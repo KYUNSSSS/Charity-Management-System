@@ -30,4 +30,6 @@ public interface MapInterface<K, V> {
     
     public void clear();
     
+    public K[] getKeys(); // Returns an array or collection of keys
 }
+

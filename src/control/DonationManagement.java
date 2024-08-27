@@ -20,8 +20,8 @@ public class DonationManagement {
     public LinkedList<Donation> donationList;
     private DonationManagementUI ui;
     private Filter<Donation> filter;
-    private HashMap<String, Double> categoryTotals = new HashMap<>();
-    private HashMap<String, Double> itemTotals = new HashMap<>();
+    private LinkedList<CategoryTotal> categoryTotalsList = new LinkedList<>();
+    private LinkedList<ItemTotal> itemTotalsList = new LinkedList<>();
     private double cashTotal = 0.0;
     private Donation donation;
 
@@ -60,7 +60,7 @@ public class DonationManagement {
                 case 8 ->
                     handleFilterChoice();//base on criteria
                 case 9 ->
-                    ui.donationsReports();
+                    getReportChoice();
                 case 0 ->
                     System.out.println("Exiting Donation Management System.");
                 default ->
@@ -256,60 +256,133 @@ public class DonationManagement {
         }
         return itemTotals;
     }
+    
+    public void getReportChoice() {
+        int choice;
+        do {
+            choice = ui.displayReportChoice();
+            switch (choice) {
+                case 1 :
+                    System.out.println(generateReport());
+                    ui.enterToContinue();
+                    break;
+                case 2 :
+                    System.out.println(generateDetailedReport());
+                    ui.enterToContinue();
+                    break;
+                case 3 :
+                    runDonationManagement();
+                    break;
+                default :
+                    System.err.println("Invalid choice. Please select an option between 1 and 3.");
+            }
+        } while (choice != 0);
+    }
+    private class CategoryTotal {
+        String category;
+        double total;
+
+        public CategoryTotal(String category, double total) {
+            this.category = category;
+            this.total = total;
+        }
+    }
+
+    private class ItemTotal {
+        String category;
+        String item;
+        double total;
+
+        public ItemTotal(String category, String item, double total) {
+            this.category = category;
+            this.item = item;
+            this.total = total;
+        }
+    }
+    
 
     public String generateReport() {
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-        String fileName = "donation_summary_report_" + dateFormatter.format(LocalDate.now()) + ".txt";
         StringBuilder reportContent = new StringBuilder();
 
-        try {
-            Path downloadsFolder = Paths.get(System.getProperty("user.home"), "Downloads");
-            Path filePath = downloadsFolder.resolve(fileName);
-            if (!Files.exists(filePath)) {
-                Files.createFile(filePath);
-            }
+        reportContent.append("***** Donation Summary Report *****\n");
+        reportContent.append("Date Generated    : ").append(LocalDate.now().format(dateFormatter)).append("\n\n");
 
-            reportContent.append("*****Donation Summary Report*****\n");
-            reportContent.append("Date Generated    : ").append(LocalDate.now().format(dateFormatter)).append("\n\n");
+        double cashTotal = calculateCategoryAndItemTotals(reportContent);
 
-            // Calculate totals
-            calculateCategoryTotals();
-            calculateItemTotals();
+        // Output total cash donations
+        reportContent.append("Total Amount of Cash : RM ").append(String.format("%.2f", cashTotal)).append("\n");
 
-            ListInterface<Donor> filteredList = new LinkedList<>();
-            for (int i = 1; i <= categoryTotals.capacity(); i++) {
-                String category = categoryTotals.getKey(i);
+        return reportContent.toString();
+    }
 
-                if (category == null) {
-    //                System.out.println("Null donorID found at index " + i);
-                    continue; // Skip null donorID
+    private double calculateCategoryAndItemTotals(StringBuilder reportContent) {
+        double cashTotal = 0.0;
+        LinkedList<String> categories = new LinkedList<>();
+        LinkedList<String> items = new LinkedList<>();
+        LinkedList<Double> categoryAmounts = new LinkedList<>();
+        LinkedList<Double> itemAmounts = new LinkedList<>();
+
+        for (int i = 1; i <= donationList.getNumberOfEntries(); i++) {
+            Donation donation = donationList.getEntry(i);
+            String category = donation.getItemCategory().trim();
+            String item = donation.getItem().trim();
+            double amount = (category.equalsIgnoreCase("Cash")) ? donation.getCashAmount() : donation.getAmount();
+
+            // Track total cash separately
+            if (category.equalsIgnoreCase("Cash")) {
+                cashTotal += amount;
+            } else {
+                // Track category totals
+                int categoryIndex = categories.indexOf(category);
+                if (categoryIndex == -1) {
+                    categories.add(category);
+                    categoryAmounts.add(amount);
+                } else {
+                    double updatedAmount = categoryAmounts.get(categoryIndex) + amount;
+                    categoryAmounts.set(categoryIndex, updatedAmount);
                 }
 
-                double totalAmount = categoryTotals.get(category);
-                reportContent.append("Total ").append(category).append(" : ").append(totalAmount).append("\n");
+                // Track item totals
+                String itemKey = category + ": " + item;
+                int itemIndex = items.indexOf(itemKey);
+                if (itemIndex == -1) {
+                    items.add(itemKey);
+                    itemAmounts.add(amount);
+                } else {
+                    double updatedItemAmount = itemAmounts.get(itemIndex) + amount;
+                    itemAmounts.set(itemIndex, updatedItemAmount);
+                }
+            }
+        }
 
-                for (int j = 1; i <= itemTotals.capacity(); j++) {
-                    String item = itemTotals.getKey(j);
-                    if (item.startsWith(category)) {
-                        double itemTotal = itemTotals.get(item);
-                        reportContent.append("1. Total ").append(item.substring(category.length() + 2)).append(" : ").append(itemTotal).append("\n");
+        // Add totals for each category and its items
+        for (int i = 1; i <= categories.getNumberOfEntries(); i++) {
+            String category = categories.getEntry(i);
+            double totalAmount = categoryAmounts.getEntry(i);
+
+            if (!category.equalsIgnoreCase("Cash")) {
+                reportContent.append("Total ").append(category).append(" : ").append((int) totalAmount).append("\n");
+
+                // Process items under this category
+                for (int j = 1; j <= items.getNumberOfEntries(); j++) {
+                    String itemKey = items.getEntry(j);
+                    if (itemKey.startsWith(category + ": ")) {
+                        double itemTotal = itemAmounts.getEntry(j);
+                        String itemName = itemKey.substring(category.length() + 2);
+                        reportContent.append("-> Total ").append(itemName).append(" : ").append((int) itemTotal).append("\n");
                     }
                 }
                 reportContent.append("--------------------------------------\n");
-                
             }
-
-            // Output total cash donations
-            reportContent.append("Total Amount of Cash : RM ").append(String.format("%.2f", cashTotal)).append("\n");
-
-            Files.write(filePath, reportContent.toString().getBytes());
-
-        } catch (IOException e) {
-            e.printStackTrace();
         }
 
-        return fileName;
+        return cashTotal;
     }
+
+
+
+
 
     public String generateDetailedReport() {
         StringBuilder report = new StringBuilder();
@@ -335,53 +408,6 @@ public class DonationManagement {
         }
 
         return report.toString();
-    }
-
-    // Method to calculate totals by category
-    private void calculateCategoryTotals() {
-        cashTotal = 0.0; // Reset cash total
-        categoryTotals.clear(); // Clear previous totals
-
-        for (int i = 1; i <= donationList.getNumberOfEntries(); i++) {
-            Donation donation = donationList.getEntry(i);
-            String category = donation.getItemCategory();
-            double amount;
-
-            // Determine amount based on category
-            if (category.equalsIgnoreCase("Cash")) {
-                amount = donation.getCashAmount(); // Use cash amount for cash donations
-                cashTotal += amount;
-            } else {
-                amount = donation.getAmount(); // Use regular amount for non-cash donations
-            }
-
-            // Update category totals
-            categoryTotals.put(category, categoryTotals.getOrDefault(category, 0.0) + amount);
-        }
-
-        // Ensure the total cash amount is included in the category totals
-        categoryTotals.put("Total Amount of Cash", cashTotal);
-    }
-
-    private void calculateItemTotals() {
-        itemTotals.clear(); // Clear previous totals
-
-        for (int i = 1; i <= donationList.getNumberOfEntries(); i++) {
-            Donation donation = donationList.getEntry(i);
-            String category = donation.getItemCategory();
-            String item = donation.getItem();
-            double amount;
-
-            // Determine amount based on category
-            if (category.equalsIgnoreCase("Cash")) {
-                amount = donation.getCashAmount(); // Use cash amount for cash donations
-            } else {
-                amount = donation.getAmount(); // Use regular amount for non-cash donations
-            }
-
-            String itemKey = category + ": " + item;
-            itemTotals.put(itemKey, itemTotals.getOrDefault(itemKey, 0.0) + amount);
-        }
     }
 
     public static void main(String[] args) {

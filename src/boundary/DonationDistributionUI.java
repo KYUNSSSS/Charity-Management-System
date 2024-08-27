@@ -3,6 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package boundary;
+import entity.*;
 import java.util.Scanner;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -146,13 +147,13 @@ public class DonationDistributionUI {
     public static String formatHeader(String title, boolean includeDoneeID) {
         StringBuilder header = new StringBuilder();
         header.append(title).append("\n");
-        header.append("=====================================================================================================================\n");
+        header.append("===============================================================================================================================\n");
         if (includeDoneeID) {
-            header.append(String.format("%-20s%-15s%-15s%-15s%-20s%-20s%-20s\n", "Item", "Category", "Quantity", "Amount", "Status", "Distribution Date", "Donee ID"));
+            header.append(String.format("%-15s%-25s%-20s%-15s%-15s%-25s%-5s\n", "Item", "Category", "Quantity", "Amount", "Status", "Distribution Date", "Donee ID"));
         } else {
-            header.append(String.format("%-20s%-15s%-15s%-15s%-20s%-20s%-50s\n", "Item", "Category", "Quantity", "Amount", "Status", "Distribution Date", "Location"));
+            header.append(String.format("%-15s%-25s%-20s%-15s%-15s%-25s%-5s\n", "Item", "Category", "Quantity", "Amount", "Status", "Distribution Date", "Location"));
         }
-        header.append("=====================================================================================================================\n");
+        header.append("===============================================================================================================================\n");
         return header.toString();
     }
 
@@ -178,6 +179,10 @@ public class DonationDistributionUI {
 
         return location;
     }
+     
+     public void listDistribute(Distribution distribution) {
+        System.out.println("\n\n************* Distribution Details **************\nDistribution ID: " + distribution.getDistributionID() + "\nCategory: " + distribution.getCategory() + "\nItem: " + distribution.getItemName() + "\nQuantity: " + distribution.getQuantity() + "\nAmount: " + distribution.getAmount() + "\nDonee ID: " + distribution.getDoneeID() + "\nStatus: "+ distribution.getStatus() + "\nDistribution Date:  " + distribution.getDistributionDate() + "\n****************************************************\n\n");
+    }
 
     public void displaySummaryReport(int totalPendingItems, int totalDeliveredItems, int totalReceivedItems, double totalPendingCash, double totalDeliveredCash, double totalReceivedCash, double totalReceivedAmount, int totalItemsDistributed, int highestQuantity, String highestCategory,   String highestItemLocation, int highestItemQuantity,String highestCashLocation, double highestCashAmount) {
         StringBuilder report = new StringBuilder();
@@ -197,18 +202,3 @@ public class DonationDistributionUI {
         System.out.println(report.toString());
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

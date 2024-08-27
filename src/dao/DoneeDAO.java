@@ -17,7 +17,7 @@ public class DoneeDAO implements Serializable {
     File file = new File(fileName);
      try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
             writer.write(doneeList);
-            System.out.println("String saved successfully.");
+            System.out.print("");
         } catch (IOException ex) {
             System.out.println("Error saving string to file: " + ex.getMessage());
             ex.printStackTrace();
@@ -46,7 +46,7 @@ public class DoneeDAO implements Serializable {
                     Donee donee = new Donee(doneeID, doneeType, doneeName, doneePhoneNum, doneeEmail,doneeLocation);
                     doneeList.add(donee);
                 } else {
-                    System.out.println("Skipping invalid line: " + line);
+                    System.out.print("");
                 }
             }
         } catch (IOException ex) {

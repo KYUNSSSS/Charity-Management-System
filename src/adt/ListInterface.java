@@ -105,5 +105,9 @@ public interface ListInterface<T> {
    */
   public boolean isFull();
   public Iterator<T> iterator();
+  public T get(int index);
+  public void set(int index, T data);
+  public int indexOf(T data);
 
 }
+
