@@ -15,6 +15,7 @@ import java.nio.file.*;
 import utility.*;
 
 public class DonationManagement {
+
     private DonationDAO donationDAO = new DonationDAO();
     public LinkedList<Donation> donationList;
     private DonationManagementUI ui;
@@ -42,21 +43,32 @@ public class DonationManagement {
         do {
             choice = ui.getMenuChoice();
             switch (choice) {
-                case 1 -> ui.addDonation();
-                case 2 -> ui.removeDonation();
-                case 3 -> ui.searchDonationById();
-                case 4 -> ui.amendDonationDetails();
-                case 5 -> ui.trackDonation();
-                case 6 -> ui.listDonationsByDonors();
-                case 7 -> ui.listDonations();
-                case 8 -> handleFilterChoice();//base on criteria
-                case 9 -> ui.donationsReports();
-                case 0 -> System.out.println("Exiting Donation Management System.");
-                default -> System.err.println("Invalid choice. Please select an option between 0 and 9.");
+                case 1 ->
+                    ui.addDonation();
+                case 2 ->
+                    ui.removeDonation();
+                case 3 ->
+                    ui.searchDonationById();
+                case 4 ->
+                    ui.amendDonationDetails();
+                case 5 ->
+                    ui.trackDonation();
+                case 6 ->
+                    ui.listDonationsByDonors();
+                case 7 ->
+                    ui.listDonations();
+                case 8 ->
+                    handleFilterChoice();//base on criteria
+                case 9 ->
+                    ui.donationsReports();
+                case 0 ->
+                    System.out.println("Exiting Donation Management System.");
+                default ->
+                    System.err.println("Invalid choice. Please select an option between 0 and 9.");
             }
         } while (choice != 0);
     }
-    
+
     public String generateNextDonationID() {
         int nextID = 1; // Default starting ID
         LinkedList<Donation> donations = listDonations();
@@ -111,7 +123,6 @@ public class DonationManagement {
         return null;
     }
 
-    
     public void amendDonationDetails(String donationID, String newDonorID, String newItemCategory, String newItem, Double newAmount) {
         Donation donation = getDonationById(donationID);
         if (donation == null) {
@@ -141,7 +152,6 @@ public class DonationManagement {
         donationDAO.saveDonationListToFile(donationList);
     }
 
-
     public double trackTotalCashDonations() {
         double totalCashAmount = 0.0;
         LinkedList<Donation> allDonations = listDonations();
@@ -151,12 +161,11 @@ public class DonationManagement {
 
             if (donation.getItemCategory().equalsIgnoreCase("Cash")) {
                 totalCashAmount += donation.getCashAmount(); // Use getCashAmount() for cash donations
-            } 
+            }
         }
 
         return totalCashAmount;
     }
-
 
     public LinkedList<String> trackDonationByCategory(String itemCategory) {
         LinkedList<String> itemsInCategory = new LinkedList<>();
@@ -177,8 +186,6 @@ public class DonationManagement {
         return itemsInCategory;
     }
 
-
-
     public LinkedList<Donation> listDonationsByDonor(String donorID) {
         LinkedList<Donation> result = new LinkedList<>();
         for (int i = 1; i <= donationList.getNumberOfEntries(); i++) {
@@ -189,30 +196,30 @@ public class DonationManagement {
         }
         return result;
     }
-    
+
     public void handleFilterChoice() {
         int choice;
-        do{
+        do {
             choice = ui.displayFilterOptions();
             switch (choice) {
-            case 1:
-                ui.filterByDateRange();
-                break;
-            case 2:
-                ui.filterByDonationAmountRange();
-                break;
-            case 3:
-                ui.filterByDateAndAmountRange();
-                break;
-            case 0:
-                runDonationManagement();
-                break;
-            default:
-                System.err.println("Invalid choice. Please enter a number between 0 and 3.");
-            }   
-        }while (choice != 0);
+                case 1:
+                    ui.filterByDateRange();
+                    break;
+                case 2:
+                    ui.filterByDonationAmountRange();
+                    break;
+                case 3:
+                    ui.filterByDateAndAmountRange();
+                    break;
+                case 0:
+                    runDonationManagement();
+                    break;
+                default:
+                    System.err.println("Invalid choice. Please enter a number between 0 and 3.");
+            }
+        } while (choice != 0);
     }
-    
+
     public ListInterface<Donation> filterDonationsByDateRange(LocalDate startDate, LocalDate endDate) {
         return filter.filterByDateRange(donationList, startDate, endDate);
     }
@@ -224,7 +231,7 @@ public class DonationManagement {
     public LinkedList<Donation> listDonations() {
         return donationList;
     }
-    
+
     // Get donations categorized by item within a specific category
     private MapInterface<String, Double> getItemTotalsByCategory(String category) {
         MapInterface<String, Double> itemTotals = new HashMap<>();
@@ -250,59 +257,45 @@ public class DonationManagement {
         return itemTotals;
     }
 
-
     public String generateReport() {
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-        String fileName = "donation_summary_report_" + dateFormatter.format(LocalDate.now()) + ".txt";
         StringBuilder reportContent = new StringBuilder();
 
-        try {
-            Path downloadsFolder = Paths.get(System.getProperty("user.home"), "Downloads");
-            Path filePath = downloadsFolder.resolve(fileName);
-            if (!Files.exists(filePath)) {
-                Files.createFile(filePath);
+        reportContent.append("*****Donation Summary Report*****\n");
+        reportContent.append("Date Generated    : ").append(LocalDate.now().format(dateFormatter)).append("\n\n");
+
+        // Calculate totals
+        calculateCategoryTotals();
+        calculateItemTotals();
+
+        for (int i = 1; i <= categoryTotals.capacity(); i++) {
+            String category = categoryTotals.getKey(i);
+
+            if (category == null) {
+//                System.out.println("Null category found at index " + i);
+                continue; // Skip null category
             }
 
-            reportContent.append("*****Donation Summary Report*****\n");
-            reportContent.append("Date Generated    : ").append(LocalDate.now().format(dateFormatter)).append("\n\n");
+            double totalAmount = categoryTotals.get(category);
+            reportContent.append("Total ").append(category).append(" : ").append(totalAmount).append("\n");
 
-            // Calculate totals
-            calculateCategoryTotals();
-            calculateItemTotals();
-
-            ListInterface<Donor> filteredList = new LinkedList<>();
-            for (int i = 1; i <= categoryTotals.capacity(); i++) {
-                String category = categoryTotals.getKey(i);
-
-                if (category == null) {
-    //                System.out.println("Null donorID found at index " + i);
-                    continue; // Skip null donorID
+            for (int j = 1; j <= itemTotals.capacity(); j++) {
+                String item = itemTotals.getKey(j);
+                if (item == null) {
+                    continue;
                 }
-
-                double totalAmount = categoryTotals.get(category);
-                reportContent.append("Total ").append(category).append(" : ").append(totalAmount).append("\n");
-
-                for (int j = 1; i <= itemTotals.capacity(); j++) {
-                    String item = itemTotals.getKey(j);
-                    if (item.startsWith(category)) {
-                        double itemTotal = itemTotals.get(item);
-                        reportContent.append("1. Total ").append(item.substring(category.length() + 2)).append(" : ").append(itemTotal).append("\n");
-                    }
+                if (item.startsWith(category)) {
+                    double itemTotal = itemTotals.get(item);
+                    reportContent.append("1. Total ").append(item.substring(category.length() + 2)).append(" : ").append(itemTotal).append("\n");
                 }
-                reportContent.append("--------------------------------------\n");
-                
             }
-
-            // Output total cash donations
-            reportContent.append("Total Amount of Cash : RM ").append(String.format("%.2f", cashTotal)).append("\n");
-
-            Files.write(filePath, reportContent.toString().getBytes());
-
-        } catch (IOException e) {
-            e.printStackTrace();
+            reportContent.append("--------------------------------------\n");
         }
 
-        return fileName;
+        // Output total cash donations
+        reportContent.append("Total Amount of Cash : RM ").append(String.format("%.2f", cashTotal)).append("\n");
+
+        return reportContent.toString();
     }
 
 
@@ -355,10 +348,9 @@ public class DonationManagement {
         }
 
         // Ensure the total cash amount is included in the category totals
-        categoryTotals.put("Total Amount of Cash", cashTotal);
+        categoryTotals.put("Cash", cashTotal);
     }
 
-    
     private void calculateItemTotals() {
         itemTotals.clear(); // Clear previous totals
 
@@ -379,9 +371,6 @@ public class DonationManagement {
             itemTotals.put(itemKey, itemTotals.getOrDefault(itemKey, 0.0) + amount);
         }
     }
-
-
-
 
     public static void main(String[] args) {
         DonationManagement controller = new DonationManagement();
