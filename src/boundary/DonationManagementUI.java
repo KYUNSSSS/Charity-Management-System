@@ -283,6 +283,11 @@ public class DonationManagementUI {
         }
     }
     
+    public void enterToContinue(){
+        System.out.println(greenText + "Press any key to continue..." + resetText);
+        scanner.nextLine();
+    }
+    
 //All method
 //------------------------------------------------------------------------------- 
     private ListInterface<Donor> loadDonorData() {
@@ -611,13 +616,18 @@ public class DonationManagementUI {
         scanner.nextLine();
     }
     
-    public void donationsReports() {
-        // Generate and print summary report
-        String summaryReport = controller.generateReport();
-        System.out.println(summaryReport);
-
-        // Generate and print detailed report
-        String detailedReport = controller.generateDetailedReport();
-        System.out.println(detailedReport);
+    public int displayReportChoice(){
+        System.out.println("***** Report Generation *****");
+        System.out.println("1. Generate Total Report");
+        System.out.println("2. Generate Details Report");
+        System.out.println("3. Back");
+        int choice = 0;
+        while (choice < 1 || choice > 3){
+            choice = getValidIntInput("Enter Choice : ");
+            if (choice < 1 || choice > 3){
+                System.err.println("Invalid Input. Please enter value between 1 and 3.");
+            }
+        }
+        return choice;
     }
 }
