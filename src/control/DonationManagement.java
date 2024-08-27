@@ -308,14 +308,21 @@ public class DonationManagement {
         reportContent.append("***** Donation Summary Report *****\n");
         reportContent.append("Date Generated    : ").append(LocalDate.now().format(dateFormatter)).append("\n\n");
 
-        // Track the totals for each category and item
+        double cashTotal = calculateCategoryAndItemTotals(reportContent);
+
+        // Output total cash donations
+        reportContent.append("Total Amount of Cash : RM ").append(String.format("%.2f", cashTotal)).append("\n");
+
+        return reportContent.toString();
+    }
+
+    private double calculateCategoryAndItemTotals(StringBuilder reportContent) {
         double cashTotal = 0.0;
         LinkedList<String> categories = new LinkedList<>();
         LinkedList<String> items = new LinkedList<>();
         LinkedList<Double> categoryAmounts = new LinkedList<>();
         LinkedList<Double> itemAmounts = new LinkedList<>();
 
-        // Calculate totals
         for (int i = 1; i <= donationList.getNumberOfEntries(); i++) {
             Donation donation = donationList.getEntry(i);
             String category = donation.getItemCategory().trim();
@@ -325,33 +332,31 @@ public class DonationManagement {
             // Track total cash separately
             if (category.equalsIgnoreCase("Cash")) {
                 cashTotal += amount;
-            }
-
-            // Track category totals
-            int categoryIndex = categories.indexOf(category);
-            if (categoryIndex == -1) {
-                categories.add(category);
-                categoryAmounts.add(amount);
             } else {
-                double updatedAmount = categoryAmounts.get(categoryIndex) + amount;
-                categoryAmounts.set(categoryIndex, updatedAmount);
-            }
+                // Track category totals
+                int categoryIndex = categories.indexOf(category);
+                if (categoryIndex == -1) {
+                    categories.add(category);
+                    categoryAmounts.add(amount);
+                } else {
+                    double updatedAmount = categoryAmounts.get(categoryIndex) + amount;
+                    categoryAmounts.set(categoryIndex, updatedAmount);
+                }
 
-            // Track item totals (for non-cash items)
-            if (!category.equalsIgnoreCase("Cash")) {
+                // Track item totals
                 String itemKey = category + ": " + item;
                 int itemIndex = items.indexOf(itemKey);
                 if (itemIndex == -1) {
                     items.add(itemKey);
                     itemAmounts.add(amount);
                 } else {
-                    double updatedAmount = itemAmounts.get(itemIndex) + amount;
-                    itemAmounts.set(itemIndex, updatedAmount);
+                    double updatedItemAmount = itemAmounts.get(itemIndex) + amount;
+                    itemAmounts.set(itemIndex, updatedItemAmount);
                 }
             }
         }
 
-        // Add totals for each category
+        // Add totals for each category and its items
         for (int i = 1; i <= categories.getNumberOfEntries(); i++) {
             String category = categories.getEntry(i);
             double totalAmount = categoryAmounts.getEntry(i);
@@ -372,11 +377,10 @@ public class DonationManagement {
             }
         }
 
-        // Output total cash donations
-        reportContent.append("Total Amount of Cash : RM ").append(String.format("%.2f", cashTotal)).append("\n");
-
-        return reportContent.toString();
+        return cashTotal;
     }
+
+
 
 
 
@@ -405,66 +409,6 @@ public class DonationManagement {
 
         return report.toString();
     }
-
-    private void calculateCategoryTotals() {
-        cashTotal = 0.0; // Reset cash total
-        categoryTotalsList.clear(); // Clear previous totals
-
-        for (int i = 1; i <= donationList.getNumberOfEntries(); i++) {
-            Donation donation = donationList.getEntry(i);
-            String category = donation.getItemCategory();
-            double amount = category.equalsIgnoreCase("Cash") ? donation.getCashAmount() : donation.getAmount();
-
-            if (category.equalsIgnoreCase("Cash")) {
-                cashTotal += amount;
-            }
-
-            boolean found = false;
-            for (int j = 1; j <= categoryTotalsList.getNumberOfEntries(); j++) {
-                CategoryTotal categoryTotal = categoryTotalsList.getEntry(j);
-                if (categoryTotal.category.equalsIgnoreCase(category)) {
-                    categoryTotal.total += amount;
-                    found = true;
-                    break;
-                }
-            }
-
-            if (!found) {
-                categoryTotalsList.add(new CategoryTotal(category, amount));
-            }
-        }
-
-        // Ensure cash total is added to the list
-        categoryTotalsList.add(new CategoryTotal("Cash", cashTotal));
-    }
-
-    private void calculateItemTotals() {
-        itemTotalsList.clear(); // Clear previous totals
-
-        for (int i = 1; i <= donationList.getNumberOfEntries(); i++) {
-            Donation donation = donationList.getEntry(i);
-            String category = donation.getItemCategory().trim();
-            String item = donation.getItem().trim();
-            double amount = category.equalsIgnoreCase("Cash") ? 0 : donation.getAmount(); // Skip cash amounts for item totals
-
-            if (!category.equalsIgnoreCase("Cash")) {
-                boolean found = false;
-                for (int j = 1; j <= itemTotalsList.getNumberOfEntries(); j++) {
-                    ItemTotal itemTotal = itemTotalsList.getEntry(j);
-                    if (itemTotal.category.equalsIgnoreCase(category) && itemTotal.item.equalsIgnoreCase(item)) {
-                        itemTotal.total += amount;
-                        found = true;
-                        break;
-                    }
-                }
-
-                if (!found) {
-                    itemTotalsList.add(new ItemTotal(category, item, amount));
-                }
-            }
-        }
-    }
-
 
     public static void main(String[] args) {
         DonationManagement controller = new DonationManagement();
