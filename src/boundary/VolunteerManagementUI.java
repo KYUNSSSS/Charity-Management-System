@@ -131,7 +131,11 @@ public class VolunteerManagementUI {
         }
     }
     
-        public void listVolunteer(Volunteer volunteer) {
+    public void listVolunteer(Volunteer volunteer) {
         System.out.println("***Profile***\nVolunteer ID: " + volunteer.getVolunteerID() + "\nName: " + volunteer.getVolunteerName() + "\nType: " + volunteer.getVolunteerType() + "\nPhone Number: " + volunteer.getVolunteerPhoneNum() + "\nEmail: " + volunteer.getVolunteerEmail() + "\nEvent Assigned: " + volunteer.getEventAssigned() +  "\n**********");
+    }
+    
+    public void listEvent(Volunteer volunteer) {
+        System.out.println("Event(s) under volunteer ID " + volunteer.getVolunteerID() + ": " + volunteer.getEventAssigned());
     }
 }
