@@ -144,4 +144,22 @@ public class HashMap<K, V> implements MapInterface<K, V> {
         }
         size = 0;
     }
+
+    @Override
+    public K[] getKeys() {
+        K[] keys = (K[]) new Object[size]; // Creates an Object array
+        int index = 0;
+
+        // Traverse the table to gather all keys
+        for (int i = 0; i < table.length; i++) {
+            MapEntry<K, V> entry = table[i];
+            while (entry != null) {
+                keys[index++] = entry.key;
+                entry = entry.next;
+            }
+        }
+
+        return keys;
+    }
 }
+
