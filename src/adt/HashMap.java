@@ -130,22 +130,12 @@ public class HashMap<K, V> implements MapInterface<K, V> {
             this.next = next;
         }
     }
-//        @Override
-//    public Set<K> keySet() {
-//        Set<K> keySet = new HashSet<>();
-//        for (MapEntry<K, V> entry : table) {
-//            for (; entry != null; entry = entry.next) {
-//                keySet.add(entry.key);
-//            }
-//        }
-//        return keySet;
-//    }
-//    
-//    @Override
-//    public V getOrDefault(K key, V defaultValue) {
-//        V value = get(key);
-//        return (value != null) ? value : defaultValue;
-//    }
+    
+    @Override
+    public V getOrDefault(K key, V defaultValue) {
+        V value = get(key);
+        return (value != null) ? value : defaultValue;
+    }
     
     @Override
     public void clear() {
