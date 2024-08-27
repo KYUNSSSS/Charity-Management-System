@@ -18,6 +18,9 @@ import utility.Validator;
 public class DonorManagementUI {
 
     Scanner scanner = new Scanner(System.in);
+    // ANSI escape code for blue text
+    final String BLUE = "\033[34m";
+    final String RESET = "\033[0m";
 
     public int getMenuChoice() {
         while (true) {
@@ -65,6 +68,45 @@ public class DonorManagementUI {
                     donor.getType(),
                     donor.getEntityType());
             outputStr.append(donorDetails).append("\n");
+        }
+        outputStr.append("=".repeat(header.length())).append("\n");
+        System.out.println("\nList of Donor:\n" + outputStr);
+    }
+
+    public void displayDonor(ListInterface<Donor> donorList, String id) {
+        StringBuilder outputStr = new StringBuilder();
+
+        // Define table headers
+        String header = String.format("%-10s %-20s %-15s %-15s %-15s %-15s",
+                "DonorID", "Name", "Contact No", "Email", "Type", "Entity Type");
+
+        // Add header and a line separator to the output string
+        outputStr.append("=".repeat(header.length())).append("\n");
+        outputStr.append(header).append("\n");
+        outputStr.append("=".repeat(header.length())).append("\n");
+
+        // Add each donor's details
+        for (int i = 1; i <= donorList.getNumberOfEntries(); i++) {
+            Donor donor = donorList.getEntry(i);
+            if (donor.getDonorID().equals(id)) {
+                String donorDetails = String.format(BLUE + "%-10s %-20s %-15s %-15s %-15s %-15s",
+                        donor.getDonorID(),
+                        donor.getName(),
+                        donor.getContactNo(),
+                        donor.getEmail(),
+                        donor.getType(),
+                        donor.getEntityType() + RESET);
+                outputStr.append(donorDetails).append("\n");
+            } else {
+                String donorDetails = String.format("%-10s %-20s %-15s %-15s %-15s %-15s",
+                        donor.getDonorID(),
+                        donor.getName(),
+                        donor.getContactNo(),
+                        donor.getEmail(),
+                        donor.getType(),
+                        donor.getEntityType());
+                outputStr.append(donorDetails).append("\n");
+            }
         }
         outputStr.append("=".repeat(header.length())).append("\n");
         System.out.println("\nList of Donor:\n" + outputStr);
@@ -273,7 +315,7 @@ public class DonorManagementUI {
             MessageUI.displayInvalidChoiceMessage();
         }
     }
-    
+
     public int getReportChoice() {
         while (true) {
             System.out.println("Summary Reports: ");
@@ -348,7 +390,7 @@ public class DonorManagementUI {
         System.out.println("Entity Type   : " + donor.getEntityType());
         System.out.println("-----------------------------------------");
     }
-          
+
     public void printDonorTypeSummary(String type, int count, double percentage, double total, double average, double max, double min) {
         System.out.printf("%-10s | %-16d | %-10s | RM%-15.2f | RM%-17.2f | RM%-8.2f | RM%-8.2f\n", type, count, percentage + "%", total, average, max, min);
     }
