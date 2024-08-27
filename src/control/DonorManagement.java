@@ -61,7 +61,6 @@ public class DonorManagement {
     public void runDonorManagement() {
         int choice = 0;
         do {
-//            listAllDonors();
             choice = donorUI.getMenuChoice();
             switch (choice) {
                 case 0:
@@ -206,7 +205,6 @@ public class DonorManagement {
             String donorID = donorDonations.getKey(i);
 
             if (donorID == null) {
-//                System.out.println("Warning: Found null donorID at index " + i);
                 continue; // Skip to the next iteration
             }
 
@@ -468,7 +466,6 @@ public class DonorManagement {
             String donorID = donorDonations.getKey(i);
 
             if (donorID == null) {
-//                System.out.println("Warning: Found null donorID at index " + i);
                 continue;
             }
 
