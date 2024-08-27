@@ -5,18 +5,18 @@ import java.time.LocalDate;
 
 public class Distribution implements Serializable {
     private String distributionID;
-    private String itemName;
     private String category;
+    private String itemName;
     private int quantity;
     private double amount;
     private String doneeID;
     private String status;
     private LocalDate distributionDate;
 
-    public Distribution(String distributionID, String itemName, String category, int quantity, double amount, String doneeID, String status, LocalDate distributionDate) {
+    public Distribution(String distributionID, String category, String itemName, int quantity, double amount, String doneeID, String status, LocalDate distributionDate) {
         this.distributionID = distributionID;
-        this.itemName = itemName;
         this.category = category;
+        this.itemName = itemName;
         this.quantity = quantity;
         this.amount = amount;
         this.doneeID = doneeID;
@@ -92,6 +92,7 @@ public class Distribution implements Serializable {
     @Override
     public String toString() {
         return String.format("%5s, %s, %s, %d, %.2f, %s, %s, %s", 
-                             distributionID, itemName, category, quantity, amount, doneeID, status, distributionDate);
+                             distributionID, category, itemName, quantity, amount, doneeID, status, distributionDate);
     }
 }
+
