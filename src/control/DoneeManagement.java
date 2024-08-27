@@ -69,7 +69,9 @@ public class DoneeManagement {
     public void runDoneeManagement() {
         int choice = 0;
         do {
+          
             choice = doneeUI.getMenuChoice();
+
             switch (choice) {
                 case 0:
                     driver driver = new driver();
@@ -77,15 +79,15 @@ public class DoneeManagement {
                     break;
                 case 1:
                     addNewDonee();//done
-                    doneeUI.listAllDonees(getAllDonee());
+                    
                     break;
                 case 2:
                     updateDoneeDetails();//done
-                    doneeUI.listAllDonees(getAllDonee());
+                   MessageUI.pressAnyKeyToContinue();
                     break;
                 case 3:
                     searchDoneeDetails();//done
-                    //doneeUI.listAllDonees(getAllDonee());
+                     MessageUI.pressAnyKeyToContinue();
                     break;
                 case 4:
                     listDoneeDonation();//done
@@ -93,7 +95,7 @@ public class DoneeManagement {
                     break;
                 case 5:
                     filterDonees();
-                    // doneeUI.listAllDonees(getAllDonee());
+                    
                     break;
                 case 6:
                     removeDonee();
@@ -159,8 +161,9 @@ public class DoneeManagement {
         for (int i = 1; i <= doneeList.getNumberOfEntries(); i++) {
             Donee donee = doneeList.getEntry(i);
             if (donee.getDoneeID().equalsIgnoreCase(doneeID)) {
-                Donee updatedDonee = doneeUI.inputDoneeDetails(); // Prompt user for new details
-                doneeList.replace(i, updatedDonee);
+                doneeUI.updateDonee(donee); // Prompt user for new details
+                System.out.println("Donee Infomation Updated.");
+                doneeUI.listDonee(donee);
                 updated = true;
                 break;
             }
@@ -168,7 +171,7 @@ public class DoneeManagement {
 
         if (updated) {
             doneeDAO.saveToFile(getAllDonee());
-            System.out.println("Donee with ID " + doneeID + " has been updated.");
+            System.out.print("");
         } else {
             System.out.println("Donee with ID " + doneeID + " not found.");
         }
@@ -178,12 +181,12 @@ public class DoneeManagement {
 
     public void searchDoneeDetails() {
         String doneeID = doneeUI.inputDoneeID();
-        Donee foundDonee = searchDoneeByID(doneeID);
+        Donee foundDonee = searchDoneeByID(doneeID.toUpperCase());
         if (foundDonee != null) {
             doneeUI.listDonee(foundDonee);
         } else {
             System.out.println("Donee not found.");
-            MessageUI.pressAnyKeyToContinue();
+           
         }
     }
 
@@ -261,25 +264,48 @@ public class DoneeManagement {
                 doneeUI.displayFilteredDonees(filteredDonees);
                 break;
             case 2:
+                while(true){
                 doneeID = doneeUI.inputDoneeID();
+                    if(doneeUI.isDoneeIDValid(doneeID, doneeList)){
+                
+                
                 LocalDate startDate = doneeUI.inputStartDate();
                 LocalDate endDate = doneeUI.inputEndDate();
                 filteredInfoByDoneeID = filterDonation.filterByDateAndDoneeID(distributeList, startDate, endDate, doneeID);
-                System.out.println("Donation for " + doneeMap.get(doneeID).getDoneeName() + " between " + startDate + " and " + endDate);
+                System.out.println("Donation for " + doneeMap.get(doneeID).getDoneeName() + " between " + startDate + " to " + endDate);
                 doneeUI.displayFilteredDoneesByDoneeID(filteredInfoByDoneeID);
+                
+                break;}else{
+                        System.err.println("Donee ID not found.");
+                    }
+                }
                 break;
             case 3:
+                while(true){
                 doneeID = doneeUI.inputDoneeID();
+                if(doneeUI.isDoneeIDValid(doneeID, doneeList)){
                 double minAmount = doneeUI.inputMinAmount();
                 double maxAmount = doneeUI.inputMaxAmount();
                 filteredInfoByDoneeID = filterDonation.filterByAmountAndDoneeID(distributeList, minAmount, maxAmount, doneeID);
                 System.out.println("Donation for " + doneeMap.get(doneeID).getDoneeName() + " between " + minAmount + " and " + maxAmount);
                 doneeUI.displayFilteredDoneesByDoneeID(filteredInfoByDoneeID);
                 break;
+                }else{
+                    System.err.println("Donee ID not found.");
+                }
+                }
+                break;
             case 4:
+                while(true){
                 String doneeLocation = doneeUI.inputDoneeLocation();
+                if(doneeUI.isLocationValid(doneeLocation, doneeList)){
                 filteredDonees = filterDonee.filterByLocation(doneeList, doneeLocation);
                 doneeUI.displayFilteredDonees(filteredDonees);
+                break;
+                }
+                else{
+                    System.err.println("Donee ID not found.");
+                }}
                 break;
             default:
                 MessageUI.displayInvalidChoiceMessage();

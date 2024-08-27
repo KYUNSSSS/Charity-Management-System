@@ -57,7 +57,7 @@ public class DistributionDAO implements Serializable {
                         System.out.println("Skipping line due to number format error: " + line);
                     }
                 } else {
-                    System.out.println("Skipping invalid line: " + line);
+                    System.out.print("");
                 }
             }
         } catch (IOException ex) {
