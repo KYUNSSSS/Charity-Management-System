@@ -7,7 +7,6 @@ package boundary;
 import adt.ListInterface;
 import entity.Donor;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 import utility.MessageUI;
 import utility.Validator;
@@ -348,5 +347,9 @@ public class DonorManagementUI {
         System.out.println("Type of Donor : " + donor.getType());
         System.out.println("Entity Type   : " + donor.getEntityType());
         System.out.println("-----------------------------------------");
+    }
+          
+    public void printDonorTypeSummary(String type, int count, double percentage, double total, double average, double max, double min) {
+        System.out.printf("%-10s | %-16d | %-10s | RM%-15.2f | RM%-17.2f | RM%-8.2f | RM%-8.2f\n", type, count, percentage + "%", total, average, max, min);
     }
 }
