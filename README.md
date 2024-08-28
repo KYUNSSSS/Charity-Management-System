@@ -24,6 +24,7 @@ To run the system in NetBeans, run src/control/driver.java
 3. Press 3 for donation management
 4. Press 4 for donation distribution
 5. Press 5 for volunteer Management
+6. Press 0 to quit the system
 
 #### Donor Management Subsystem
 1. Press 1 to add a new donor
