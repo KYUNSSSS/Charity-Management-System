@@ -1,8 +1,6 @@
 package adt;
 
-import java.util.NoSuchElementException;
 import java.io.Serializable;
-import java.util.Iterator;
 
 /**
  * LinkedList.java A class that implements the ADT List using a chain of nodes,
@@ -188,47 +186,8 @@ public class LinkedList<T> implements ListInterface<T>, Serializable {
         }
         return outputStr;
     }
-
-    private class LinkedListIterator implements Iterator<T> {
-
-        private Node currentNode;
-
-        LinkedListIterator() {
-            this.currentNode = firstNode;
-        }
-
-        @Override
-        public boolean hasNext() {
-            return currentNode != null;
-        }
-
-        @Override
-        public T next() {
-            if (!hasNext()) {
-                throw new NoSuchElementException("No more elements in the list");
-            }
-            T data = currentNode.data;
-            currentNode = currentNode.next;
-            return data;
-        }
-
-        @Override
-        public void remove() {
-            throw new UnsupportedOperationException("Remove operation is not supported");
-        }
-    }
     
-    public T get(int index) {
-        if (index <= 0 || index > numberOfEntries) {
-            throw new IndexOutOfBoundsException("Index out of bounds");
-        }
-        Node current = firstNode;
-        for (int i = 1; i < index; i++) {
-            current = current.next;
-        }
-        return current.data;
-    }
-    
+    @Override
     public void set(int index, T data) {
         if (index <= 0 || index > numberOfEntries) {
             throw new IndexOutOfBoundsException("Index out of bounds");
@@ -240,6 +199,7 @@ public class LinkedList<T> implements ListInterface<T>, Serializable {
         current.data = data;
     }
     
+    @Override
     public int indexOf(T data) {
         Node current = firstNode;
         int index = 1;
@@ -251,11 +211,6 @@ public class LinkedList<T> implements ListInterface<T>, Serializable {
             index++;
         }
         return -1; // Not found
-    }
-
-    @Override
-    public Iterator<T> iterator() {
-        return new LinkedListIterator();
     }
 
     private class Node {
