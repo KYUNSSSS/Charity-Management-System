@@ -1,17 +1,20 @@
-DATA STRUCTURE AND ALGORITHM ASSIGNMENT
-<br><br>How to start?<br>
-1.clone this repository to your netbean/vsc<br><br>
-2.see how the code is organised to different folder(donor subsystem) (the format follow ECB format mentioned in assignment question)<br><br>
-3. write and add your code to different folder<br><br>
+# DATA STRUCTURE AND ALGORITHM ASSIGNMENT
 
-* donor subsystem can be run at control folder> driver.java
+## Contributors
+    1. Ng Yin Xuan
+      - Donor Management Subsystem
+    2. Kow Yun Shen
+      - Donee Management Subsystem
+    3. Loh Hao Juan
+      - Donation Managemengt Subsystem
+    4. Tay Ying Ting 
+      - Donation Distribution Subsystem
+    5. Wong Eu Ling
+      - Volunteer Management Subsystem
 
-Subsystem<br>
-1. yx<br>
-2. ys<br>
-3. hj<br>
-4. yt<br>
-5. el<br>
+## ADT Used
+    1. List - LinkedList
+    2. Map - HashMap
 
 Concept Diagram:
 https://drive.google.com/file/d/14g2J-Z4WPtv32z96vGCbCwnrIpY9u_b5/view?usp=sharing
