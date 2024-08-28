@@ -26,8 +26,7 @@ public class driver {
             choice = driverUI.getMenuChoice();
             switch (choice) {
                 case 0:
-                    driver driver = new driver();
-                    driver.runDriver();
+                    MessageUI.displayExitMessage();
                     break;
                 case 1:
                     donor.runDonorManagement();
