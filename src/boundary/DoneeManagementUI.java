@@ -145,7 +145,7 @@ public class DoneeManagementUI {
     }
 
     public int getFilterChoice() {
-        System.out.println("Filter by: ");
+        System.out.println("*****Filter by***** ");
         System.out.println("1. Donee Type");
         System.out.println("2. Date Range By Donee ID");
         System.out.println("3. Donation Amount Range By Donee ID");
