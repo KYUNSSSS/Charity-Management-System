@@ -22,7 +22,6 @@ public class DonationDistribution {
     private HashMap<String, Double> categoryTotals = new HashMap<>();
     private HashMap<String, Double> itemTotals = new HashMap<>();
     private DoneeDAO doneeDAO = new DoneeDAO();
-    private TempDAO tempDAO = new TempDAO();
     private DistributionDAO distributeDAO = new DistributionDAO();
     private DonationDistributionUI distributeUI = new DonationDistributionUI();
     private DonationManagement donation = new DonationManagement();
