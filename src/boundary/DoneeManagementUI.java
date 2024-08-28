@@ -7,6 +7,7 @@ package boundary;
 import entity.*;
 import adt.*;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 import java.util.Scanner;
 import utility.MessageUI;
@@ -21,30 +22,31 @@ public class DoneeManagementUI {
     Scanner scanner = new Scanner(System.in);
 
     public int getMenuChoice() {
-        int num=9;
+        int num = 9;
         boolean loop = true;
-        while(loop){
-        try {
-            System.out.println("\n******DONEE MANAGEMENT******");
-            System.out.println("1. Add New Donee");
-            System.out.println("2. Update Donee Details");
-            System.out.println("3. Search Donee Details");
-            System.out.println("4. List Donee Donations");
-            System.out.println("5. Filter Donee");
-            System.out.println("6. Remove Donee");
-            System.out.println("7. Generate Summary Report");
-            System.out.println("0. Quit");
-            System.out.print("Enter choice(0-7): ");
-            int choice = scanner.nextInt();
-            scanner.nextLine();
-            System.out.println();
-            num=choice;
-            loop=false;
-        } catch (Exception ex) {
-            System.err.println("Digit only.");
-            scanner.nextLine();
-            
-        }
+        while (loop) {
+            try {
+                System.out.println("\n******DONEE MANAGEMENT******");
+                System.out.println("1. Add New Donee");
+                System.out.println("2. Update Donee Details");
+                System.out.println("3. Search Donee Details");
+                System.out.println("4. List Donee Donations");
+                System.out.println("5. Filter Donee");
+                System.out.println("6. Remove Donee");
+                System.out.println("7. Generate Summary Report");
+                System.out.println("8. Generate Detail Report");
+                System.out.println("0. Quit");
+                System.out.print("Enter choice(0-8): ");
+                int choice = scanner.nextInt();
+                scanner.nextLine();
+                System.out.println();
+                num = choice;
+                loop = false;
+            } catch (Exception ex) {
+                System.err.println("Digit only.");
+                scanner.nextLine();
+
+            }
         }
         return num;
     }
@@ -61,7 +63,7 @@ public class DoneeManagementUI {
             if (Validator.isValidID(id)) {
                 return id.toUpperCase();
             }
-            System.out.println("\nInvalid Input. Please enter a valid Distribution ID without symbols. [Eg. A001].");
+            System.out.println("\nInvalid Input. Please enter a valid Donee ID without symbols. [Eg. DE001].");
         }
     }
 
@@ -74,13 +76,13 @@ public class DoneeManagementUI {
             if (type.equalsIgnoreCase("O")
                     || type.equalsIgnoreCase("F")
                     || type.equalsIgnoreCase("I")) {
-                if(type.equalsIgnoreCase("O")){
-            type="ORGANISATION";
-        }else if(type.equalsIgnoreCase("F")){
-            type="---FAMILY---";
-        }else if(type.equalsIgnoreCase("I")){
-            type="-INDIVIDUAL-";
-        }
+                if (type.equalsIgnoreCase("O")) {
+                    type = "ORGANISATION";
+                } else if (type.equalsIgnoreCase("F")) {
+                    type = "---FAMILY---";
+                } else if (type.equalsIgnoreCase("I")) {
+                    type = "-INDIVIDUAL-";
+                }
                 break;
             } else {
                 System.out.println("\nInvalid Type.Enter O/F/I only.");
@@ -135,7 +137,7 @@ public class DoneeManagementUI {
     public Donee inputDoneeDetails() {
         //String id = inputDoneeID();
         String type = inputDoneeType();
-        
+
         String name = inputDoneeName();
         int phone = inputPhoneNum();
         String email = inputDoneeEmail();
@@ -145,69 +147,123 @@ public class DoneeManagementUI {
     }
 
     public int getFilterChoice() {
+
         System.out.println("*****Filter by***** ");
         System.out.println("1. Donee Type");
         System.out.println("2. Date Range By Donee ID");
         System.out.println("3. Donation Amount Range By Donee ID");
         System.out.println("4. Donee Location");
-        System.out.print("Enter your choice: ");
-        int choice = scanner.nextInt();
-        scanner.nextLine();
-        return choice;
+        String choice = "";
+        do {
+            System.out.print("Enter your choice(1-4): ");
+
+            try {
+                String choices = scanner.nextLine();
+                choice = choices;
+                if (!choice.equals("1") && !choice.equals("2") && !choice.equals("3") && !choice.equals("4")) {
+                    System.err.println("Invalid choice.");
+                }
+
+            } catch (Exception ex) {
+                System.err.println("Digit only.");
+            }
+
+        } while (!choice.equals("1") && !choice.equals("2") && !choice.equals("3") && !choice.equals("4"));
+
+        return Integer.parseInt(choice);
     }
 
     public LocalDate inputStartDate() {
-        System.out.print("Enter start date (YYYY-MM-DD): ");
-        return LocalDate.parse(scanner.next());
+        LocalDate date = null;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        while (date == null) {
+            System.out.print("Enter start date (YYYY-MM-DD): ");
+            String input = scanner.nextLine().trim();
+
+            date = Validator.isValidDate(input, formatter);
+
+            if (date == null) {
+                System.err.println("\nInvalid Date Format. Please use YYYY-MM-DD.");
+            }
+        }
+        return date;
     }
 
     public LocalDate inputEndDate() {
-        System.out.print("Enter end date (YYYY-MM-DD): ");
-        return LocalDate.parse(scanner.next());
+        LocalDate date = null;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        while (date == null) {
+            System.out.print("Enter end date (YYYY-MM-DD): ");
+            String input = scanner.nextLine().trim();
+
+            date = Validator.isValidDate(input, formatter);
+
+            if (date == null) {
+                System.err.println("\nInvalid Date Format. Please use YYYY-MM-DD.");
+            }
+        }
+        return date;
     }
 
     public double inputMinAmount() {
-        System.out.print("Enter minimum donation amount: ");
-        return scanner.nextDouble();
+        while (true) {
+            System.out.print("Enter minimum donation amount: ");
+            String input = scanner.nextLine().trim();
+
+            if (Validator.isValidAmount(input)) {
+                return Double.parseDouble(input);
+            }
+
+            System.err.println("\nInvalid Input. Please enter a positive value.");
+        }
     }
 
     public double inputMaxAmount() {
-        System.out.print("Enter maximum donation amount: ");
-        return scanner.nextDouble();
+        while (true) {
+            System.out.print("Enter maximum donation amount: ");
+            String input = scanner.nextLine().trim();
+
+            if (Validator.isValidAmount(input)) {
+                return Double.parseDouble(input);
+            }
+
+            System.err.println("\nInvalid Input. Please enter a positive value.");
+        }
     }
 
     public void displayFilteredDonees(ListInterface<Donee> donees) {
-    if (donees.isEmpty()) {
-        System.out.println("No matching donees found.");
-    } else {
-        System.out.println("*******************************************");
-        System.out.println("Donee ID   Category        Name            Phone Number   Email                    Location");
-        System.out.println("*******************************************");
-        for (int i = 1; i <= donees.getNumberOfEntries(); i++) {
-            Donee donee = donees.getEntry(i);
-            System.out.printf("%-10s %-15s %-15s %-14s %-25s %-15s\n", 
-                donee.getDoneeID(), 
-                donee.getDoneeType(), 
-                donee.getDoneeName(), 
-                donee.getDoneePhoneNum(), 
-                donee.getDoneeEmail(), 
-                donee.getDoneeLocation());
+        if (donees.isEmpty()) {
+            System.out.println("No matching donees found.");
+        } else {
+            System.out.println("*******************************************************************************************");
+            System.out.println("Donee ID   Category        Name            Phone Number   Email                    Location");
+            System.out.println("*******************************************************************************************");
+            for (int i = 1; i <= donees.getNumberOfEntries(); i++) {
+                Donee donee = donees.getEntry(i);
+                System.out.printf("%-10s %-15s %-15s %-14s %-25s %-15s\n",
+                        donee.getDoneeID(),
+                        donee.getDoneeType(),
+                        donee.getDoneeName(),
+                        donee.getDoneePhoneNum(),
+                        donee.getDoneeEmail(),
+                        donee.getDoneeLocation());
+            }
+            System.out.println("********************************************************************************************");
         }
-        System.out.println("****************************************");
+        MessageUI.pressAnyKeyToContinue();
     }
-    MessageUI.pressAnyKeyToContinue();
-}
-
 
     public void displayFilteredDoneesByDoneeID(ListInterface<Distribution> donations) {
         if (donations.isEmpty()) {
             System.out.println("No matching donees found.");
         } else {
-            System.out.println("**************");
+            System.out.println("*******************************************************************************************************");
             System.out.printf("%-15s %-20s %-15s %-10s %-10s %-10s %-20s\n",
                     "Distribution ID", "Item Name", "Category",
                     "Quantity", "Amount", "Status", "Distribution Date");
-            System.out.println("**************");
+            System.out.println("*******************************************************************************************************");
 
             for (int i = 1; i <= donations.getNumberOfEntries(); i++) {
                 Distribution donation = donations.getEntry(i);
@@ -220,41 +276,52 @@ public class DoneeManagementUI {
                         donation.getAmount(),
                         donation.getStatus(),
                         donation.getDistributionDate().toString());
-                
+
             }
-        }System.out.println("**************");
-                MessageUI.pressAnyKeyToContinue();
+        }
+        System.out.println("*******************************************************************************************************");
+        MessageUI.pressAnyKeyToContinue();
     }
+
     public boolean isDoneeIDValid(String doneeID, ListInterface<Donee> doneeList) {
         for (int i = 1; i <= doneeList.getNumberOfEntries(); i++) {
             Donee donee = doneeList.getEntry(i);
             if (donee.getDoneeID().equalsIgnoreCase(doneeID)) {
-                return true; 
+                return true;
             }
         }
-        return false; 
+        return false;
     }
+
     public boolean isLocationValid(String location, ListInterface<Donee> doneeList) {
         for (int i = 1; i <= doneeList.getNumberOfEntries(); i++) {
             Donee donee = doneeList.getEntry(i);
             if (donee.getDoneeLocation().equalsIgnoreCase(location)) {
-                return true; 
+                return true;
             }
         }
-        return false; 
+        return false;
     }
-    public void updateDonee(Donee donee){
+
+    public void updateDonee(Donee donee) {
         System.out.println("Donee Found!");
         listDonee(donee);
-        System.out.print("Enter your choice(1-5): ");
-        String choice ="";
-        try{
-        String choices = scanner.nextLine();
-        choice=choices;
-        }catch(Exception ex){
-            System.err.println("Digit only.");
-        }
-        switch (choice){
+        String choice = "";
+        do {
+            System.out.print("Enter your choice(1-5): ");
+
+            try {
+                String choices = scanner.nextLine();
+                choice = choices;
+                if (!choice.equals("1") && !choice.equals("2") && !choice.equals("3") && !choice.equals("4") && !choice.equals("5")) {
+                    System.err.println("Invalid choice.");
+                }
+            } catch (Exception ex) {
+                System.err.println("Digit only.");
+            }
+        } while (!choice.equals("1") && !choice.equals("2") && !choice.equals("3") && !choice.equals("4") && !choice.equals("5"));
+
+        switch (choice) {
             case "1":
                 String name = inputDoneeName();
                 donee.setDoneeName(name);
@@ -268,7 +335,7 @@ public class DoneeManagementUI {
                 donee.setDoneePhoneNum(num);
                 break;
             case "4":
-                String email =inputDoneeEmail();
+                String email = inputDoneeEmail();
                 donee.setDoneeEmail(email);
                 break;
             case "5":
@@ -279,6 +346,7 @@ public class DoneeManagementUI {
                 MessageUI.displayInvalidChoiceMessage();
         }
     }
+
     public void listDonee(Donee donee) {
         System.out.println("***Profile***\nDonee ID: " + donee.getDoneeID() + "\n1.Name: " + donee.getDoneeName() + "\n2.Type: " + donee.getDoneeType() + "\n3.Phone Number: " + donee.getDoneePhoneNum() + "\n4.Email: " + donee.getDoneeEmail() + "\n5.Location: " + donee.getDoneeLocation() + "\n*************");
     }
