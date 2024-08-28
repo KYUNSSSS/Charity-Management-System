@@ -16,8 +16,6 @@ import utility.*;
  * @author Ng Yin Xuan
  */
 public class DonorManagement {
-
-    private driver driver = new driver();
     
     private ListInterface<Donor> donorList = new LinkedList<>();
     private ListInterface<Donation> donationList = new LinkedList<>();
@@ -64,7 +62,6 @@ public class DonorManagement {
             choice = donorUI.getMenuChoice();
             switch (choice) {
                 case 0:
-                    driver.runDriver();
                     MessageUI.displayExitMessage();
                     break;
                 case 1:
@@ -538,6 +535,8 @@ public class DonorManagement {
 
     public static void main(String[] args) {
         DonorManagement DonorManagement = new DonorManagement();
+        driver driver = new driver();
         DonorManagement.runDonorManagement();
+        driver.runDriver();
     }
 }
