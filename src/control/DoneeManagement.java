@@ -69,7 +69,7 @@ public class DoneeManagement {
     public void runDoneeManagement() {
         int choice = 0;
         do {
-          
+
             choice = doneeUI.getMenuChoice();
 
             switch (choice) {
@@ -79,15 +79,15 @@ public class DoneeManagement {
                     break;
                 case 1:
                     addNewDonee();//done
-                    
+
                     break;
                 case 2:
                     updateDoneeDetails();//done
-                   MessageUI.pressAnyKeyToContinue();
+                    MessageUI.pressAnyKeyToContinue();
                     break;
                 case 3:
                     searchDoneeDetails();//done
-                     MessageUI.pressAnyKeyToContinue();
+                    MessageUI.pressAnyKeyToContinue();
                     break;
                 case 4:
                     listDoneeDonation();//done
@@ -95,7 +95,7 @@ public class DoneeManagement {
                     break;
                 case 5:
                     filterDonees();
-                    
+
                     break;
                 case 6:
                     removeDonee();
@@ -103,8 +103,7 @@ public class DoneeManagement {
                     break;
                 case 7:
                     generateSummaryReport();
-                    
-                    
+
                     break;
                 case 8:
                     generateDetailReport();
@@ -190,7 +189,7 @@ public class DoneeManagement {
             doneeUI.listDonee(foundDonee);
         } else {
             System.out.println("Donee not found.");
-           
+
         }
     }
 
@@ -268,48 +267,48 @@ public class DoneeManagement {
                 doneeUI.displayFilteredDonees(filteredDonees);
                 break;
             case 2:
-                while(true){
-                doneeID = doneeUI.inputDoneeID();
-                    if(doneeUI.isDoneeIDValid(doneeID, doneeList)){
-                
-                
-                LocalDate startDate = doneeUI.inputStartDate();
-                LocalDate endDate = doneeUI.inputEndDate();
-                filteredInfoByDoneeID = filterDonation.filterByDateAndDoneeID(distributeList, startDate, endDate, doneeID);
-                System.out.println("\nDonation for " + doneeMap.get(doneeID).getDoneeName() + " between " + startDate + " to " + endDate);
-                doneeUI.displayFilteredDoneesByDoneeID(filteredInfoByDoneeID);
-                
-                break;}else{
+                while (true) {
+                    doneeID = doneeUI.inputDoneeID();
+                    if (doneeUI.isDoneeIDValid(doneeID, doneeList)) {
+
+                        LocalDate startDate = doneeUI.inputStartDate();
+                        LocalDate endDate = doneeUI.inputEndDate();
+                        filteredInfoByDoneeID = filterDonation.filterByDateAndDoneeID(distributeList, startDate, endDate, doneeID);
+                        System.out.println("\nDonation for " + doneeMap.get(doneeID).getDoneeName() + " between " + startDate + " to " + endDate);
+                        doneeUI.displayFilteredDoneesByDoneeID(filteredInfoByDoneeID);
+
+                        break;
+                    } else {
                         System.err.println("Donee ID not found.");
                     }
                 }
                 break;
             case 3:
-                while(true){
-                doneeID = doneeUI.inputDoneeID();
-                if(doneeUI.isDoneeIDValid(doneeID, doneeList)){
-                double minAmount = doneeUI.inputMinAmount();
-                double maxAmount = doneeUI.inputMaxAmount();
-                filteredInfoByDoneeID = filterDonation.filterByAmountAndDoneeID(distributeList, minAmount, maxAmount, doneeID);
-                System.out.println("\nDonation for " + doneeMap.get(doneeID).getDoneeName() + " between " + minAmount + " to " + maxAmount);
-                doneeUI.displayFilteredDoneesByDoneeID(filteredInfoByDoneeID);
-                break;
-                }else{
-                    System.err.println("Donee ID not found.");
-                }
+                while (true) {
+                    doneeID = doneeUI.inputDoneeID();
+                    if (doneeUI.isDoneeIDValid(doneeID, doneeList)) {
+                        double minAmount = doneeUI.inputMinAmount();
+                        double maxAmount = doneeUI.inputMaxAmount();
+                        filteredInfoByDoneeID = filterDonation.filterByAmountAndDoneeID(distributeList, minAmount, maxAmount, doneeID);
+                        System.out.println("\nDonation for " + doneeMap.get(doneeID).getDoneeName() + " between " + minAmount + " to " + maxAmount);
+                        doneeUI.displayFilteredDoneesByDoneeID(filteredInfoByDoneeID);
+                        break;
+                    } else {
+                        System.err.println("Donee ID not found.");
+                    }
                 }
                 break;
             case 4:
-                while(true){
-                String doneeLocation = doneeUI.inputDoneeLocation();
-                if(doneeUI.isLocationValid(doneeLocation, doneeList)){
-                filteredDonees = filterDonee.filterByLocation(doneeList, doneeLocation);
-                doneeUI.displayFilteredDonees(filteredDonees);
-                break;
+                while (true) {
+                    String doneeLocation = doneeUI.inputDoneeLocation();
+                    if (doneeUI.isLocationValid(doneeLocation, doneeList)) {
+                        filteredDonees = filterDonee.filterByLocation(doneeList, doneeLocation);
+                        doneeUI.displayFilteredDonees(filteredDonees);
+                        break;
+                    } else {
+                        System.err.println("Donee ID not found.");
+                    }
                 }
-                else{
-                    System.err.println("Donee ID not found.");
-                }}
                 break;
             default:
                 MessageUI.displayInvalidChoiceMessage();
@@ -319,74 +318,74 @@ public class DoneeManagement {
     }
 
     public void generateSummaryReport() {
-    int totalDonees = doneeList.getNumberOfEntries();
-    int totalFamilies = 0;
-    int totalOrganizations = 0;
-    int totalIndividuals = 0;
+        int totalDonees = doneeList.getNumberOfEntries();
+        int totalFamilies = 0;
+        int totalOrganizations = 0;
+        int totalIndividuals = 0;
 
-    // Use a LinkedList to keep track of unique locations
-    ListInterface<String> uniqueLocations = new LinkedList<>();
+        // Use a LinkedList to keep track of unique locations
+        ListInterface<String> uniqueLocations = new LinkedList<>();
 
-    for (int i = 1; i <= doneeList.getNumberOfEntries(); i++) {
-        Donee donee = doneeList.getEntry(i);
+        for (int i = 1; i <= doneeList.getNumberOfEntries(); i++) {
+            Donee donee = doneeList.getEntry(i);
 
-        // Count the type of Donee
-        switch (donee.getDoneeType()) {
-            case "---FAMILY---":
-                totalFamilies++;
-                break;
-            case "ORGANISATION":
-                totalOrganizations++;
-                break;
-            case "-INDIVIDUAL-":
-                totalIndividuals++;
-                break;
-        }
+            // Count the type of Donee
+            switch (donee.getDoneeType()) {
+                case "---FAMILY---":
+                    totalFamilies++;
+                    break;
+                case "ORGANISATION":
+                    totalOrganizations++;
+                    break;
+                case "-INDIVIDUAL-":
+                    totalIndividuals++;
+                    break;
+            }
 
-        // Check and add unique locations
-        String location = donee.getDoneeLocation();
-        boolean locationExists = false;
+            // Check and add unique locations
+            String location = donee.getDoneeLocation();
+            boolean locationExists = false;
 
-        for (int j = 1; j <= uniqueLocations.getNumberOfEntries(); j++) {
-            if (uniqueLocations.getEntry(j).equalsIgnoreCase(location)) {
-                locationExists = true;
-                break;
+            for (int j = 1; j <= uniqueLocations.getNumberOfEntries(); j++) {
+                if (uniqueLocations.getEntry(j).equalsIgnoreCase(location)) {
+                    locationExists = true;
+                    break;
+                }
+            }
+
+            if (!locationExists) {
+                uniqueLocations.add(location);
             }
         }
 
-        if (!locationExists) {
-            uniqueLocations.add(location);
-        }
-    }
-
-    // Display the summary report
-    System.out.println("=== Donee Summary Report ===");
-    System.out.println("Total Number of Donees: " + totalDonees);
+        // Display the summary report
+        System.out.println("=== Donee Summary Report ===");
+        System.out.println("Total Number of Donees: " + totalDonees);
         System.out.println("\nCategory Breakdown:");
-    System.out.println("Total Number of Families: " + totalFamilies);
-    System.out.println("Total Number of Organizations: " + totalOrganizations);
-    System.out.println("Total Number of Individuals: " + totalIndividuals);
-    
-    
-    // Display each location and its count
-    System.out.println("\nLocation Breakdown:");
-    System.out.println("Total Number of Locations: " + uniqueLocations.getNumberOfEntries());
-    for (int i = 1; i <= uniqueLocations.getNumberOfEntries(); i++) {
-        String location = uniqueLocations.getEntry(i);
-        int locationCount = 0;
-        for (int j = 1; j <= doneeList.getNumberOfEntries(); j++) {
-            if (doneeList.getEntry(j).getDoneeLocation().equalsIgnoreCase(location)) {
-                locationCount++;
+        System.out.println("Total Number of Families: " + totalFamilies);
+        System.out.println("Total Number of Organizations: " + totalOrganizations);
+        System.out.println("Total Number of Individuals: " + totalIndividuals);
+
+        // Display each location and its count
+        System.out.println("\nLocation Breakdown:");
+        System.out.println("Total Number of Locations: " + uniqueLocations.getNumberOfEntries());
+        for (int i = 1; i <= uniqueLocations.getNumberOfEntries(); i++) {
+            String location = uniqueLocations.getEntry(i);
+            int locationCount = 0;
+            for (int j = 1; j <= doneeList.getNumberOfEntries(); j++) {
+                if (doneeList.getEntry(j).getDoneeLocation().equalsIgnoreCase(location)) {
+                    locationCount++;
+                }
             }
+            System.out.println(location + ": " + locationCount);
         }
-        System.out.println(location + ": " + locationCount);
+        System.out.println("============================");
+        MessageUI.pressAnyKeyToContinue();
     }
-    System.out.println("============================");
-    MessageUI.pressAnyKeyToContinue();
-}
-    public void generateDetailReport(){
-        System.out.printf("%50s\n","DETAILED REPORT");
-        
+
+    public void generateDetailReport() {
+        System.out.printf("%50s\n", "DETAILED REPORT");
+
         doneeUI.displayFilteredDonees(doneeList);
     }
 
