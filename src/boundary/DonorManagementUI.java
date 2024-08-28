@@ -34,7 +34,7 @@ public class DonorManagementUI {
             System.out.println("6. Filter Donor"); //based on criteria
             System.out.println("7. Categorise Donors"); // government, private, public
             System.out.println("8. Generate Summary Reports");
-            System.out.println("0. Quit");
+            System.out.println("0. Back to Main Menu");
             System.out.print("Enter choice(0-8): ");
             String choice = scanner.nextLine();
 
