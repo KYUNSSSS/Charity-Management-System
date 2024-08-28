@@ -112,6 +112,7 @@ public class DonorManagement {
         newDonor.setDonorID(newDonorID);
         donorList.add(newDonor);
         donorMap.put(newDonor.getDonorID(), newDonor);
+        donorDonations.put(newDonor.getDonorID(), new LinkedList<>());
         donorDAO.saveToFile(getAllDonors());
         System.out.println("Donor added successfully.");
     }
@@ -442,7 +443,7 @@ public class DonorManagement {
         System.out.println("-".repeat(header.length()));
         System.out.println("Total Number of Donors  : " + totalCount);
         System.out.println("Total Cash Amount       : RM " + total);
-        System.out.println("Overall Average Amount  : RM " + totalAverage);
+        System.out.printf("Overall Average Amount  : RM %.2f\n", totalAverage);
         System.out.println("Number of Cash Donations: " + totalDonations);
         System.out.println("-".repeat(header.length()));
     }

@@ -344,6 +344,6 @@ public class DonorManagementUI {
     }
 
     public void printDonorTypeSummary(String type, int count, double percentage, int donations, double total, double average, double max, double min) {
-        System.out.printf("%-10s | %-16d | %-10s | %-24d | RM%-15.2f | RM%-17.2f | RM%-8.2f | RM%-8.2f\n", type, count, percentage + "%", donations, total, average, max, min);
+        System.out.printf("%-10s | %-16d |   %5.2f%-3s | %-24d | RM%-15.2f | RM%-17.2f | RM%-8.2f | RM%-8.2f\n", type, count, percentage, "%", donations, total, average, max, min);
     }
 }
