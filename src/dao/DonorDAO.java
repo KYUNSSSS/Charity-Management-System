@@ -17,13 +17,13 @@ import java.util.logging.Logger;
  */
 public class DonorDAO implements Serializable {
 
-    private String fileName = "donor.txt"; // For security and maintainability, should not have filename hardcoded here.
+    private String fileName = "donor.txt";
 
     public void saveToFile(String donorList) {
         File file = new File(fileName);
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
             writer.write(donorList);
-//            System.out.println("Donor added successfully.");
+
         } catch (IOException ex) {
             System.out.println("Error saving string to file: " + ex.getMessage());
             ex.printStackTrace();
