@@ -5,8 +5,11 @@
 package boundary;
 
 import adt.ListInterface;
+import control.VolunteerManagement;
 import entity.Volunteer;
 import java.util.Scanner;
+import utility.MessageUI;
+import utility.Validator;
 
 /**
  *
@@ -34,49 +37,80 @@ public class VolunteerManagementUI {
     }
     
     public void listAllVolunteers(String outputStr) {
-    System.out.println("\nList of Volunteer:\n" + outputStr);
-  }
+        System.out.println("\nList of Volunteer:\n" + outputStr);
+    }
+  
+    public String inputVolunteerID() {
+        while(true) {
+           System.out.print("Enter Volunteer ID: ");
+            String id = scanner.nextLine();
+            return id; 
+        }
+    }
     
- 
-  public String inputVolunteerID() {
-    System.out.print("Enter Volunteer ID: ");
-    String id = scanner.nextLine();
-    return  id;
-  }
-  
-  public String inputVolunteerType() {
-    System.out.println("""
-                       Reg - Registration
-                       Sup - Support
-                       Log - Logistic
-                       Crc - Crowd Control
-                       Enter Volunteer Type(Eg: Reg/Sup/Log/Crc): 
-                       """);
-    String type = scanner.nextLine();
-    return  type;
+    public String inputVolunteerType() {
+        while(true) {
+            System.out.println("""
+                         Reg - Registration
+                         Sup - Support
+                         Log - Logistic
+                         Crc - Crowd Control
+                         Enter Volunteer Type(Eg: Reg/Sup/Log/Crc): 
+                         """);
+            String type = scanner.nextLine();
+            if(type.equalsIgnoreCase("Reg")) {
+                type = "Reg";
+            } else if (type.equalsIgnoreCase("Sup")) {
+                type = "Sup";
+            } else if (type.equalsIgnoreCase("Log")) {
+                type = "Log";
+            } else if (type.equalsIgnoreCase("Crc")) {
+                type = "Crc";
+            } else {
+                System.out.println("Enter Reg/Sup/Log/Crc only.");
+            }
+            return  type;
+        }
+
+    }
+
+    public String inputVolunteerName() {
+        while(true) {
+           System.out.print("Enter Volunteer Name: ");
+            String name = scanner.nextLine();
+            
+            if (Validator.isAlphabetic(name)) {
+                return name;
+            }
+            System.err.println("Please enter alphabets only."); 
+        }
+    }
+    
+    public String inputVolunteerEmail() {
+        while(true) {
+            System.out.print("Enter Volunteer Email: ");
+            String email = scanner.nextLine();
+            
+            if (Validator.isValidEmail(email)) {
+                return email;
+            }
+            System.err.println("Please email in correct format.");
+        }
+    
   }
 
-  public String inputVolunteerName() {
-    System.out.print("Enter Volunteer Name: ");
-    String name = scanner.nextLine();
-    return name;
-  }
-  public String inputVolunteerEmail() {
-    System.out.print("Enter Volunteer Email: ");
-    String email = scanner.nextLine();
-    return email;
-  }
+    public int inputPhoneNum() {
+        while(true) {
+            System.out.print("Enter Phone Number: ");
+            int phone = scanner.nextInt();
+            scanner.nextLine();
+            return phone;        
+        }
+    }
 
-  public int inputPhoneNum() {
-    System.out.print("Enter Phone Number: ");
-    int phone = scanner.nextInt();
-    scanner.nextLine();
-    return phone;
-  }
-  
-  public String inputEventAssigned() {
-      return "None";
-  }
+    public String inputEventAssigned() {
+        return "None";
+    }
   
   public String inputEvent() {
       System.out.println("""
@@ -87,6 +121,8 @@ public class VolunteerManagementUI {
       int event = scanner.nextInt();
       String eventName = null;
       switch(event) {
+          case 0:
+              break;
           case 1:
               eventName = "Acts of Kindness Fund";
               break;
@@ -112,13 +148,15 @@ public class VolunteerManagementUI {
         return new Volunteer("V000", type, name, phone, email, eventAssigned);
   }
     public int getFilterChoice() {
-        System.out.println("Filter by: ");
-        System.out.println("1. Volunteer Type");
-        System.out.println("2. Event");
-        System.out.print("Enter your choice: ");
-        int choice = scanner.nextInt();
-        scanner.nextLine();
-        return choice;
+        while(true) {
+            System.out.println("Filter by: ");
+            System.out.println("1. Volunteer Type");
+            System.out.println("2. Event");
+            System.out.print("Enter your choice: ");
+            int choice = scanner.nextInt();
+            scanner.nextLine();
+            return choice;
+        }
    }
     
     public void displayFilteredVolunteers(ListInterface<Volunteer> volunteers) {
@@ -137,5 +175,20 @@ public class VolunteerManagementUI {
     
     public void listEvent(Volunteer volunteer) {
         System.out.println("Event(s) under volunteer ID " + volunteer.getVolunteerID() + ": " + volunteer.getEventAssigned());
+    }
+    
+    public void generateSummaryReport(int actRegCount, int actSupCount, int actLogCount, int actCrcCount, int shareRegCount, int shareSupCount, int shareLogCount, int shareCrcCount, int togetherRegCount, int togetherSupCount, int togetherLogCount, int togetherCrcCount, int actTotal, int shareTotal, int togetherTotal) {
+        
+        
+        System.out.printf("%75s", "Summary report for Number of Volunteer in Event\n");
+        System.out.println(" ---------------------------------------------------------------------------------------------------");
+        System.out.printf("| %-25s | %-12s | %-12s | %-12s | %-15s | %-6s |\n","Event","Registration","Support", "Logistic", "Crowd Control", "Total");
+        System.out.println(" ---------------------------------------------------------------------------------------------------");
+        System.out.printf("| %-25s | %-12d | %-12d | %-12d | %-15d | %-6s |\n","Act of Kindness Fund", actRegCount, actSupCount, actLogCount, actCrcCount, actTotal);
+        System.out.println(" ---------------------------------------------------------------------------------------------------");
+        System.out.printf("| %-25s | %-12d | %-12d | %-12d | %-15d | %-6s |\n","Share the Love Project", shareRegCount, shareSupCount, shareLogCount, shareCrcCount, shareTotal);
+        System.out.println(" ---------------------------------------------------------------------------------------------------");
+        System.out.printf("| %-25s | %-12d | %-12d | %-12d | %-15d | %-6s |\n","Together for Change", togetherRegCount, togetherSupCount, togetherLogCount, togetherCrcCount, togetherTotal);
+        System.out.println(" ---------------------------------------------------------------------------------------------------");
     }
 }
