@@ -256,7 +256,7 @@ public class DonationManagementUI {
             try {
                 date = LocalDate.parse(input, dateFormatter);
             } catch (DateTimeParseException e) {
-                System.err.println("Invalid date format. Please enter the date in yyyy-MM-dd format.");
+                System.err.println("Invalid date format. Please enter the date in dd-MM-yyyy format.");
             }
         }
         return date;
