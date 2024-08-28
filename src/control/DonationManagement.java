@@ -413,7 +413,9 @@ public class DonationManagement {
     public static void main(String[] args) {
         DonationManagement controller = new DonationManagement();
         DonationManagementUI ui = new DonationManagementUI(controller);
+        driver driver = new driver();
         controller.setUI(ui);
         controller.runDonationManagement();
+        driver.runDriver();
     }
 }
