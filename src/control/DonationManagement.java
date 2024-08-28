@@ -339,7 +339,7 @@ public class DonationManagement {
                     categories.add(category);
                     categoryAmounts.add(amount);
                 } else {
-                    double updatedAmount = categoryAmounts.get(categoryIndex) + amount;
+                    double updatedAmount = categoryAmounts.getEntry(categoryIndex) + amount;
                     categoryAmounts.set(categoryIndex, updatedAmount);
                 }
 
@@ -350,7 +350,7 @@ public class DonationManagement {
                     items.add(itemKey);
                     itemAmounts.add(amount);
                 } else {
-                    double updatedItemAmount = itemAmounts.get(itemIndex) + amount;
+                    double updatedItemAmount = itemAmounts.getEntry(itemIndex) + amount;
                     itemAmounts.set(itemIndex, updatedItemAmount);
                 }
             }
