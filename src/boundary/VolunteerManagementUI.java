@@ -5,10 +5,8 @@
 package boundary;
 
 import adt.ListInterface;
-import control.VolunteerManagement;
 import entity.Volunteer;
 import java.util.Scanner;
-import utility.MessageUI;
 import utility.Validator;
 
 /**
@@ -59,17 +57,21 @@ public class VolunteerManagementUI {
                          """);
             String type = scanner.nextLine();
             if(type.equalsIgnoreCase("Reg")) {
-                type = "Reg";
+                type = "Registration";
+                return  type;
             } else if (type.equalsIgnoreCase("Sup")) {
-                type = "Sup";
+                type = "Support";
+                return  type;
             } else if (type.equalsIgnoreCase("Log")) {
-                type = "Log";
+                type = "Logistic";
+                return  type;
             } else if (type.equalsIgnoreCase("Crc")) {
-                type = "Crc";
+                type = "Crowd Control";
+                return  type;
             } else {
-                System.out.println("Enter Reg/Sup/Log/Crc only.");
+                System.err.println("Enter Reg/Sup/Log/Crc only.");
             }
-            return  type;
+            
         }
 
     }
@@ -177,7 +179,7 @@ public class VolunteerManagementUI {
         System.out.println("Event(s) under volunteer ID " + volunteer.getVolunteerID() + ": " + volunteer.getEventAssigned());
     }
     
-    public void generateSummaryReport(int actRegCount, int actSupCount, int actLogCount, int actCrcCount, int shareRegCount, int shareSupCount, int shareLogCount, int shareCrcCount, int togetherRegCount, int togetherSupCount, int togetherLogCount, int togetherCrcCount, int actTotal, int shareTotal, int togetherTotal) {
+    public void generateSummaryReport(int actRegCount, int actSupCount, int actLogCount, int actCrcCount, int shareRegCount, int shareSupCount, int shareLogCount, int shareCrcCount, int togetherRegCount, int togetherSupCount, int togetherLogCount, int togetherCrcCount, int actTotal, int shareTotal, int togetherTotal, int totalVolunteer) {
         
         
         System.out.printf("%75s", "Summary report for Number of Volunteer in Event\n");
@@ -190,5 +192,7 @@ public class VolunteerManagementUI {
         System.out.println(" ---------------------------------------------------------------------------------------------------");
         System.out.printf("| %-25s | %-12d | %-12d | %-12d | %-15d | %-6s |\n","Together for Change", togetherRegCount, togetherSupCount, togetherLogCount, togetherCrcCount, togetherTotal);
         System.out.println(" ---------------------------------------------------------------------------------------------------");
+        
+        System.out.println("\nTotal Number of Volunteer: " + totalVolunteer);
     }
 }
