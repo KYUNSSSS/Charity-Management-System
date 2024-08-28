@@ -27,7 +27,7 @@ public class VolunteerManagement {
     private HashMap<String, Volunteer> volunteerMap = new HashMap<>();
     private Filter<Volunteer> filterVolunteer = new Filter<>();
     
-    private int lastDoneeNumber = 0;
+    private int lastVolunteerNumber = 0;
     
     public VolunteerManagement() {
         File file = new File("volunteer.txt");
@@ -46,6 +46,11 @@ public class VolunteerManagement {
             }
         }
         volunteerList = volunteerDAO.retrieveFromFile();
+        for (int i = 1; i <= volunteerList.getNumberOfEntries(); i++) {
+            Volunteer volunteer = volunteerList.getEntry(i);
+            volunteerMap.put(volunteer.getVolunteerID(), volunteer); // Populate HashMap
+            updateLastVolunteerNumber(volunteer.getVolunteerID());
+        }
     }
     
     public void runVolunteerManagement() {
@@ -59,7 +64,6 @@ public class VolunteerManagement {
                 case 1:
                     addNewVolunteer();
                     volunteerUI.listAllVolunteers(getAllVolunteer());
-                    
                     break;
                 case 2:                    
                     removeVolunteer();
@@ -193,6 +197,8 @@ public class VolunteerManagement {
                     default:
                         break;
                 }
+                System.out.println(volunteer.getVolunteerID()+"\n"+volunteer.getEventAssigned());
+                volunteerDAO.updateVolunteer(volunteer);
                 volunteerUI.listVolunteer(volunteer);
             }
         }
@@ -240,40 +246,14 @@ public class VolunteerManagement {
    
     public void generateReport() {
         String[] event = {"Acts of Kindness Fund", "Share the Love Project", "Together for Change"};
-        String[] volunteerType = {"Reg", "Sup", "Log", "Crc"};
+        String[] volunteerType = {"Registration", "Support", "Logistic", "Crowd Control"};
         int actRegCount = 0, actSupCount = 0, actLogCount = 0, actCrcCount = 0;
         int shareRegCount = 0, shareSupCount = 0, shareLogCount = 0, shareCrcCount = 0;
         int togetherRegCount = 0, togetherSupCount = 0, togetherLogCount = 0, togetherCrcCount = 0;
         int actTotal, shareTotal, togetherTotal;
-        int regTotal, supTotal, logTotal, crcTotal;
         int totalVolunteer = volunteerList.getNumberOfEntries();
         for (int i = 1; i  <= totalVolunteer;i++) {
            Volunteer volunteer = volunteerList.getEntry(i); 
-//           if(volunteer.getEventAssigned().contains(event[0]) && volunteer.getVolunteerType().contains(volunteerType[0])) {
-//               actRegCount++;
-//           } else if(volunteer.getEventAssigned().contains(event[0]) && volunteer.getVolunteerType().contains(volunteerType[1])) {
-//               actSupCount++;
-//           } else if(volunteer.getEventAssigned().contains(event[0]) && volunteer.getVolunteerType().contains(volunteerType[2])) {
-//               actLogCount++;
-//           } else if(volunteer.getEventAssigned().contains(event[0]) && volunteer.getVolunteerType().contains(volunteerType[3])) {
-//               actCrcCount++;
-//           } else if(volunteer.getEventAssigned().contains(event[1]) && volunteer.getVolunteerType().contains(volunteerType[0])) {
-//               shareRegCount++;
-//           } else if(volunteer.getEventAssigned().contains(event[1]) && volunteer.getVolunteerType().contains(volunteerType[1])) {
-//               shareSupCount++;
-//           } else if(volunteer.getEventAssigned().contains(event[1]) && volunteer.getVolunteerType().contains(volunteerType[2])) {
-//               shareLogCount++;
-//           } else if(volunteer.getEventAssigned().contains(event[1]) && volunteer.getVolunteerType().contains(volunteerType[3])) {
-//               shareCrcCount++;
-//           } else if(volunteer.getEventAssigned().contains(event[2]) && volunteer.getVolunteerType().contains(volunteerType[0])) {
-//               togetherRegCount++;
-//           } else if(volunteer.getEventAssigned().contains(event[2]) && volunteer.getVolunteerType().contains(volunteerType[1])) {
-//               togetherSupCount++;
-//           } else if(volunteer.getEventAssigned().contains(event[2]) && volunteer.getVolunteerType().contains(volunteerType[2])) {
-//               togetherLogCount++;
-//           } else if(volunteer.getEventAssigned().contains(event[2]) && volunteer.getVolunteerType().contains(volunteerType[3])) {
-//               togetherCrcCount++;
-//           }
             if(volunteer.getVolunteerType().contains(volunteerType[0])) {
                 if(volunteer.getEventAssigned().contains(event[0])) {
                     actRegCount++;
@@ -327,13 +307,21 @@ public class VolunteerManagement {
         shareTotal = shareRegCount + shareSupCount + shareLogCount + shareCrcCount;
         togetherTotal = togetherRegCount + togetherSupCount + togetherLogCount + togetherCrcCount;
         
-        volunteerUI.generateSummaryReport(actRegCount, actSupCount, actLogCount, actCrcCount, shareRegCount, shareSupCount, shareLogCount, shareCrcCount, togetherRegCount, togetherSupCount, togetherLogCount, togetherCrcCount, actTotal, shareTotal, togetherTotal);
+        volunteerUI.generateSummaryReport(actRegCount, actSupCount, actLogCount, actCrcCount, shareRegCount, shareSupCount, shareLogCount, shareCrcCount, togetherRegCount, togetherSupCount, togetherLogCount, togetherCrcCount, actTotal, shareTotal, togetherTotal, totalVolunteer);
         
     }
     
+    private void updateLastVolunteerNumber(String volunteerID) {
+        String numberPart = volunteerID.substring(1); // Extract the numeric part (e.g., "001" from "V001")
+        int number = Integer.parseInt(numberPart);
+        if (number > lastVolunteerNumber) {
+            lastVolunteerNumber = number;
+        }
+    }
+    
     private String generateNextVolunteerID() {
-        lastDoneeNumber++;
-        return String.format("V%03d", lastDoneeNumber); // Format as DE001, DE002, etc.
+        lastVolunteerNumber++;
+        return String.format("V%03d", lastVolunteerNumber); // Format as DE001, DE002, etc.
     }
     
     
@@ -343,3 +331,4 @@ public class VolunteerManagement {
         volunteerMaintenance.runVolunteerManagement();
     }
 }
+
