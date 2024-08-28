@@ -1,9 +1,6 @@
 
 package adt;
 
-import java.time.LocalDate;
-import java.util.Iterator;
-
 /**
  * ListInterface.java An interface for the ADT List. Entries in the list have
  * positions that begin with 1.
@@ -104,8 +101,6 @@ public interface ListInterface<T> {
    * @return true if the list is full, or false if not
    */
   public boolean isFull();
-  public Iterator<T> iterator();
-  public T get(int index);
   public void set(int index, T data);
   public int indexOf(T data);
 
