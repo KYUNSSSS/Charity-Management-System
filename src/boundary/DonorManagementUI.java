@@ -7,13 +7,14 @@ package boundary;
 import adt.ListInterface;
 import entity.Donor;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 import utility.MessageUI;
 import utility.Validator;
 
 /**
  *
- * @author xuan
+ * @author Ng Yin Xuan
  */
 public class DonorManagementUI {
 
@@ -37,7 +38,7 @@ public class DonorManagementUI {
             System.out.print("Enter choice(0-8): ");
             String choice = scanner.nextLine();
 
-            if (Validator.isValidPositiveInteger(choice)) {
+            if (Validator.isValidInteger(choice)) {
                 return Integer.parseInt(choice);
             }
 
@@ -49,7 +50,7 @@ public class DonorManagementUI {
         StringBuilder outputStr = new StringBuilder();
 
         // Define table headers
-        String header = String.format("%-10s %-20s %-15s %-15s %-15s %-15s",
+        String header = String.format("%-10s %-20s %-15s %-20s %-15s %-15s",
                 "DonorID", "Name", "Contact No", "Email", "Type", "Entity Type");
 
         // Add header and a line separator to the output string
@@ -60,7 +61,7 @@ public class DonorManagementUI {
         // Add each donor's details
         for (int i = 1; i <= donorList.getNumberOfEntries(); i++) {
             Donor donor = donorList.getEntry(i);
-            String donorDetails = String.format("%-10s %-20s %-15s %-15s %-15s %-15s",
+            String donorDetails = String.format("%-10s %-20s %-15s %-20s %-15s %-15s",
                     donor.getDonorID(),
                     donor.getName(),
                     donor.getContactNo(),
@@ -73,11 +74,11 @@ public class DonorManagementUI {
         System.out.println("\nList of Donor:\n" + outputStr);
     }
 
-    public void displayDonor(ListInterface<Donor> donorList, String id) {
+    public void displayUpdatedDonor(ListInterface<Donor> donorList, String id) {
         StringBuilder outputStr = new StringBuilder();
 
         // Define table headers
-        String header = String.format("%-10s %-20s %-15s %-15s %-15s %-15s",
+        String header = String.format("%-10s %-20s %-15s %-20s %-15s %-15s",
                 "DonorID", "Name", "Contact No", "Email", "Type", "Entity Type");
 
         // Add header and a line separator to the output string
@@ -89,7 +90,7 @@ public class DonorManagementUI {
         for (int i = 1; i <= donorList.getNumberOfEntries(); i++) {
             Donor donor = donorList.getEntry(i);
             if (donor.getDonorID().equals(id)) {
-                String donorDetails = String.format(BLUE + "%-10s %-20s %-15s %-15s %-15s %-15s",
+                String donorDetails = String.format(BLUE + "%-10s %-20s %-15s %-20s %-15s %-15s",
                         donor.getDonorID(),
                         donor.getName(),
                         donor.getContactNo(),
@@ -98,7 +99,7 @@ public class DonorManagementUI {
                         donor.getEntityType() + RESET);
                 outputStr.append(donorDetails).append("\n");
             } else {
-                String donorDetails = String.format("%-10s %-20s %-15s %-15s %-15s %-15s",
+                String donorDetails = String.format("%-10s %-20s %-15s %-20s %-15s %-15s",
                         donor.getDonorID(),
                         donor.getName(),
                         donor.getContactNo(),
@@ -188,79 +189,6 @@ public class DonorManagementUI {
         }
     }
 
-//    public void inputDonation() {
-//        System.out.println("Donations: ");
-//        System.out.println("1. Donate Money");
-//        System.out.println("2. Donate Goods");
-//        System.out.print("Enter your choice: ");
-//        int choice = scanner.nextInt();
-//        scanner.nextLine();
-//        switch (choice) {
-//            case 1:
-//                inputDonationAmount();
-//                break;
-//            case 2:
-//                inputDonationItem();
-//                break;
-//            default:
-//                MessageUI.displayInvalidChoiceMessage();
-//                break;
-//        }
-//    }
-//
-//    public double inputDonationAmount() {
-//        System.out.print("Enter Donation Amount: RM ");
-//        int amount = scanner.nextInt();
-//        scanner.nextLine();
-//        return amount;
-//    }
-//
-//    public String inputDonationItem() {
-//        String item = "";
-//        int choice = 0;
-//        do {
-//            System.out.print("Choose Donation Item: ");
-//            System.out.println("1. Clothing");
-//            System.out.println("2. Furniture");
-//            System.out.println("3. Books");
-//            System.out.println("4. Electronic Devices");
-//            System.out.print("Enter choice(1-4): ");
-//            choice = scanner.nextInt();
-//            scanner.nextLine();
-//            switch (choice) {
-//                case 1:
-//                    item = "clothing";
-//                    break;
-//                case 2:
-//                    item = "furniture";
-//                    break;
-//                case 3:
-//                    item = "books";
-//                    break;
-//                case 4:
-//                    item = "electronic devices";
-//                default:
-//                    MessageUI.displayInvalidChoiceMessage();
-//            }
-//        } while (choice != 1 && choice != 2 && choice != 3 && choice != 4);
-//
-//        return item;
-//    }
-//
-//    public LocalDate inputDonationDate() { // can change to direct get System date
-//        System.out.print("Enter the date (YYYY-MM-DD): ");
-//        String inputDate = scanner.nextLine();
-//
-//        // Define the desired date format
-//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-//        LocalDate date = LocalDate.parse(inputDate, formatter);
-//        try {
-//            System.out.println("You entered: " + date);
-//        } catch (Exception e) {
-//            System.out.println("Invalid date format. Please use YYYY-MM-DD.");
-//        }
-//        return date;
-//    }
     public String inputEntityType() {
         String entity = "";
         int choice = 0;
@@ -300,8 +228,8 @@ public class DonorManagementUI {
 
     public int getFilterChoice() {
         while (true) {
-            System.out.println("Filter by: ");
-            System.out.println("1. Donor Type");
+            System.out.println("\nFilter by: ");
+            System.out.println("1. Donor Type (Government / Private / Public)");
             System.out.println("2. Entity Type (Organisation / Individual)");
             System.out.println("3. Date Range");
             System.out.println("4. Donation Amount Range");
@@ -318,12 +246,10 @@ public class DonorManagementUI {
 
     public int getReportChoice() {
         while (true) {
-            System.out.println("Summary Reports: ");
-            System.out.println("1. Donor Type");
-            System.out.println("2. Entity Type (Organisation / Individual)");
-            System.out.println("3. Date Range");
-            System.out.println("4. Donation Amount Range");
-            System.out.print("Enter your choice (1-4): ");
+            System.out.println("\nSummary Reports: ");
+            System.out.println("1. Donor Type Summary Report");
+            System.out.println("2. Top Donors Summary Report");
+            System.out.print("Enter your choice (1-2): ");
             String choice = scanner.nextLine();
 
             if (Validator.isValidPositiveInteger(choice)) {
@@ -334,14 +260,50 @@ public class DonorManagementUI {
         }
     }
 
-    public LocalDate inputStartDate() {
-        System.out.print("Enter start date (YYYY-MM-DD): ");
-        return LocalDate.parse(scanner.next());
+    public int inputTopValue() {
+        while (true) {
+            System.out.print("Show Top N Donors: ");
+            String top = scanner.nextLine();
+
+            if (Validator.isValidPositiveInteger(top)) {
+                return Integer.parseInt(top);
+            }
+            System.err.println("\nInvalid Input. Please enter a positive integer.");
+        }
     }
 
-    public LocalDate inputEndDate() {
-        System.out.print("Enter end date (YYYY-MM-DD): ");
-        return LocalDate.parse(scanner.next());
+    public LocalDate inputStartDate() {
+        LocalDate date = null;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        while (date == null) {
+            System.out.print("Enter start date (YYYY-MM-DD): ");
+            String input = scanner.nextLine().trim();
+
+            date = Validator.isValidDate(input, formatter);
+
+            if (date == null) {
+                System.err.println("\nInvalid Date Format. Please use YYYY-MM-DD.");
+            }
+        }
+        return date;
+    }
+
+    public LocalDate inputEndDate() {  
+        LocalDate date = null;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        while (date == null) {
+            System.out.print("Enter end date (YYYY-MM-DD): ");
+            String input = scanner.nextLine().trim();
+
+            date = Validator.isValidDate(input, formatter);
+
+            if (date == null) {
+                System.err.println("\nInvalid Date Format. Please use YYYY-MM-DD.");
+            }
+        }
+        return date;
     }
 
     public double inputMinAmount() {
@@ -353,7 +315,7 @@ public class DonorManagementUI {
                 return Double.parseDouble(input);
             }
 
-            System.out.println("\nInvalid Input. Please enter a positive value.");
+            System.err.println("\nInvalid Input. Please enter a positive value.");
         }
     }
 
@@ -366,32 +328,22 @@ public class DonorManagementUI {
                 return Double.parseDouble(input);
             }
 
-            System.out.println("\nInvalid Input. Please enter a positive value.");
-        }
-    }
-
-    public void displayFilteredDonors(ListInterface<Donor> donors) {
-        if (donors.isEmpty()) {
-            System.out.println("No matching donors found.");
-        } else {
-            for (int i = 1; i <= donors.getNumberOfEntries(); i++) {
-                System.out.println(donors.getEntry(i));
-            }
+            System.err.println("\nInvalid Input. Please enter a positive value.");
         }
     }
 
     public void displayDonorDetails(Donor donor) {
-        System.out.println("**********Donor Details**********");
+        System.out.println("\n**********Donor Details**********");
         System.out.println("Donor ID      : " + donor.getDonorID());
         System.out.println("Donor Name    : " + donor.getName());
         System.out.println("Contact No    : " + donor.getContactNo());
         System.out.println("Email         : " + donor.getEmail());
         System.out.println("Type of Donor : " + donor.getType());
         System.out.println("Entity Type   : " + donor.getEntityType());
-        System.out.println("-----------------------------------------");
+        System.out.println("---------------------------------\n");
     }
 
-    public void printDonorTypeSummary(String type, int count, double percentage, double total, double average, double max, double min) {
-        System.out.printf("%-10s | %-16d | %-10s | RM%-15.2f | RM%-17.2f | RM%-8.2f | RM%-8.2f\n", type, count, percentage + "%", total, average, max, min);
+    public void printDonorTypeSummary(String type, int count, double percentage, int donations, double total, double average, double max, double min) {
+        System.out.printf("%-10s | %-16d | %-10s | %-24d | RM%-15.2f | RM%-17.2f | RM%-8.2f | RM%-8.2f\n", type, count, percentage + "%", donations, total, average, max, min);
     }
 }

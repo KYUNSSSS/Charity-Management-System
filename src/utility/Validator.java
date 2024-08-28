@@ -10,7 +10,7 @@ import java.time.format.DateTimeParseException;
 
 /**
  *
- * @author SCSM11
+ * @author Team
  */
 public class Validator {
 
@@ -34,6 +34,15 @@ public class Validator {
         try {
             int number = Integer.parseInt(input.trim());
             return number > 0;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+    
+    public static boolean isValidInteger(String input) {
+        try {
+            int number = Integer.parseInt(input.trim());
+            return number >= 0;
         } catch (NumberFormatException e) {
             return false;
         }

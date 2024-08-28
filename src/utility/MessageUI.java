@@ -4,7 +4,7 @@ import java.util.Scanner;
 
 /**
  *
- * @author Kat Tan
+ * @author Team
  */
 public class MessageUI {
   

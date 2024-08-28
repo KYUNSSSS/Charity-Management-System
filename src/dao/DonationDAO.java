@@ -6,6 +6,7 @@ import java.io.*;
 import java.time.LocalDate;
 
 public class DonationDAO {
+
     private String fileName = "donations.txt";
 
     // Save the donation list to file in the specified format
@@ -77,13 +78,13 @@ public class DonationDAO {
 
     // Convert Donation object to string in the specified format
     private String donationToString(Donation donation) {
-        return "Donation Date: " + donation.getDonationDate().toString() + "\n" +
-               "Donation ID: " + donation.getDonationID() + "\n" +
-               "Donors ID: " + donation.getDonorID() + "\n" +
-               "Donation Type: " + donation.getItemCategory() + "\n" +
-               "Item: " + donation.getItem() + "\n" +
-               "Amount: " + (donation.getItemCategory().equalsIgnoreCase("Cash") 
-                   ? String.format("%.2f", donation.getCashAmount()) 
-                   : donation.getAmount());
+        return "Donation Date: " + donation.getDonationDate().toString() + "\n"
+                + "Donation ID: " + donation.getDonationID() + "\n"
+                + "Donors ID: " + donation.getDonorID() + "\n"
+                + "Donation Type: " + donation.getItemCategory() + "\n"
+                + "Item: " + donation.getItem() + "\n"
+                + "Amount: " + (donation.getItemCategory().equalsIgnoreCase("Cash")
+                ? String.format("%.2f", donation.getCashAmount())
+                : donation.getAmount());
     }
 }

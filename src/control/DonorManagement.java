@@ -13,10 +13,12 @@ import utility.*;
 
 /**
  *
- * @author xuan
+ * @author Ng Yin Xuan
  */
 public class DonorManagement {
 
+    private driver driver = new driver();
+    
     private ListInterface<Donor> donorList = new LinkedList<>();
     private ListInterface<Donation> donationList = new LinkedList<>();
     private DonorDAO donorDAO = new DonorDAO();
@@ -59,10 +61,10 @@ public class DonorManagement {
     public void runDonorManagement() {
         int choice = 0;
         do {
-//            listAllDonors();
             choice = donorUI.getMenuChoice();
             switch (choice) {
                 case 0:
+                    driver.runDriver();
                     MessageUI.displayExitMessage();
                     break;
                 case 1:
@@ -175,7 +177,7 @@ public class DonorManagement {
                 System.err.println("Donor ID not found.");
             }
         }
-        donorUI.displayDonor(donorList, donorID);
+        donorUI.displayUpdatedDonor(donorList, donorID);
     }
 
     public void searchDonorDetails() {
@@ -184,16 +186,18 @@ public class DonorManagement {
             donorUI.displayDonorDetails(donorMap.get(donorID));
         } else {
             System.err.println("Donor not found.");
+            searchDonorDetails();
         }
     }
 
     public void listDonorsWithDonations() {
         // Define table headers
-        String header = String.format("%-10s %-20s %-15s %-15s %-10s %-15s %-10s %-15s %-10s %-10s %-15s",
+        String header = String.format("%-10s %-20s %-15s %-20s %-10s %-15s %-10s %-15s %-10s %-10s %-15s",
                 "DonorID", "Name", "Contact No", "Email",
                 "Type", "Entity Type", "DonationID", "Donation Type", "Item", "Amount", "Donation Date");
 
         // Print table header
+        System.out.println("=".repeat(header.length()));
         System.out.println(header);
         System.out.println("=".repeat(header.length()));
 
@@ -201,7 +205,6 @@ public class DonorManagement {
             String donorID = donorDonations.getKey(i);
 
             if (donorID == null) {
-//                System.out.println("Warning: Found null donorID at index " + i);
                 continue; // Skip to the next iteration
             }
 
@@ -214,7 +217,7 @@ public class DonorManagement {
             }
 
             // Display the donor details once
-            String donorRow = String.format("%-10s %-20s %-15s %-15s %-10s %-15s",
+            String donorRow = String.format("%-10s %-20s %-15s %-20s %-10s %-15s",
                     donor.getDonorID(),
                     donor.getName(),
                     donor.getContactNo(),
@@ -228,20 +231,30 @@ public class DonorManagement {
             if (!donations.isEmpty()) {
                 for (int j = 1; j <= donations.getNumberOfEntries(); j++) {
                     Donation donation = donations.getEntry(j);
+                    String donationRow;
 
                     // Format the donation details under the donor
-                    String donationRow = String.format("%-10s %-20s %-15s %-15s %-10s %-15s %-10s %-15s %-10s %-10.2f %-15s",
+                    if (donation.getItemCategory().equals("Cash")) {
+                        donationRow = String.format("%-10s %-20s %-15s %-20s %-10s %-15s %-10s %-15s %-10s %-10.2f %-15s",
+                            "", "", "", "", "", "", // Empty for donor details
+                            donation.getDonationID(),
+                            donation.getItemCategory(),
+                            donation.getItem(),
+                            donation.getCashAmount(),
+                            donation.getDonationDate().toString());
+                    } else {
+                        donationRow = String.format("%-10s %-20s %-15s %-20s %-10s %-15s %-10s %-15s %-10s %-10s %-15s",
                             "", "", "", "", "", "", // Empty for donor details
                             donation.getDonationID(),
                             donation.getItemCategory(),
                             donation.getItem(),
                             donation.getAmount(),
                             donation.getDonationDate().toString());
-
+                    }
                     System.out.println(donationRow);
                 }
             } else {
-                System.out.printf("%-10s %-20s %-15s %-15s %-10s %-15s %s", "", "", "", "", "", "", "No donations found for this donor.");
+                System.out.printf("%-10s %-20s %-15s %-20s %-10s %-15s %s", "", "", "", "", "", "", "No donations found for this donor.");
             }
 
             System.out.println();
@@ -280,7 +293,7 @@ public class DonorManagement {
                 return;
         }
 
-        donorUI.displayFilteredDonors(filteredDonors);
+        donorUI.displayDonor(filteredDonors);
     }
 
     public MapInterface<String, LinkedList<Donor>> categoriseDonors() {
@@ -303,7 +316,7 @@ public class DonorManagement {
         for (String type : new String[]{"government", "private", "public"}) {
             switch (type) {
                 case "government":
-                    System.out.println("Category: Government");
+                    System.out.println("\nCategory: Government");
                     break;
                 case "private":
                     System.out.println("Category: Private");
@@ -315,7 +328,7 @@ public class DonorManagement {
 
             LinkedList<Donor> donors = categorisedDonors.get(type);
             if (!donors.isEmpty()) {
-                System.out.println(donors);
+                donorUI.displayDonor(donors);
             } else {
                 System.out.println("No donors in this category.");
             }
@@ -324,19 +337,18 @@ public class DonorManagement {
     }
 
     public void generateReport() {
-        generateDonorTypeSummaryReport();
+        int choice = donorUI.getReportChoice();
+        if (choice == 1) {
+            generateDonorTypeSummaryReport();
+        } else if (choice == 2) {
+            int n = donorUI.inputTopValue();
+            generateTopDonorsSummaryReport(n);
+        }
     }
 
     public void generateDonorTypeSummaryReport() {
-//        LinkedList<Donor> governmentList = categorisedDonors.get("government");
-//        LinkedList<Donor> privateList = categorisedDonors.get("private");
-//        LinkedList<Donor> publicList = categorisedDonors.get("public");
-//
-//        int governmentCount = governmentList.getNumberOfEntries();
-//        int privateCount = privateList.getNumberOfEntries();
-//        int publicCount = publicList.getNumberOfEntries();
-
         int governmentCount = 0, privateCount = 0, publicCount = 0, totalCount = 0;
+        int govDonations = 0, privateDonations = 0, publicDonations = 0, totalDonations = 0;
         double governmentTotal = 0, privateTotal = 0, publicTotal = 0, total = 0;
         double govPercentage = 0, privatePercentage = 0, publicPercentage = 0;
         double governmentAverage = 0, privateAverage = 0, publicAverage = 0, totalAverage = 0;
@@ -356,77 +368,161 @@ public class DonorManagement {
                 for (int j = 1; j <= donations.getNumberOfEntries(); j++) {
                     Donation donation = donations.getEntry(j);
                     donorTotal += donation.getCashAmount();
-                }
 
-                // Update statistics based on donor type
-                switch (type.toLowerCase()) {
-                    case "government":
-                        governmentTotal += donorTotal;
-                        governmentCount++;
-                        if (donorTotal > governmentMax) {
-                            governmentMax = donorTotal;
+                    if (donation.getItemCategory().equals("Cash")) {
+                        switch (type.toLowerCase()) {
+                            case "government":
+                                govDonations++;
+                                break;
+                            case "private":
+                                privateDonations++;
+                                break;
+                            case "public":
+                                publicDonations++;
+                                break;
                         }
-                        if (donorTotal < governmentMin) {
-                            governmentMin = donorTotal;
-                        }
-                        break;
-                    case "private":
-                        privateTotal += donorTotal;
-                        privateCount++;
-                        if (donorTotal > privateMax) {
-                            privateMax = donorTotal;
-                        }
-                        if (donorTotal < privateMin) {
-                            privateMin = donorTotal;
-                        }
-                        break;
-                    case "public":
-                        publicTotal += donorTotal;
-                        publicCount++;
-                        if (donorTotal > publicMax) {
-                            publicMax = donorTotal;
-                        }
-                        if (donorTotal < publicMin) {
-                            publicMin = donorTotal;
-                        }
-                        break;
+                    }
                 }
-            } else {
-//                governmentMax = 0;
-//                governmentMin = 0;
-//                privateMax = 0;
-//                privateMin = 0;
-//                publicMax = 0;
-//                publicMin = 0;
-
             }
 
-            totalCount = governmentCount + privateCount + publicCount;
-
-            govPercentage = (double) governmentCount / totalCount * 100;
-            privatePercentage = (double) privateCount / totalCount * 100;
-            publicPercentage = (double) publicCount / totalCount * 100;
-
-            governmentAverage = governmentTotal / governmentCount;
-            privateAverage = privateTotal / privateCount;
-            publicAverage = publicTotal / publicCount;
-
-            total = governmentTotal + privateTotal + publicTotal;
-            totalAverage = total / totalCount;
+            // Update statistics based on donor type
+            switch (type.toLowerCase()) {
+                case "government":
+                    governmentTotal += donorTotal;
+                    governmentCount++;
+                    if (donorTotal > governmentMax) {
+                        governmentMax = donorTotal;
+                    }
+                    if (donorTotal < governmentMin) {
+                        governmentMin = donorTotal;
+                    }
+                    break;
+                case "private":
+                    privateTotal += donorTotal;
+                    privateCount++;
+                    if (donorTotal > privateMax) {
+                        privateMax = donorTotal;
+                    }
+                    if (donorTotal < privateMin) {
+                        privateMin = donorTotal;
+                    }
+                    break;
+                case "public":
+                    publicTotal += donorTotal;
+                    publicCount++;
+                    if (donorTotal > publicMax) {
+                        publicMax = donorTotal;
+                    }
+                    if (donorTotal < publicMin) {
+                        publicMin = donorTotal;
+                    }
+                    break;
+            }
 
         }
-        String header = "Donor Type | Number of Donors | Percentage | Total Cash Amount | Average Cash Amount | Max Amount | Min Amount ";
-        System.out.println("*".repeat(header.length() / 2 - 25) + "Donor Type Summary Report" + "*".repeat(header.length() / 2 - 25));
+        totalCount = governmentCount + privateCount + publicCount;
+
+        govPercentage = (double) governmentCount / totalCount * 100;
+        privatePercentage = (double) privateCount / totalCount * 100;
+        publicPercentage = (double) publicCount / totalCount * 100;
+
+        governmentAverage = governmentTotal / governmentCount;
+        privateAverage = privateTotal / privateCount;
+        publicAverage = publicTotal / publicCount;
+
+        total = governmentTotal + privateTotal + publicTotal;
+        totalAverage = total / totalCount;
+        totalDonations = govDonations + privateDonations + publicDonations;
+
+        String header = "Donor Type | Number of Donors | Percentage | Number of Cash Donations | Total Cash Amount | Average Cash Amount | Max Amount | Min Amount ";
+        System.out.println(" ".repeat(header.length() / 2 - 12) + "Donor Type Summary Report" + " ".repeat(header.length() / 2 - 12));
         System.out.println("-".repeat(header.length()));
         System.out.println(header);
         System.out.println("-".repeat(header.length()));
-        donorUI.printDonorTypeSummary("Government", governmentCount, govPercentage, governmentTotal, governmentAverage, governmentMax, governmentMin);
-        donorUI.printDonorTypeSummary("Private", privateCount, privatePercentage, privateTotal, privateAverage, privateMax, privateMin);
-        donorUI.printDonorTypeSummary("Public", publicCount, publicPercentage, publicTotal, publicAverage, publicMax, publicMin);
+        donorUI.printDonorTypeSummary("Government", governmentCount, govPercentage, govDonations, governmentTotal, governmentAverage, governmentMax, governmentMin);
+        donorUI.printDonorTypeSummary("Private", privateCount, privatePercentage, privateDonations, privateTotal, privateAverage, privateMax, privateMin);
+        donorUI.printDonorTypeSummary("Public", publicCount, publicPercentage, publicDonations, publicTotal, publicAverage, publicMax, publicMin);
         System.out.println("-".repeat(header.length()));
-        System.out.println("Total Number of Donors : " + totalCount);
-        System.out.println("Total Cash Amount      : RM " + total);
-        System.out.println("Overall Average Amount : RM " + totalAverage);
+        System.out.println("Total Number of Donors  : " + totalCount);
+        System.out.println("Total Cash Amount       : RM " + total);
+        System.out.println("Overall Average Amount  : RM " + totalAverage);
+        System.out.println("Number of Cash Donations: " + totalDonations);
+        System.out.println("-".repeat(header.length()));
+    }
+
+    public void generateTopDonorsSummaryReport(int topN) {
+        // Create a list to store donors with their total donation amounts and counts
+        ListInterface<Donor> donorsWithCounts = new LinkedList<>();
+
+        // Maps to store counts and amounts for each donor
+        MapInterface<String, Integer> donationCounts = new HashMap<>();
+        MapInterface<String, Double> donationAmounts = new HashMap<>();
+        MapInterface<String, Integer> itemQuantity = new HashMap<>();
+        MapInterface<String, Integer> cashCounts = new HashMap<>();
+        MapInterface<String, Integer> itemCounts = new HashMap<>();
+
+        // Iterate over all donors in the donorDonations map
+        for (int i = 1; i <= donorDonations.capacity(); i++) {
+            String donorID = donorDonations.getKey(i);
+
+            if (donorID == null) {
+                continue;
+            }
+
+            Donor donor = donorMap.get(donorID);
+
+            if (donor == null) {
+                System.out.println("Warning: Donor not found for donorID " + donorID);
+                continue;
+            }
+
+            ListInterface<Donation> donations = donorDonations.get(donorID);
+            int donationCount = donations.getNumberOfEntries();
+            double totalAmount = 0.0;
+            int cashCount = 0, itemCount = 0;
+            int totalQty = 0;
+
+            for (int j = 1; j <= donations.getNumberOfEntries(); j++) {
+                Donation donation = donations.getEntry(j);
+                totalAmount += donation.getCashAmount();
+                totalQty += donation.getAmount();
+
+                if (donation.getItemCategory().equals("Cash")) {
+                    cashCount++;
+                } else {
+                    itemCount++;
+                }
+            }
+
+            donationCounts.put(donorID, donationCount);
+            donationAmounts.put(donorID, totalAmount);
+            itemQuantity.put(donorID, totalQty);
+            cashCounts.put(donorID, cashCount);
+            itemCounts.put(donorID, itemCount);
+
+            // Insert the donor in the sorted order by the total donation amount
+            int k = 1;
+            while (k <= donorsWithCounts.getNumberOfEntries()
+                    && donationCount <= donationCounts.get(donorsWithCounts.getEntry(k).getDonorID())) {
+                k++;
+            }
+            donorsWithCounts.add(k, donor);
+        }
+
+        // Print the top N donors
+        String header = "DonorID    | Donor Name      | Cash Donations | Total Cash Amount | Item Donations | Quantity of Donated Item | Total Donations ";
+        System.out.println(" ".repeat(header.length() / 2 - 12) + "Top Donors Summary Report" + " ".repeat(header.length() / 2 - 12));
+        System.out.println(" ".repeat(header.length() / 2 - 17) + "Sorted by Total Number of Donations");
+        System.out.println("-".repeat(header.length()));
+        System.out.println(header);
+        System.out.println("-".repeat(header.length()));
+
+        for (int i = 1; i <= Math.min(topN, donorsWithCounts.getNumberOfEntries()); i++) {
+            Donor donor = donorsWithCounts.getEntry(i);
+            System.out.printf("%-10s | %-15s | %-14s | RM%-15.2f | %-14s | %-24s | %-15s \n", donor.getDonorID(), donor.getName(),
+                    cashCounts.get(donor.getDonorID()), donationAmounts.get(donor.getDonorID()), itemCounts.get(donor.getDonorID()),
+                    itemQuantity.get(donor.getDonorID()), donationCounts.get(donor.getDonorID()));
+        }
         System.out.println("-".repeat(header.length()));
     }
 
