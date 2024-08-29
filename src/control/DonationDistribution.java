@@ -57,7 +57,9 @@ public class DonationDistribution {
         }
         doneeList = doneeDAO.retrieveFromFile();
         distributeList = distributeDAO.retrieveFromFile();
+        
         donationList = donationDAO.loadDonationsFromFile();
+        
         loadDoneeLocations();
         for (int i = 1; i <= distributeList.getNumberOfEntries(); i++) {
             Distribution distribution = distributeList.getEntry(i);
@@ -518,7 +520,6 @@ public class DonationDistribution {
 
         if (category.equalsIgnoreCase("cash")) {
             if (!itemTotals.containsKey("CASH: CASH")) {
-                //System.out.println("Check");
                 itemTotals.put("CASH: CASH", 0.0);
             }
 
@@ -526,9 +527,11 @@ public class DonationDistribution {
             
             do {
                 amount = distributeUI.inputAmount();
-                if (amount > cashTotal) {
-                    System.out.println("\nError: Insufficient cash available. Please enter a valid amount.");
-                    System.out.print(cashTotal);
+                if (cashTotal == 0) {
+                    System.out.print("Insufficient cash available in the donation file. Please waiting for donation.\n\n");
+                   runDonationDistribution();
+                }else if (amount > cashTotal ){
+                   System.out.println("\nError: Insufficient cash available. Please enter a valid amount.");
                 }
             } while (amount > cashTotal);
             
@@ -597,5 +600,3 @@ public class DonationDistribution {
 
     }
 }
-
-
