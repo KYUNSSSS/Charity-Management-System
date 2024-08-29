@@ -59,6 +59,11 @@ public class DonationDistribution {
         distributeList = distributeDAO.retrieveFromFile();
         donationList = donationDAO.loadDonationsFromFile();
         loadDoneeLocations();
+        for (int i = 1; i <= distributeList.getNumberOfEntries(); i++) {
+            Distribution distribution = distributeList.getEntry(i);
+            distributeMap.put(distribution.getDistributionID(), distribution); // Populate HashMap
+            updateLastDistributionNumber(distribution.getDistributionID());
+        }
 
         double cashTotal = 0.0;
         for (int i = 1; i <= donationList.getNumberOfEntries(); i++) {
@@ -169,6 +174,14 @@ public class DonationDistribution {
         for (int i = 1; i <= doneeList.getNumberOfEntries(); i++) {
             Donee donee = doneeList.getEntry(i);
             doneeLocationList.add(new KeyValuePair(donee.getDoneeID(), donee.getDoneeLocation()));
+        }
+    }
+    
+    private void updateLastDistributionNumber(String distributionID) {
+        String numberPart = distributionID.substring(2); // Extract the numeric part (e.g., "001" from "DE001")
+        int number = Integer.parseInt(numberPart);
+        if (number > lastDistributionNumber) {
+            lastDistributionNumber = number;
         }
     }
 
@@ -505,7 +518,7 @@ public class DonationDistribution {
 
         if (category.equalsIgnoreCase("cash")) {
             if (!itemTotals.containsKey("CASH: CASH")) {
-                System.out.println("Check");
+                //System.out.println("Check");
                 itemTotals.put("CASH: CASH", 0.0);
             }
 
@@ -584,4 +597,5 @@ public class DonationDistribution {
 
     }
 }
+
 
