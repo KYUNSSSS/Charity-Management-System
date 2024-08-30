@@ -24,8 +24,8 @@ public class DoneeManagement {
     private DoneeManagementUI doneeUI = new DoneeManagementUI();
     private ListInterface<Distribution> distributeList = new LinkedList<>();
     private DistributionDAO distributeDAO = new DistributionDAO();
-    private HashMap<String, Donee> doneeMap = new HashMap<>();
-    private HashMap<String, ListInterface<Distribution>> donationMap = new HashMap<>();
+    private MapInterface<String, Donee> doneeMap = new HashMap<>();
+    private MapInterface<String, ListInterface<Distribution>> donationMap = new HashMap<>();
     private Filter<Donee> filterDonee = new Filter<>();
     private Filter<Distribution> filterDonation = new Filter<>();
 
