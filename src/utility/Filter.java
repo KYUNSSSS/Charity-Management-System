@@ -188,7 +188,29 @@ public class Filter<F> {
                 if (isWithinAmountRange(donation.getAmount(), minAmount, maxAmount)) {
                     filteredList.add(entity);
                 }
+                if (isWithinAmountRange(donation.getCashAmount(), minAmount, maxAmount)) {
+                    filteredList.add(entity);
+                }
             }
+        }
+        return filteredList;
+    }
+    
+    public ListInterface<F> filterByDateAndAmountRange(ListInterface<F> list, LocalDate startDate, LocalDate endDate, double minAmount, double maxAmount) {
+        ListInterface<F> filteredList = new LinkedList<>();
+        for (int i = 1; i <= list.getNumberOfEntries(); i++) {
+            F entity = list.getEntry(i);
+            if (entity instanceof Donation donation) {
+                if (isWithinDateRange(donation.getDonationDate(), startDate, endDate)) {
+                    if (isWithinAmountRange(donation.getAmount(), minAmount, maxAmount)) {
+                        filteredList.add(entity);
+                    }
+                    if (isWithinAmountRange(donation.getCashAmount(), minAmount, maxAmount)) {
+                        filteredList.add(entity);
+                    }
+                }
+            }
+        
         }
         return filteredList;
     }
