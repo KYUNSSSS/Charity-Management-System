@@ -7,11 +7,8 @@ import adt.MapInterface;
 import dao.DonationDAO;
 import entity.Donation;
 import boundary.DonationManagementUI;
-import entity.Donor;
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.nio.file.*;
 import utility.*;
 
 public class DonationManagement {
@@ -388,25 +385,22 @@ public class DonationManagement {
         StringBuilder report = new StringBuilder();
         report.append("***** Detailed Report *****\n");
         report.append("Date Generated: ").append(LocalDate.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))).append("\n\n");
-
+        report.append(String.format("%-4s | %-12s | %-12s | %-13s | %-18s | %-16s | %-10s | %-10s\n", 
+                                "No.", "Donation ID", "Donor ID", "Donation Date", "Donation Type", "Item", "Quantity", "Cash Amount (RM)"));
+        report.append("--------------------------------------------------------------------------------------------------------------------------\n");
         for (int i = 1; i <= donationList.getNumberOfEntries(); i++) {
             Donation donation = donationList.getEntry(i);
-            report.append("Donation ID     : ").append(donation.getDonationID()).append("\n");
-            report.append("Donor ID        : ").append(donation.getDonorID()).append("\n");
-            report.append("Donation Date   : ").append(donation.getDonationDate()).append("\n");
-            report.append("Category        : ").append(donation.getItemCategory()).append("\n");
-            report.append("Items           : ").append(donation.getItem()).append("\n");
-
-            // Display amount based on donation category
-            if (donation.getItemCategory().equalsIgnoreCase("Cash")) {
-                report.append("Cash Amount     : RM ").append(String.format("%.2f", donation.getCashAmount())).append("\n");
-            } else {
-                report.append("Amount          : ").append(donation.getAmount()).append("\n");
-            }
-
-            report.append("-----------------------------------------\n");
+            report.append(String.format("%4d. | %-12s | %-12s | %-13s | %-18s | %-16s | %-10s | %-10.2f\n", 
+                                                i, 
+                                                donation.getDonationID(), 
+                                                donation.getDonorID(), 
+                                                donation.getDonationDate(), 
+                                                donation.getItemCategory(), 
+                                                donation.getItem(), 
+                                                donation.getAmount(), 
+                                                donation.getCashAmount()));
         }
-
+        report.append("--------------------------------------------------------------------------------------------------------------------------\n");
         return report.toString();
     }
 
