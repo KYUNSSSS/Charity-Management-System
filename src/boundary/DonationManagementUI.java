@@ -1,418 +1,652 @@
-package control;
+/**
+ *
+ * @author haojuan
+ */
+package boundary;
 
-import adt.HashMap;
-import adt.LinkedList;
-import adt.ListInterface;
-import adt.MapInterface;
-import dao.DonationDAO;
-import entity.Donation;
-import boundary.DonationManagementUI;
-import entity.Donor;
-import java.io.IOException;
+import control.DonationManagement;
+import entity.*;
+import utility.*;
+import adt.*; 
+import dao.*;
+
+import java.util.Scanner;
+import utility.MessageUI;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.nio.file.*;
-import utility.*;
+import java.time.format.DateTimeParseException;
+import java.util.InputMismatchException;
+import java.util.List;
 
-public class DonationManagement {
+public class DonationManagementUI {
 
-    private DonationDAO donationDAO = new DonationDAO();
-    public LinkedList<Donation> donationList;
-    private DonationManagementUI ui;
-    private Filter<Donation> filter;
-    private LinkedList<CategoryTotal> categoryTotalsList = new LinkedList<>();
-    private LinkedList<ItemTotal> itemTotalsList = new LinkedList<>();
-    private double cashTotal = 0.0;
-    private Donation donation;
+    Scanner scanner = new Scanner(System.in);
+    private DonationManagement controller;
+    private DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");    
 
-    public DonationManagement(DonationManagementUI ui) {
-        this.ui = ui;
-        this.donationList = donationDAO.loadDonationsFromFile(); // Load donations from file on initialization
+    
+    // Constructor that takes DonationManagement as a parameter
+    public DonationManagementUI(DonationManagement controller) {
+        this.controller = controller;
+    }
+    // ANSI escape code for green text
+    String greenText = "\u001B[32m";
+
+    // ANSI escape code to reset to default color
+    String resetText = "\u001B[0m";
+    
+//All declaration
+//------------------------------------------------------------------------------------
+    
+    public int getMenuChoice() {
+        System.out.println("*****Donation Management System Menu*****");
+        System.out.println("1. Add Donation");
+        System.out.println("2. Remove Donation");
+        System.out.println("3. Search Donation by ID");
+        System.out.println("4. Amend Donation details");
+        System.out.println("5. Track Donated Items in Categories");
+        System.out.println("6. List Donations by Donors");
+        System.out.println("7. List Donations");
+        System.out.println("8. Filter donations");
+        System.out.println("9. Generate Donation Reports");
+        System.out.println("0. Exit");
+        int choice = -1;
+        while (choice < 0 || choice > 9) {
+            System.out.print("Enter choice (0-9) : ");
+            try {
+                choice = Integer.parseInt(scanner.nextLine());
+            } catch (NumberFormatException e) {
+                System.err.println("Invalid input. Please enter a number between 0 and 9.");
+            }
+        }
+        return choice;
     }
 
-    public DonationManagement() {
-        this.donationList = donationDAO.loadDonationsFromFile();
-    }
-
-    public void setUI(DonationManagementUI ui) {
-        this.ui = ui;
-    }
-
-    public void runDonationManagement() {
-        int choice;
-        do {
-            choice = ui.getMenuChoice();
+    public String DonationItemCategory() {
+        String itemCategory = "";
+        System.out.println("Choose Donation Category : ");
+        System.out.println("1. Clothing");
+        System.out.println("2. Food and Beverage");
+        System.out.println("3. Books");
+        System.out.println("4. Electronic Devices");
+        System.out.println("5. Cash");
+        int choice = 0;
+        while (choice < 1 || choice > 5){
+            while (true) {
+                System.out.print("Enter choice : ");
+                try {
+                    choice = Integer.parseInt(scanner.nextLine());
+                } catch (NumberFormatException e) {
+                    System.err.println("Invalid input. Please enter a number between 1 and 5.");
+                }
+                
+                if (Validator.isValidPositiveInteger(String.valueOf(choice))) {
+                    break;
+                }
+            }
+            
             switch (choice) {
                 case 1 ->
-                    ui.addDonation();
+                    itemCategory = "Clothing";
                 case 2 ->
-                    ui.removeDonation();
+                    itemCategory = "Food and Beverage";
                 case 3 ->
-                    ui.searchDonationById();
+                    itemCategory = "Books";
                 case 4 ->
-                    ui.amendDonationDetails();
+                    itemCategory = "Electronic Devices";
                 case 5 ->
-                    ui.trackDonation();
-                case 6 ->
-                    ui.listDonationsByDonors();
-                case 7 ->
-                    ui.listDonations();
-                case 8 ->
-                    handleFilterChoice();//base on criteria
-                case 9 ->
-                    getReportChoice();
-                case 0 ->
-                    System.out.println("Exiting Donation Management System.");
+                    itemCategory = "Cash";
                 default ->
-                    System.err.println("Invalid choice. Please select an option between 0 and 9.");
+                    MessageUI.displayInvalidChoiceMessage();
             }
-        } while (choice != 0);
+        } 
+
+        return itemCategory;
+    }
+    
+    public boolean isValidDonorID(String input) {
+        // Regular expression for DNT followed by exactly 5 digits
+        String regex = "DNR\\d{5}";
+        return input.matches(regex);
     }
 
-    public String generateNextDonationID() {
-        int nextID = 1; // Default starting ID
-        LinkedList<Donation> donations = listDonations();
-        if (donations.getNumberOfEntries() > 0) {
-            Donation lastDonation = donations.getEntry(donations.getNumberOfEntries());
-            String lastID = lastDonation.getDonationID();
-            nextID = Integer.parseInt(lastID.replace("DNT", "")) + 1;
+    
+    private int getValidIntInput(String prompt) {
+        int value = -1;
+        while (value < 0) {
+            System.out.print(prompt);
+            try {
+                value = scanner.nextInt();
+                if (value < 0) {
+                    System.err.println("Value must be non-negative. Please try again.");
+                }
+            } catch (InputMismatchException e) {
+                System.err.println("Invalid input. Please enter a valid integer.");
+                scanner.next(); // Clear the invalid input
+            }
         }
-        return String.format("DNT%05d", nextID); // Format as DNT00001, DNT00002, etc.
+        scanner.nextLine(); // Clear the newline character
+        return value;
+    }
+    
+    private double getValidDoubleInput(String prompt) {
+        double value = -1;
+        while (value < 0) {
+            System.out.print(prompt);
+            try {
+                value = scanner.nextDouble();
+                if (value < 0) {
+                    System.err.println("Amount must be positive. Please try again.");
+                }
+            } catch (InputMismatchException e) {
+                System.err.println("Invalid amount format. Please enter a valid number.");
+                scanner.next(); // Clear the invalid input
+            }
+        }
+        scanner.nextLine(); // Clear the newline character
+        return value;
     }
 
-    public boolean addDonation(String donationID, String donorID, String itemCategory, String item, double amount, LocalDate donationDate) {
-        Donation donation;
+    private String getItemInput(String itemCategory) {
+        int choice = 0;
+        String itemsInput = "";
+        switch (itemCategory) {
+            case "Clothing":
+                itemsInput = getCategoryItemInput("Clothes", "Pants", "Shoes", "Mask", "Hat");
+                break;
+            case "Food and Beverage":
+                itemsInput = getCategoryItemInput("Noodles", "Rice", "Vegetable", "Meat", "Drinking Water");
+                break;
+            case "Books":
+                itemsInput = getCategoryItemInput("Novel", "Magazine", "Textbook", "Comics", "Biography");
+                break;
+            case "Electronic Devices":
+                itemsInput = getCategoryItemInput("Mobile Phone", "Computer", "Refrigerator", "Washing Machine", "Rice Cooker");
+                break;
+            case "Cash":
+                itemsInput = "Cash";
+                break;
+        }
+        return itemsInput;
+    }
 
-        // Check if the itemCategory is cash
+    private String getCategoryItemInput(String... items) {
+        int choice = 0;
+        do {
+            System.out.println("Choose Donation Item : ");
+            for (int i = 0; i < items.length; i++) {
+                System.out.println((i + 1) + ". " + items[i]);
+            }
+            System.out.print("Enter Items (1-" + items.length + ") : ");
+            choice = scanner.nextInt();
+            scanner.nextLine();
+        } while (choice < 1 || choice > items.length);
+        return items[choice - 1];
+    }
+    
+    private String getCategoryByChoice(String choice) {
+        return switch (choice) {
+            case "1" -> "Clothing";
+            case "2" -> "Food and Beverage";
+            case "3" -> "Books";
+            case "4" -> "Electronic Devices";
+            case "5" -> "Cash";
+            default -> "";
+        };
+    }
+
+    private List<String> getAvailableCategories() {
+        return List.of("Clothing", "Food and Beverage", "Books", "Electronic Devices", "Cash");
+    }
+    
+    private String getNewItemInput(String itemCategory) {
+        int choice = 0;
+        String itemsInput = "";
+        switch (itemCategory) {
+            case "Clothing":
+                itemsInput = getNewCategoryItemInput("Clothes", "Pants", "Shoes", "Mask", "Hat");
+                break;
+            case "Food and Beverage":
+                itemsInput = getNewCategoryItemInput("Noodles", "Rice", "Vegetable", "Meat", "Drinking Water");
+                break;
+            case "Books":
+                itemsInput = getNewCategoryItemInput("Novel", "Magazine", "Textbook", "Comics", "Biography");
+                break;
+            case "Electronic Devices":
+                itemsInput = getNewCategoryItemInput("Mobile Phone", "Computer", "Refrigerator", "Washing Machine", "Rice Cooker");
+                break;
+            case "Cash":
+                itemsInput = "Cash";
+                break;
+        }
+        return itemsInput;
+    }
+
+    private String getNewCategoryItemInput(String... newItem) {
+        System.out.println("Choose Donation Item : ");
+        for (int i = 0; i < newItem.length; i++) {
+            System.out.println((i + 1) + ". " + newItem[i]);
+        }
+        return null;
+    }
+    
+    public int displayFilterOptions() {
+        System.out.println("**** Filter Donation *****");
+        System.out.println("Filter by: ");
+        System.out.println("1. Date Range");
+        System.out.println("2. Donation Amount Range");
+        System.out.println("3. Date and Amount Range");
+        System.out.println("0. Back");
+        System.out.print("Enter your choice: ");
+        int choice = -1;
+        while (choice < 0 || choice > 3) {
+            System.out.print("Enter choice (0-3) : ");
+            try {
+                choice = scanner.nextInt();
+                scanner.nextLine(); // Clear newline
+                if (choice < 0 || choice > 3) {
+                    System.err.println("Invalid choice. Please enter a number between 0 and 3.");
+                }
+            } catch (InputMismatchException e) {
+                System.err.println("Invalid input. Please enter a valid number.");
+                scanner.next(); // Clear the invalid input
+            }
+        }
+        return choice;
+    }
+    
+    private LocalDate getValidDateInput(String prompt) {
+        LocalDate date = null;
+        while (date == null) {
+            System.out.print(prompt);
+            String input = scanner.nextLine();
+            try {
+                date = LocalDate.parse(input, dateFormatter);
+            } catch (DateTimeParseException e) {
+                System.err.println("Invalid date format. Please enter the date in dd-MM-yyyy format.");
+            }
+        }
+        return date;
+    }
+
+    private void displayDonations(ListInterface<Donation> donations) {
+        for (int i = 1; i <= donations.getNumberOfEntries(); i++) {
+            Donation donation = donations.getEntry(i);
+
+            System.out.println("Donation ID     : " + donation.getDonationID());
+            System.out.println("Donor ID        : " + donation.getDonorID());
+            System.out.println("Donation Date   : " + donation.getDonationDate());
+            System.out.println("Category        : " + donation.getItemCategory());
+            System.out.println("Items           : " + donation.getItem());
+
+            // Display the amount based on the type of donation
+            if (donation.getItemCategory().equalsIgnoreCase("Cash")) {
+                System.out.println("Amount (Cash)   : RM " + String.format("%.2f", donation.getCashAmount()));
+            } else {
+                System.out.println("Amount (Non-Cash): " + donation.getAmount());
+            }
+
+            System.out.println("-----------------------------------------");
+        }
+    }
+    
+    public void enterToContinue(){
+        System.out.println(greenText + "Press any key to continue..." + resetText);
+        scanner.nextLine();
+    }
+    
+//All method
+//------------------------------------------------------------------------------- 
+    private ListInterface<Donor> loadDonorData() {
+        DonorDAO donorDAO = new DonorDAO();
+        return donorDAO.retrieveFromFile();
+    }
+
+    public void addDonation() {
+        ListInterface<Donor> donorList = loadDonorData();
+        String donorID2="";
+        System.out.println("*****Add Donation*****");
+
+        LocalDate donationDate = LocalDate.now();
+        System.out.println("Date        : " + donationDate);
+
+        String donationID = controller.generateNextDonationID();
+        System.out.println("Donation ID : " + donationID);
+        while (true){
+            System.out.print("Enter Donor ID    : ");
+            String donorID = scanner.nextLine();
+            if(isDonorIDValid(donorID, donorList)){
+                donorID2 = donorID;
+                break;
+            }else{
+                  System.out.println("Enter valid id.");      
+            }
+        }
+
+        String itemCategory = DonationItemCategory();
+        String itemsInput = getItemInput(itemCategory);
+
+        double amount = 0.0; // Initialize amount
+
+        // Determine if the category is cash and handle accordingly
         if (itemCategory.equalsIgnoreCase("Cash")) {
-            // For cash donations, directly use the double amount
-            donation = new Donation(donationID, donorID, itemCategory, item, amount, donationDate);
+            // For cash donations, amount is a double
+            amount = getValidDoubleInput("Enter Cash Amount : ");
         } else {
-            // For non-cash donations, convert the amount to int
-            int nonCashAmount = (int) amount;
-            donation = new Donation(donationID, donorID, itemCategory, item, nonCashAmount, donationDate);
+            // For non-cash donations, amount is an integer
+            int nonCashAmount = getValidIntInput("Enter Quantity : ");
+            amount = nonCashAmount; // Or use another approach based on your logic
         }
 
-        // Add the donation to the list and save if successful
-        boolean isAdded = donationList.add(donation);
-        if (isAdded) {
-            donationDAO.saveDonationListToFile(donationList);
-        }
-        return isAdded;
+        boolean success = controller.addDonation(donationID, donorID2, itemCategory, itemsInput, amount, donationDate);
+        System.out.println(success ? greenText + "Donation added successfully!" + resetText : "Failed to add donation.");
+        System.out.println(greenText + "Press any key to continue..." + resetText);
+        scanner.nextLine();
     }
-
-    public boolean removeDonation(String donationID) {
-        for (int i = 1; i <= donationList.getNumberOfEntries(); i++) {
-            Donation donation = donationList.getEntry(i);
-            if (donation.getDonationID().equals(donationID)) {
-                donationList.remove(i);
-                donationDAO.saveDonationListToFile(donationList); // Save the updated list to file
+    private boolean isDonorIDValid(String donorID, ListInterface<Donor> donorList) {
+        for (int i = 1; i <= donorList.getNumberOfEntries(); i++) {
+            if (donorList.getEntry(i).getDonorID().equalsIgnoreCase(donorID)) {
                 return true;
             }
         }
         return false;
     }
 
-    public Donation getDonationById(String donationID) {
-        for (int i = 1; i <= donationList.getNumberOfEntries(); i++) {
-            Donation donation = donationList.getEntry(i);
-            if (donation.getDonationID().equals(donationID)) {
-                return donation;
+    public void removeDonation() {
+        System.out.println("*****Remove Donation*****");
+
+        System.out.print("Enter Donation ID: ");
+        String donationID = scanner.nextLine();
+
+        Donation donation = controller.getDonationById(donationID);
+        if (donation != null) {
+            System.out.println("Donation ID : " + donation.getDonationID());
+
+            boolean validInput = false;
+            while (!validInput) {
+                System.out.print("Confirmation for remove (Y/N): ");
+                String confirmation = scanner.nextLine().trim().toLowerCase();
+                if (confirmation.equals("y") || confirmation.equals("yes")) {
+                    boolean success = controller.removeDonation(donationID);
+                    if (success) {
+                        System.out.println(greenText + "Donation removed successfully!" + resetText);
+                    } else {
+                        System.err.println("Failed to remove donation.");
+                    }
+                    validInput = true;
+                } else if (confirmation.equals("n") || confirmation.equals("no")) {
+                    System.err.println("Action canceled.");
+                    validInput = true;
+                } else {
+                    System.err.println("Invalid input. Please enter 'Y' or 'N'.");
+                }
             }
         }
-        return null;
+        System.out.println(greenText + "Press any key to continue..." + resetText);
+        scanner.nextLine();
     }
 
-    public void amendDonationDetails(String donationID, String newDonorID, String newItemCategory, String newItem, Double newAmount) {
-        Donation donation = getDonationById(donationID);
-        if (donation == null) {
+    public void searchDonationById() {        
+        System.out.println("***** Search Donation *****");
+        System.out.print("Enter Donation ID: ");
+        String donationID = scanner.nextLine();
+
+        Donation donation = controller.getDonationById(donationID);
+        if (donation != null) {
+            System.out.println("Donation Date   : " + donation.getDonationDate());
+            System.out.println("Donation ID     : " + donation.getDonationID());
+            System.out.println("Donor ID        : " + donation.getDonorID());
+            System.out.println("Donation Type   : " + donation.getItemCategory());
+            System.out.println("Items           : " + donation.getItem());
+
+            // Handle amount display based on donation type
+            String amountDisplay = "";
+            if (donation.getItemCategory().equalsIgnoreCase("Cash")) {
+                amountDisplay = String.format("%.2f", donation.getCashAmount()); // Format as currency
+            } else {
+                amountDisplay = String.valueOf(donation.getAmount()); // Display integer value
+            }
+            System.out.println("Amount          : " + amountDisplay);
+
+            System.out.println(greenText + "Done Searching ..." + resetText);
+        } else {
             System.err.println("Donation not found.");
+        }
+        System.out.println(greenText + "Press any key to continue..." + resetText);
+        scanner.nextLine();
+    }
+
+
+    public void amendDonationDetails() {
+        System.out.println("***** Amend Donation Details *****");
+
+        System.out.print("Enter Donation ID to amend: ");
+        String donationID = scanner.nextLine();
+
+        Donation donation = controller.getDonationById(donationID);
+        if (donation == null) {
+            System.err.println("Donation ID not found.");
             return;
         }
 
-        // Update the details if new values are provided
-        if (newDonorID != null && !newDonorID.isEmpty()) {
-            donation.setDonorID(newDonorID);
-        }
-        if (newItemCategory != null && !newItemCategory.isEmpty()) {
-            donation.setItemCategory(newItemCategory);
-        }
-        if (newItem != null && !newItem.isEmpty()) {
-            donation.setItem(newItem);
-        }
-        if (newAmount != null) {
-            if (newItemCategory.equalsIgnoreCase("Cash")) {
-                donation.setCashAmount(newAmount);
-            } else {
-                donation.setAmount(newAmount.intValue()); // Convert Double to int for non-cash donations
+        System.out.println("Leave blank, input not match and press Enter default to keep the current value.");
+
+        // Display and select new Donor ID
+        System.out.print("Enter new Donor ID : ");
+        String newDonorID = scanner.nextLine();
+        if (!newDonorID.isEmpty()) {
+            if (isValidDonorID(String.valueOf(newDonorID))){
+                donation.setDonorID(newDonorID);
             }
         }
 
-        // Save the updated donation list back to the file
-        donationDAO.saveDonationListToFile(donationList);
-    }
-
-    public double trackTotalCashDonations() {
-        double totalCashAmount = 0.0;
-        LinkedList<Donation> allDonations = listDonations();
-
-        for (int i = 1; i <= allDonations.getNumberOfEntries(); i++) {
-            Donation donation = allDonations.getEntry(i);
-
-            if (donation.getItemCategory().equalsIgnoreCase("Cash")) {
-                totalCashAmount += donation.getCashAmount(); // Use getCashAmount() for cash donations
+        // Display and select new Item Category
+        System.out.println("Available Item Categories:");
+        List<String> categories = getAvailableCategories(); // Method to get available categories
+        for (int i = 0; i < categories.size(); i++) {
+            System.out.println((i + 1) + ". " + categories.get(i));
+        }
+        System.out.println("Current Donation Type : " + donation.getItemCategory());
+        System.out.print("Enter new Donation Type : ");
+        String categoryChoice = scanner.nextLine();
+        String newCategory = getCategoryByChoice(categoryChoice);
+        if (!categoryChoice.isEmpty()){
+            if("1".equals(categoryChoice)||"2".equals(categoryChoice)||"3".equals(categoryChoice)||"4".equals(categoryChoice)||"5".equals(categoryChoice)){
+                donation.setItemCategory(newCategory);
             }
         }
-
-        return totalCashAmount;
-    }
-
-    public LinkedList<String> trackDonationByCategory(String itemCategory) {
-        LinkedList<String> itemsInCategory = new LinkedList<>();
-
-        for (int i = 1; i <= donationList.getNumberOfEntries(); i++) {
-            Donation donation = donationList.getEntry(i);
-
-            if (donation.getItemCategory().equalsIgnoreCase(itemCategory)) {
-                String itemWithAmount;
-                if (donation.getItemCategory().equalsIgnoreCase("Cash")) {
-                    itemWithAmount = donation.getItem() + " (Amount: RM " + String.format("%.2f", donation.getCashAmount()) + ")";
-                } else {
-                    itemWithAmount = donation.getItem() + " (Amount: " + donation.getAmount() + ")";
+        
+        if(donation.getItemCategory().equalsIgnoreCase("Cash")){
+            donation.setItem("Cash");
+        }else{
+            getNewItemInput(donation.getItemCategory());
+            System.out.println("Current Donation Item : " + donation.getItem());
+            System.out.print("Enter new Item : ");
+            String newItem = scanner.nextLine();
+            if (!newItem.isEmpty()) {
+                if("1".equals(newItem)||"2".equals(newItem)||"3".equals(newItem)||"4".equals(newItem)||"5".equals(newItem)){
+                    donation.setItem(newItem);
                 }
-                itemsInCategory.add(itemWithAmount);
             }
         }
-        return itemsInCategory;
-    }
-
-    public LinkedList<Donation> listDonationsByDonor(String donorID) {
-        LinkedList<Donation> result = new LinkedList<>();
-        for (int i = 1; i <= donationList.getNumberOfEntries(); i++) {
-            Donation donation = donationList.getEntry(i);
-            if (donation.getDonorID().equals(donorID)) {
-                result.add(donation);
-            }
-        }
-        return result;
-    }
-
-    public void handleFilterChoice() {
-        int choice;
-        do {
-            choice = ui.displayFilterOptions();
-            switch (choice) {
-                case 1:
-                    ui.filterByDateRange();
-                    break;
-                case 2:
-                    ui.filterByDonationAmountRange();
-                    break;
-                case 3:
-                    ui.filterByDateAndAmountRange();
-                    break;
-                case 0:
-                    runDonationManagement();
-                    break;
-                default:
-                    System.err.println("Invalid choice. Please enter a number between 0 and 3.");
-            }
-        } while (choice != 0);
-    }
-
-    public ListInterface<Donation> filterDonationsByDateRange(LocalDate startDate, LocalDate endDate) {
-        return filter.filterByDateRange(donationList, startDate, endDate);
-    }
-
-    public ListInterface<Donation> filterDonationsByAmountRange(double minAmount, double maxAmount) {
-        return filter.filterByDonationAmountRange(donationList, minAmount, maxAmount);
-    }
-
-    public LinkedList<Donation> listDonations() {
-        return donationList;
-    }
-
-    // Get donations categorized by item within a specific category
-    private MapInterface<String, Double> getItemTotalsByCategory(String category) {
-        MapInterface<String, Double> itemTotals = new HashMap<>();
-
-        for (int i = 1; i <= donationList.getNumberOfEntries(); i++) {
-            Donation donation = donationList.getEntry(i);
-
-            if (donation.getItemCategory().equalsIgnoreCase(category)) {
-                String item = donation.getItem();
-                double amount;
-
-                // Check if the category is "cash" or non-cash
-                if (category.equalsIgnoreCase("Cash")) {
-                    amount = donation.getCashAmount(); // Use cash amount for cash donations
-                } else {
-                    amount = donation.getAmount(); // Use non-cash amount for other categories
+        
+        // Handle amount or quantity based on category
+        if (newCategory.equalsIgnoreCase("Cash")) {
+            System.out.println("Current Amount : " + donation.getCashAmount());
+            System.out.print("Enter new Amount : ");
+            String amount = scanner.nextLine();
+            if (!amount.isEmpty()){
+                if (Validator.isValidAmount(String.valueOf(amount))) {
+                    double newAmount = Double.parseDouble(amount);
+                    donation.setCashAmount(newAmount);
                 }
-
-                double currentTotal = itemTotals.get(item) != null ? itemTotals.get(item) : 0;
-                itemTotals.put(item, currentTotal + amount);
+            }
+        } else {
+            System.out.println("Current Quantity : " + donation.getAmount());
+            System.out.print("Enter new Quantity : ");
+            String quantity = scanner.nextLine();
+            if (!quantity.isEmpty()){
+                if (Validator.isValidPositiveInteger(String.valueOf(quantity))) {
+                    int newQuantity = Integer.parseInt(quantity);
+                    donation.setAmount(newQuantity);
+                }
             }
         }
-        return itemTotals;
+
+        System.out.println(greenText + "Donation details updated successfully!" + resetText);
+        System.out.println(greenText + "Press any key to continue..." + resetText);
+        scanner.nextLine();
     }
+
     
-    public void getReportChoice() {
-        int choice;
-        do {
-            choice = ui.displayReportChoice();
-            switch (choice) {
-                case 1 :
-                    System.out.println(generateReport());
-                    ui.enterToContinue();
-                    break;
-                case 2 :
-                    System.out.println(generateDetailedReport());
-                    ui.enterToContinue();
-                    break;
-                case 3 :
-                    runDonationManagement();
-                    break;
-                default :
-                    System.err.println("Invalid choice. Please select an option between 1 and 3.");
-            }
-        } while (choice != 0);
-    }
-    private class CategoryTotal {
-        String category;
-        double total;
+    public void trackDonation() {
+        System.out.println("*****Track Donated Items in Categories*****");
+        String itemCategory = DonationItemCategory();
 
-        public CategoryTotal(String category, double total) {
-            this.category = category;
-            this.total = total;
-        }
-    }
-
-    private class ItemTotal {
-        String category;
-        String item;
-        double total;
-
-        public ItemTotal(String category, String item, double total) {
-            this.category = category;
-            this.item = item;
-            this.total = total;
-        }
-    }
-    
-
-    public String generateReport() {
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-        StringBuilder reportContent = new StringBuilder();
-
-        reportContent.append("***** Donation Summary Report *****\n");
-        reportContent.append("Date Generated    : ").append(LocalDate.now().format(dateFormatter)).append("\n\n");
-
-        double cashTotal = calculateCategoryAndItemTotals(reportContent);
-
-        // Output total cash donations
-        reportContent.append("Total Amount of Cash : RM ").append(String.format("%.2f", cashTotal)).append("\n");
-
-        return reportContent.toString();
-    }
-
-    private double calculateCategoryAndItemTotals(StringBuilder reportContent) {
-        double cashTotal = 0.0;
-        LinkedList<String> categories = new LinkedList<>();
-        LinkedList<String> items = new LinkedList<>();
-        LinkedList<Double> categoryAmounts = new LinkedList<>();
-        LinkedList<Double> itemAmounts = new LinkedList<>();
-
-        for (int i = 1; i <= donationList.getNumberOfEntries(); i++) {
-            Donation donation = donationList.getEntry(i);
-            String category = donation.getItemCategory().trim();
-            String item = donation.getItem().trim();
-            double amount = (category.equalsIgnoreCase("Cash")) ? donation.getCashAmount() : donation.getAmount();
-
-            // Track total cash separately
-            if (category.equalsIgnoreCase("Cash")) {
-                cashTotal += amount;
+        if (itemCategory.equals("Cash")) {
+            // Track cash donations
+            double totalCashAmount = controller.trackTotalCashDonations();
+            System.out.println("Total cash donations: RM " + totalCashAmount);
+        } else {
+            // Track non-cash donations
+            LinkedList<String> items = controller.trackDonationByCategory(itemCategory);
+            System.out.println("Tracking items for category: " + itemCategory);
+            if (items.getNumberOfEntries() > 0) {
+                System.out.println("Items in category " + itemCategory + ":");
+                for (int i = 1; i <= items.getNumberOfEntries(); i++) {
+                    System.out.println(i + ". " + items.getEntry(i));
+                }
+                System.out.println(greenText + "Done Tracking ..." + resetText);
             } else {
-                // Track category totals
-                int categoryIndex = categories.indexOf(category);
-                if (categoryIndex == -1) {
-                    categories.add(category);
-                    categoryAmounts.add(amount);
-                } else {
-                    double updatedAmount = categoryAmounts.getEntry(categoryIndex) + amount;
-                    categoryAmounts.set(categoryIndex, updatedAmount);
-                }
-
-                // Track item totals
-                String itemKey = category + ": " + item;
-                int itemIndex = items.indexOf(itemKey);
-                if (itemIndex == -1) {
-                    items.add(itemKey);
-                    itemAmounts.add(amount);
-                } else {
-                    double updatedItemAmount = itemAmounts.getEntry(itemIndex) + amount;
-                    itemAmounts.set(itemIndex, updatedItemAmount);
-                }
+                System.err.println("No items found in category " + itemCategory);
             }
         }
 
-        // Add totals for each category and its items
-        for (int i = 1; i <= categories.getNumberOfEntries(); i++) {
-            String category = categories.getEntry(i);
-            double totalAmount = categoryAmounts.getEntry(i);
+        System.out.println(greenText + "Press any key to continue..." + resetText);
+        scanner.nextLine();
+    }
 
-            if (!category.equalsIgnoreCase("Cash")) {
-                reportContent.append("Total ").append(category).append(" : ").append((int) totalAmount).append("\n");
+    
+    public void listDonationsByDonors() {
+            System.out.println("***** List Donation by Different Donor *****");
 
-                // Process items under this category
-                for (int j = 1; j <= items.getNumberOfEntries(); j++) {
-                    String itemKey = items.getEntry(j);
-                    if (itemKey.startsWith(category + ": ")) {
-                        double itemTotal = itemAmounts.getEntry(j);
-                        String itemName = itemKey.substring(category.length() + 2);
-                        reportContent.append("-> Total ").append(itemName).append(" : ").append((int) itemTotal).append("\n");
+            // Assuming the controller can list donations by donor
+            System.out.print("Enter Donor ID: ");
+            String donorID = scanner.nextLine();
+
+            LinkedList<Donation> donations = controller.listDonationsByDonor(donorID);
+            if (donations != null && donations.getNumberOfEntries() > 0) {
+                for (int i = 1; i <= donations.getNumberOfEntries(); i++) {
+                    Donation donation = donations.getEntry(i);
+                    System.out.println("Donation Date   : " + donation.getDonationDate());
+                    System.out.println("Donation ID     : " + donation.getDonationID());
+                    System.out.println("Donation Type   : " + donation.getItemCategory());
+                    System.out.println("Items           : " + donation.getItem());
+
+                    // Display the amount based on donation type
+                    if (donation.getItemCategory().equalsIgnoreCase("Cash")) {
+                        System.out.println("Cash Amount     : " + donation.getCashAmount());
+                    } else {
+                        System.out.println("Amount          : " + donation.getAmount());
                     }
+
+                    System.out.println("-----------------------------------------");
                 }
-                reportContent.append("--------------------------------------\n");
+            } else {
+                System.err.println("No donations found for the specified donor.");
+            }
+            System.out.println(greenText + "Press any key to continue..." + resetText);
+            scanner.nextLine();
+        }
+
+
+    public void listDonations() {
+        System.out.println("***** List All Donations *****");
+
+        LinkedList<Donation> donations = controller.listDonations();
+        if (donations != null && donations.getNumberOfEntries() > 0) {
+            for (int i = 1; i <= donations.getNumberOfEntries(); i++) {
+                Donation donation = donations.getEntry(i);
+                System.out.println("Donation ID     : " + donation.getDonationID());
+                System.out.println("Donor ID        : " + donation.getDonorID());
+                System.out.println("Donation Type   : " + donation.getItemCategory());
+                System.out.println("Items           : " + donation.getItem());
+
+                // Display the amount based on donation type
+                if (donation.getItemCategory().equalsIgnoreCase("Cash")) {
+                    System.out.println("Amount (Cash)   : " + donation.getCashAmount());
+                } else {
+                    System.out.println("Amount (Non-Cash): " + donation.getAmount());
+                }
+
+                System.out.println("-----------------------------------------");
+            }
+        } else {
+            System.err.println("No donations found.");
+        }
+        System.out.println(greenText + "Press any key to continue..." + resetText);
+        scanner.nextLine();
+    }
+    
+    public void filterByDateRange() {
+        LocalDate startDate = getValidDateInput("Enter start date (dd-MM-yyyy): ");
+        LocalDate endDate = getValidDateInput("Enter end date (dd-MM-yyyy): ");
+        
+        ListInterface<Donation> donations = controller.listDonations();
+        Filter<Donation> filter = new Filter<>();
+        
+        ListInterface<Donation> filtered = filter.filterByDateRange(donations, startDate, endDate);
+        System.out.println("Filtered by Date Range : " + startDate + " until " + endDate);
+        displayDonations(filtered);
+        System.out.println(greenText + "Press any key to continue..." + resetText);
+        scanner.nextLine();
+    }
+
+    public void filterByDonationAmountRange() {
+        double minAmount = getValidDoubleInput("Enter minimum donation amount: ");
+        double maxAmount = getValidDoubleInput("Enter maximum donation amount: ");
+        
+        ListInterface<Donation> donations = controller.listDonations();
+        Filter<Donation> filter = new Filter<>();
+        
+        ListInterface<Donation> filtered = filter.filterByDonationAmountRange(donations, minAmount, maxAmount);
+        System.out.println("Filtered by Donation Amount Range:");
+        displayDonations(filtered);
+        System.out.println(greenText + "Press any key to continue..." + resetText);
+        scanner.nextLine();
+    }
+
+    public void filterByDateAndAmountRange() {
+        LocalDate startDate = getValidDateInput("Enter start date (dd-MM-yyyy): ");
+        LocalDate endDate = getValidDateInput("Enter end date (dd-MM-yyyy): ");
+        double minAmount = getValidDoubleInput("Enter minimum donation amount: ");
+        double maxAmount = getValidDoubleInput("Enter maximum donation amount: ");
+        
+        ListInterface<Donation> donations = controller.listDonations();
+        Filter<Donation> filter = new Filter<>();
+        
+        ListInterface<Donation> filtered = filter.filterByDateAndAmountRange(donations, startDate, endDate, minAmount, maxAmount);
+
+        System.out.println("Filtered by Date Range : " + startDate + " to " + endDate);
+        System.out.println("Filtered by Amount Range : " + minAmount + " to " + maxAmount);
+        displayDonations(filtered);
+        
+        System.out.println(greenText + "Press any key to continue..." + resetText);
+        scanner.nextLine();
+    }
+    
+    public int displayReportChoice(){
+        System.out.println("***** Report Generation *****");
+        System.out.println("1. Generate Total Report");
+        System.out.println("2. Generate Details Report");
+        System.out.println("3. Back");
+        int choice = 0;
+        while (choice < 1 || choice > 3){
+            choice = getValidIntInput("Enter Choice : ");
+            if (choice < 1 || choice > 3){
+                System.err.println("Invalid Input. Please enter value between 1 and 3.");
             }
         }
-
-        return cashTotal;
-    }
-
-
-
-
-
-    public String generateDetailedReport() {
-        StringBuilder report = new StringBuilder();
-        report.append("***** Detailed Report *****\n");
-        report.append("Date Generated: ").append(LocalDate.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))).append("\n\n");
-        report.append(String.format("%-4s | %-12s | %-12s | %-13s | %-18s | %-16s | %-10s | %-10s\n", 
-                                "No.", "Donation ID", "Donor ID", "Donation Date", "Donation Type", "Item", "Quantity", "Cash Amount (RM)"));
-        report.append("--------------------------------------------------------------------------------------------------------------------------\n");
-        for (int i = 1; i <= donationList.getNumberOfEntries(); i++) {
-            Donation donation = donationList.getEntry(i);
-            report.append(String.format("%4d. | %-12s | %-12s | %-13s | %-18s | %-16s | %-10s | %-10.2f\n", 
-                                                i, 
-                                                donation.getDonationID(), 
-                                                donation.getDonorID(), 
-                                                donation.getDonationDate(), 
-                                                donation.getItemCategory(), 
-                                                donation.getItem(), 
-                                                donation.getAmount(), 
-                                                donation.getCashAmount()));
-        }
-        report.append("--------------------------------------------------------------------------------------------------------------------------\n");
-        return report.toString();
-    }
-
-    public static void main(String[] args) {
-        DonationManagement controller = new DonationManagement();
-        DonationManagementUI ui = new DonationManagementUI(controller);
-        driver driver = new driver();
-        controller.setUI(ui);
-        controller.runDonationManagement();
-        driver.runDriver();
+        return choice;
     }
 }
