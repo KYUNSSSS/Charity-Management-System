@@ -22,7 +22,7 @@ public class DonationManagementUI {
 
     Scanner scanner = new Scanner(System.in);
     private DonationManagement controller;
-    private DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+    private DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");    
 
     
     // Constructor that takes DonationManagement as a parameter
@@ -104,6 +104,13 @@ public class DonationManagementUI {
         return itemCategory;
     }
     
+    public boolean isValidDonorID(String input) {
+        // Regular expression for DNT followed by exactly 5 digits
+        String regex = "DNR\\d{5}";
+        return input.matches(regex);
+    }
+
+    
     private int getValidIntInput(String prompt) {
         int value = -1;
         while (value < 0) {
@@ -177,13 +184,13 @@ public class DonationManagementUI {
         return items[choice - 1];
     }
     
-    private String getCategoryByChoice(int choice) {
+    private String getCategoryByChoice(String choice) {
         return switch (choice) {
-            case 1 -> "Clothing";
-            case 2 -> "Food and Beverage";
-            case 3 -> "Books";
-            case 4 -> "Electronic Devices";
-            case 5 -> "Cash";
+            case "1" -> "Clothing";
+            case "2" -> "Food and Beverage";
+            case "3" -> "Books";
+            case "4" -> "Electronic Devices";
+            case "5" -> "Cash";
             default -> "";
         };
     }
@@ -306,14 +313,14 @@ public class DonationManagementUI {
         String donationID = controller.generateNextDonationID();
         System.out.println("Donation ID : " + donationID);
         while (true){
-        System.out.print("Enter Donor ID    : ");
-        String donorID = scanner.nextLine();
+            System.out.print("Enter Donor ID    : ");
+            String donorID = scanner.nextLine();
             if(isDonorIDValid(donorID, donorList)){
                 donorID2 = donorID;
                 break;
             }else{
                   System.out.println("Enter valid id.");      
-                        }
+            }
         }
 
         String itemCategory = DonationItemCategory();
@@ -422,13 +429,15 @@ public class DonationManagementUI {
             return;
         }
 
-        System.out.println("Leave blank and press Enter to keep the current value.");
+        System.out.println("Leave blank, input not match and press Enter default to keep the current value.");
 
         // Display and select new Donor ID
         System.out.print("Enter new Donor ID : ");
         String newDonorID = scanner.nextLine();
         if (!newDonorID.isEmpty()) {
-            donation.setDonorID(newDonorID);
+            if (isValidDonorID(String.valueOf(newDonorID))){
+                donation.setDonorID(newDonorID);
+            }
         }
 
         // Display and select new Item Category
@@ -439,37 +448,49 @@ public class DonationManagementUI {
         }
         System.out.println("Current Donation Type : " + donation.getItemCategory());
         System.out.print("Enter new Donation Type : ");
-        int categoryChoice = Integer.parseInt(scanner.nextLine());
+        String categoryChoice = scanner.nextLine();
         String newCategory = getCategoryByChoice(categoryChoice);
-
-        // Update category if changed
-        if (!newCategory.isEmpty()) {
-            donation.setItemCategory(newCategory);
+        if (!categoryChoice.isEmpty()){
+            if("1".equals(categoryChoice)||"2".equals(categoryChoice)||"3".equals(categoryChoice)||"4".equals(categoryChoice)||"5".equals(categoryChoice)){
+                donation.setItemCategory(newCategory);
+            }
         }
         
         if(donation.getItemCategory().equalsIgnoreCase("Cash")){
             donation.setItem("Cash");
         }else{
+            getNewItemInput(donation.getItemCategory());
             System.out.println("Current Donation Item : " + donation.getItem());
-            getNewItemInput(newCategory);
             System.out.print("Enter new Item : ");
             String newItem = scanner.nextLine();
             if (!newItem.isEmpty()) {
-                donation.setItem(newItem);
+                if("1".equals(newItem)||"2".equals(newItem)||"3".equals(newItem)||"4".equals(newItem)||"5".equals(newItem)){
+                    donation.setItem(newItem);
+                }
             }
         }
         
         // Handle amount or quantity based on category
         if (newCategory.equalsIgnoreCase("Cash")) {
             System.out.println("Current Amount : " + donation.getCashAmount());
-            System.out.println("Enter new Amount : ");
-            double newAmount = Double.parseDouble(scanner.nextLine());
-            donation.setCashAmount(newAmount);
+            System.out.print("Enter new Amount : ");
+            String amount = scanner.nextLine();
+            if (!amount.isEmpty()){
+                if (Validator.isValidAmount(String.valueOf(amount))) {
+                    double newAmount = Double.parseDouble(amount);
+                    donation.setCashAmount(newAmount);
+                }
+            }
         } else {
             System.out.println("Current Quantity : " + donation.getAmount());
-            System.out.println("Enter new Quantity : ");
-            int newQuantity = Integer.parseInt(scanner.nextLine());
-            donation.setAmount(newQuantity); // Assuming quantity is stored as amount for non-cash
+            System.out.print("Enter new Quantity : ");
+            String quantity = scanner.nextLine();
+            if (!quantity.isEmpty()){
+                if (Validator.isValidPositiveInteger(String.valueOf(quantity))) {
+                    int newQuantity = Integer.parseInt(quantity);
+                    donation.setAmount(newQuantity);
+                }
+            }
         }
 
         System.out.println(greenText + "Donation details updated successfully!" + resetText);
@@ -604,14 +625,12 @@ public class DonationManagementUI {
         ListInterface<Donation> donations = controller.listDonations();
         Filter<Donation> filter = new Filter<>();
         
-        ListInterface<Donation> filteredByDate = filter.filterByDateRange(donations, startDate, endDate);
-        ListInterface<Donation> filteredByAmount = filter.filterByDonationAmountRange(donations, minAmount, maxAmount);
+        ListInterface<Donation> filtered = filter.filterByDateAndAmountRange(donations, startDate, endDate, minAmount, maxAmount);
 
-        System.out.println("Filtered by Date Range:");
-        displayDonations(filteredByDate);
+        System.out.println("Filtered by Date Range : " + startDate + " to " + endDate);
+        System.out.println("Filtered by Amount Range : " + minAmount + " to " + maxAmount);
+        displayDonations(filtered);
         
-        System.out.println("Filtered by Donation Amount Range:");
-        displayDonations(filteredByAmount);
         System.out.println(greenText + "Press any key to continue..." + resetText);
         scanner.nextLine();
     }
