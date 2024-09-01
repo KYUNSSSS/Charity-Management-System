@@ -28,7 +28,6 @@ public class DoneeManagement {
     private MapInterface<String, ListInterface<Distribution>> donationMap = new HashMap<>();
     private Filter<Donee> filterDonee = new Filter<>();
     private Filter<Distribution> filterDonation = new Filter<>();
-
     private int lastDoneeNumber = 0;
 
     public DoneeManagement() {
@@ -57,11 +56,9 @@ public class DoneeManagement {
         for (int i = 1; i <= distributeList.getNumberOfEntries(); i++) {
             Distribution distribution = distributeList.getEntry(i);
             String doneeID = distribution.getDoneeID();
-
             if (!donationMap.containsKey(doneeID)) {
                 donationMap.put(doneeID, new LinkedList<Distribution>());
             }
-
             donationMap.get(doneeID).add(distribution); // Populate HashMap for Donations
         }
     }
@@ -69,9 +66,7 @@ public class DoneeManagement {
     public void runDoneeManagement() {
         int choice = 0;
         do {
-
             choice = doneeUI.getMenuChoice();
-
             switch (choice) {
                 case 0:
                     driver driver = new driver();
@@ -79,7 +74,6 @@ public class DoneeManagement {
                     break;
                 case 1:
                     addNewDonee();//done
-
                     break;
                 case 2:
                     updateDoneeDetails();//done
@@ -91,11 +85,9 @@ public class DoneeManagement {
                     break;
                 case 4:
                     listDoneeDonation();//done
-
                     break;
                 case 5:
                     filterDonees();
-
                     break;
                 case 6:
                     removeDonee();
@@ -103,7 +95,6 @@ public class DoneeManagement {
                     break;
                 case 7:
                     generateSummaryReport();
-
                     break;
                 case 8:
                     generateDetailReport();
@@ -160,7 +151,6 @@ public class DoneeManagement {
 
     public boolean updateDoneeDetails(String doneeID) {
         boolean updated = false;
-
         for (int i = 1; i <= doneeList.getNumberOfEntries(); i++) {
             Donee donee = doneeList.getEntry(i);
             if (donee.getDoneeID().equalsIgnoreCase(doneeID)) {
@@ -178,10 +168,13 @@ public class DoneeManagement {
         } else {
             System.out.println("Donee with ID " + doneeID + " not found.");
         }
-
         return updated;
     }
 
+    public Donee searchDoneeByID(String doneeID) {
+        return doneeMap.get(doneeID);
+    }
+    
     public void searchDoneeDetails() {
         String doneeID = doneeUI.inputDoneeID();
         Donee foundDonee = searchDoneeByID(doneeID.toUpperCase());
@@ -189,7 +182,6 @@ public class DoneeManagement {
             doneeUI.listDonee(foundDonee);
         } else {
             System.out.println("Donee not found.");
-
         }
     }
 
@@ -200,17 +192,14 @@ public class DoneeManagement {
 
     public void listDonationsByDoneeID(String doneeID) {
         ListInterface<Distribution> donations = donationMap.get(doneeID);
-
         if (donations != null && !donations.isEmpty()) {
             System.out.println("\nDonation for " + doneeMap.get(doneeID).getDoneeName());
             doneeUI.DoneeDonationHeader();
             double totalDonations = 0;
             int totalGoods = 0;
             double totalCash = 0;
-
             for (int i = 1; i <= donations.getNumberOfEntries(); i++) {
                 Distribution donation = donations.getEntry(i);
-
                 System.out.printf("%-15s %-20s %-15s %-10d %-10.2f %-10s %-20s\n",
                         donation.getDistributionID(),
                         donation.getItemName(),
@@ -219,27 +208,21 @@ public class DoneeManagement {
                         donation.getAmount(),
                         donation.getStatus(),
                         donation.getDistributionDate().toString());
-
                 totalDonations++;
                 totalGoods += donation.getQuantity();
                 totalCash += donation.getAmount();
             }
-
             System.out.println("*********************************************************************************************************");
             System.out.println("Total Donations: " + totalDonations);
             System.out.println("Total Donated Goods: " + totalGoods);
             System.out.println("Total Donated Cash: " + String.format("%.2f", totalCash));
             System.out.println("**********************************");
             MessageUI.pressAnyKeyToContinue();
-
         } else {
             System.out.println("No donations found for Donee ID: " + doneeID);
         }
     }
 
-    public Donee searchDoneeByID(String doneeID) {
-        return doneeMap.get(doneeID);
-    }
 
     public String getAllDonee() {
         String outputStr = "";
@@ -254,7 +237,6 @@ public class DoneeManagement {
         int filterChoice = doneeUI.getFilterChoice(); // Prompt user to choose filter type
         ListInterface<Donee> filteredDonees;
         ListInterface<Distribution> filteredInfoByDoneeID = null;
-
         switch (filterChoice) {
             case 1:
                 String doneeType = doneeUI.inputDoneeType();
@@ -266,13 +248,11 @@ public class DoneeManagement {
                 while (true) {
                     doneeID = doneeUI.inputDoneeID();
                     if (doneeUI.isDoneeIDValid(doneeID, doneeList)) {
-
                         LocalDate startDate = doneeUI.inputStartDate();
                         LocalDate endDate = doneeUI.inputEndDate();
                         filteredInfoByDoneeID = filterDonation.filterByDateAndDoneeID(distributeList, startDate, endDate, doneeID);
                         System.out.println("\nDonation for " + doneeMap.get(doneeID).getDoneeName() + " between " + startDate + " to " + endDate);
                         doneeUI.displayFilteredDoneesByDoneeID(filteredInfoByDoneeID);
-
                         break;
                     } else {
                         System.err.println("Donee ID not found.");
@@ -318,14 +298,10 @@ public class DoneeManagement {
         int totalFamilies = 0;
         int totalOrganizations = 0;
         int totalIndividuals = 0;
-
-        // Use a LinkedList to keep track of unique locations
         ListInterface<String> uniqueLocations = new LinkedList<>();
 
         for (int i = 1; i <= doneeList.getNumberOfEntries(); i++) {
             Donee donee = doneeList.getEntry(i);
-
-            // Count the type of Donee
             switch (donee.getDoneeType()) {
                 case "---FAMILY---":
                     totalFamilies++;
@@ -337,23 +313,18 @@ public class DoneeManagement {
                     totalIndividuals++;
                     break;
             }
-
-            // Check and add unique locations
             String location = donee.getDoneeLocation();
             boolean locationExists = false;
-
             for (int j = 1; j <= uniqueLocations.getNumberOfEntries(); j++) {
                 if (uniqueLocations.getEntry(j).equalsIgnoreCase(location)) {
                     locationExists = true;
                     break;
                 }
             }
-
             if (!locationExists) {
                 uniqueLocations.add(location);
             }
         }
-
         // Display the summary report
         System.out.println("=== Donee Summary Report ===");
         System.out.println("Total Number of Donees: " + totalDonees);
@@ -381,7 +352,6 @@ public class DoneeManagement {
 
     public void generateDetailReport() {
         System.out.printf("%50s\n", "DETAILED REPORT");
-
         doneeUI.displayFilteredDonees(doneeList);
     }
 
