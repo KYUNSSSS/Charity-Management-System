@@ -7,6 +7,7 @@ import entity.*;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.Comparator;
 
 /**
  *
@@ -59,6 +60,7 @@ public class DoneeManagement {
     }
 
     public void runDoneeManagement() {
+        doneeList.sort(doneeIDComparator);
         int choice = 0;
         do {
             choice = doneeUI.getMenuChoice();
@@ -362,6 +364,12 @@ public class DoneeManagement {
         lastDoneeNumber++;
         return String.format("DE%03d", lastDoneeNumber); // Format as DE001, DE002, etc.
     }
+    Comparator<Donee> doneeIDComparator = new Comparator<Donee>() {
+        @Override
+        public int compare(Donee d1, Donee d2) {
+            return d1.getDoneeID().compareTo(d2.getDoneeID());
+        }
+    };
 
     public static void main(String[] args) {
         DoneeManagement doneeMaintenance = new DoneeManagement();
