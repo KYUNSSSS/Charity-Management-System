@@ -68,15 +68,18 @@ public class VolunteerManagement {
                 case 2:                    
                     removeVolunteer();
                     volunteerUI.listAllVolunteers(getAllVolunteer());
+                    MessageUI.pressAnyKeyToContinue();
                     break;
                 case 3:
                     searchVolunteerDetails();
+                    MessageUI.pressAnyKeyToContinue();
                     break;
                 case 4:
                     assignEvents();
                     break;
                 case 5:
                     searchEventVolunteer(volunteerList);
+                    MessageUI.pressAnyKeyToContinue();
                     break;
                 case 6:
                     volunteerUI.listAllVolunteers(getAllVolunteer());
@@ -106,7 +109,7 @@ public class VolunteerManagement {
     
     public void removeVolunteer() {
         String volunteerID = volunteerUI.inputVolunteerID();
-        boolean result = removeVolunteerById(volunteerID);
+        removeVolunteerById(volunteerID);
     }
     
     public boolean removeVolunteerById(String volunteerID) {
@@ -135,7 +138,7 @@ public class VolunteerManagement {
         String volunteerID = volunteerUI.inputVolunteerID();
         Volunteer foundVolunteer = searchVolunteerByID(volunteerID);
         if (foundVolunteer != null) {
-            System.out.println(foundVolunteer);
+            volunteerUI.listVolunteer(foundVolunteer);
         } else {
             System.out.println("Volunteer not found.");
         }
@@ -206,7 +209,6 @@ public class VolunteerManagement {
     }
     
     public void searchEventVolunteer(ListInterface list) {
-        volunteerUI.listAllVolunteers(getAllVolunteer());
         String volunteerID = volunteerUI.inputVolunteerID();
         if (volunteerMap.containsKey(volunteerID)) {
             volunteerUI.listEvent(volunteerMap.get(volunteerID));
@@ -233,10 +235,12 @@ public class VolunteerManagement {
             case 1:
                 String volunteerType = volunteerUI.inputVolunteerType();
                 filteredVolunteers = filterVolunteer.filterByVolunteerType(volunteerList,volunteerType);
+                volunteerUI.displayFilteredVolunteers(filteredVolunteers);
                 break;
             case 2:
                 String event = volunteerUI.inputEvent();
                 filteredVolunteers = filterVolunteer.filterByEvent(volunteerList, event);
+                volunteerUI.displayFilteredVolunteers(filteredVolunteers);
                 break;
             default:
                 MessageUI.displayInvalidChoiceMessage();
@@ -252,8 +256,18 @@ public class VolunteerManagement {
         int togetherRegCount = 0, togetherSupCount = 0, togetherLogCount = 0, togetherCrcCount = 0;
         int actTotal, shareTotal, togetherTotal;
         int totalVolunteer = volunteerList.getNumberOfEntries();
+        int totalReg = 0, totalSup = 0, totalLog = 0, totalCrc = 0;
         for (int i = 1; i  <= totalVolunteer;i++) {
            Volunteer volunteer = volunteerList.getEntry(i); 
+           if(volunteer.getVolunteerType().contains(volunteerType[0])){
+               totalReg++;
+           } else if(volunteer.getVolunteerType().contains(volunteerType[1])){
+               totalSup++;
+           } else if(volunteer.getVolunteerType().contains(volunteerType[2])) {
+               totalLog++;
+           } else if(volunteer.getVolunteerType().contains(volunteerType[3])) {
+               totalCrc++;
+           }
             if(volunteer.getVolunteerType().contains(volunteerType[0])) {
                 if(volunteer.getEventAssigned().contains(event[0])) {
                     actRegCount++;
@@ -307,7 +321,7 @@ public class VolunteerManagement {
         shareTotal = shareRegCount + shareSupCount + shareLogCount + shareCrcCount;
         togetherTotal = togetherRegCount + togetherSupCount + togetherLogCount + togetherCrcCount;
         
-        volunteerUI.generateSummaryReport(actRegCount, actSupCount, actLogCount, actCrcCount, shareRegCount, shareSupCount, shareLogCount, shareCrcCount, togetherRegCount, togetherSupCount, togetherLogCount, togetherCrcCount, actTotal, shareTotal, togetherTotal, totalVolunteer);
+        volunteerUI.generateSummaryReport(actRegCount, actSupCount, actLogCount, actCrcCount, shareRegCount, shareSupCount, shareLogCount, shareCrcCount, togetherRegCount, togetherSupCount, togetherLogCount, togetherCrcCount, actTotal, shareTotal, togetherTotal, totalVolunteer, totalReg, totalSup, totalLog, totalCrc);
         
     }
     
@@ -321,7 +335,7 @@ public class VolunteerManagement {
     
     private String generateNextVolunteerID() {
         lastVolunteerNumber++;
-        return String.format("V%03d", lastVolunteerNumber); // Format as DE001, DE002, etc.
+        return String.format("V%03d", lastVolunteerNumber); // Format as V001, V002, etc.
     }
     
     
