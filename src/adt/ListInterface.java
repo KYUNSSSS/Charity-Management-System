@@ -3,11 +3,10 @@ package adt;
 import java.util.Comparator;
 
 /**
- * ListInterface.java An interface for the ADT List. Entries in the list have
- * positions that begin with 1.
  *
  * @author Frank M. Carrano
  * @version 2.0
+ * @modifiedBy Team Members
  */
 public interface ListInterface<T> {
 
