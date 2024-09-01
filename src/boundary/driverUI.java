@@ -2,36 +2,55 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package boundary;
+package control;
 
-import java.util.*;
+import boundary.*;
+import utility.MessageUI;
 
 /**
  *
- * @author Yunshen
+ * @author Hp
  */
-public class driverUI {
+public class driver {
 
-    Scanner scanner = new Scanner(System.in);
+    private driverUI driverUI = new driverUI();
+    private DoneeManagement donee = new DoneeManagement();
+    private DonorManagement donor = new DonorManagement();
+    private DonationManagementUI donation = new DonationManagementUI();
+    private DonationDistribution distribution = new DonationDistribution();
+    private VolunteerManagement volunteer = new VolunteerManagement();
 
-    public int getMenuChoice() {
-        try {
-            System.out.println("\n******CHARITY MANAGEMENT SYSTEM******");
-            System.out.println("1. Donor Management");
-            System.out.println("2. Donee Management");
-            System.out.println("3. Donation Management");
-            System.out.println("4. Donation Distribution");
-            System.out.println("5. Volunteer Management");
-            System.out.println("0. Quit");
-            System.out.print("Enter choice(0-5): ");
-            int choice = scanner.nextInt();
-            scanner.nextLine();
-            System.out.println();
-            return choice;
-        } catch (Exception ex) {
-            System.out.println("Invalid input");
-        }
-        return 0;
+    public void runDriver() {
+        int choice = 0;
+        do {
+            choice = driverUI.getMenuChoice();
+            switch (choice) {
+                case 0:
+                    MessageUI.displayExitMessage();
+                    break;
+                case 1:
+                    donor.runDonorManagement();
+                    break;
+                case 2:
+                    donee.runDoneeManagement();
+                    break;
+                case 3:
+                    donation.runDonationManagement();
+                    break;
+                case 4:
+                    distribution.runDonationDistribution();
+                    break;
+                case 5:
+                    volunteer.runVolunteerManagement();
+                    break;
+                default:
+                    MessageUI.displayInvalidChoiceMessage();
+            }
+        } while (choice != 0);
     }
 
+    public static void main(String[] args) {
+        driver driver = new driver();
+        driver.runDriver();
+    }
 }
