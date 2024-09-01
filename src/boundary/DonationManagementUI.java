@@ -492,7 +492,8 @@ public class DonationManagementUI {
             getNewItemInput(donation.getItemCategory());
             System.out.println("Current Donation Item : " + donation.getItem());
             System.out.print("Enter new Item : ");
-            String newItem = scanner.nextLine();
+            String itemChoice = scanner.nextLine();
+            String newItem = getItemInput(itemChoice);
             if (!newItem.isEmpty()) {
                 if("1".equals(newItem)||"2".equals(newItem)||"3".equals(newItem)||"4".equals(newItem)||"5".equals(newItem)){
                     donation.setItem(newItem);
