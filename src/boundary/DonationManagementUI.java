@@ -454,6 +454,9 @@ public class DonationManagementUI {
     }
 
     public void amendDonationDetails() {
+        String newItem = "";
+        double newAmount = 0.0;
+        int newQuantity = 0;
         System.out.println("***** Amend Donation Details *****");
 
         System.out.print("Enter Donation ID to amend: ");
@@ -470,6 +473,7 @@ public class DonationManagementUI {
         if (!newDonorID.isEmpty()) {
             if (isValidDonorID(String.valueOf(newDonorID))){
                 donation.setDonorID(newDonorID);
+                
             }
         }
         System.out.println("Available Item Categories:");
@@ -485,15 +489,16 @@ public class DonationManagementUI {
             if("1".equals(categoryChoice)||"2".equals(categoryChoice)||"3".equals(categoryChoice)||"4".equals(categoryChoice)||"5".equals(categoryChoice)){
                 donation.setItemCategory(newCategory);
             }
+        }else {
+            newCategory = donation.getItemCategory();
         }
+            
         if(donation.getItemCategory().equalsIgnoreCase("Cash")){
             donation.setItem("Cash");
         }else{
             getNewItemInput(donation.getItemCategory());
             System.out.println("Current Donation Item : " + donation.getItem());
-            System.out.print("Enter new Item : ");
-            String itemChoice = scanner.nextLine();
-            String newItem = getItemInput(itemChoice);
+            newItem = getItemInput(newCategory);
             if (!newItem.isEmpty()) {
                 if("1".equals(newItem)||"2".equals(newItem)||"3".equals(newItem)||"4".equals(newItem)||"5".equals(newItem)){
                     donation.setItem(newItem);
@@ -506,7 +511,7 @@ public class DonationManagementUI {
             String amount = scanner.nextLine();
             if (!amount.isEmpty()){
                 if (Validator.isValidAmount(String.valueOf(amount))) {
-                    double newAmount = Double.parseDouble(amount);
+                    newAmount = Double.parseDouble(amount);
                     donation.setCashAmount(newAmount);
                 }
             }
@@ -516,11 +521,12 @@ public class DonationManagementUI {
             String quantity = scanner.nextLine();
             if (!quantity.isEmpty()){
                 if (Validator.isValidPositiveInteger(String.valueOf(quantity))) {
-                    int newQuantity = Integer.parseInt(quantity);
+                    newQuantity = Integer.parseInt(quantity);
                     donation.setAmount(newQuantity);
                 }
             }
         }
+        controller.amendDonationDetails(donationID, newDonorID, newCategory, newItem, newAmount, newQuantity);
         System.out.println(greenText + "Donation details updated successfully!" + resetText);
         System.out.println(greenText + "Press any key to continue..." + resetText);
         scanner.nextLine();
