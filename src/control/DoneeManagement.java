@@ -15,7 +15,7 @@ import java.time.LocalDate;
 
 /**
  *
- * @author Hp
+ * @author Kow Yun Shen
  */
 public class DoneeManagement {
 
@@ -202,12 +202,8 @@ public class DoneeManagement {
         ListInterface<Distribution> donations = donationMap.get(doneeID);
 
         if (donations != null && !donations.isEmpty()) {
-            System.out.println("Donation For " + doneeMap.get(doneeID).getDoneeName() + "\n**************");
-            System.out.printf("%-15s %-20s %-15s %-10s %-10s %-10s %-20s\n",
-                    "Distribution ID", "Item Name", "Category",
-                    "Quantity", "Amount", "Status", "Distribution Date");
-            System.out.println("**************");
-
+            System.out.println("\nDonation for " + doneeMap.get(doneeID).getDoneeName());
+            doneeUI.DoneeDonationHeader();
             double totalDonations = 0;
             int totalGoods = 0;
             double totalCash = 0;
@@ -229,11 +225,11 @@ public class DoneeManagement {
                 totalCash += donation.getAmount();
             }
 
-            System.out.println("**************");
+            System.out.println("*********************************************************************************************************");
             System.out.println("Total Donations: " + totalDonations);
             System.out.println("Total Donated Goods: " + totalGoods);
             System.out.println("Total Donated Cash: " + String.format("%.2f", totalCash));
-            System.out.println("**************");
+            System.out.println("**********************************");
             MessageUI.pressAnyKeyToContinue();
 
         } else {

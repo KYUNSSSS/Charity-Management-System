@@ -3,12 +3,11 @@ package dao;
 import adt.*;
 import entity.Donee;
 import java.io.*;
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 /**
  *
- * @author Kat Tan
+ * @author Kow Yun Shen
  */
 public class DoneeDAO implements Serializable {
   private String fileName = "donee.txt"; // For security and maintainability, should not have filename hardcoded here.
