@@ -27,48 +27,58 @@ public class LinkedList<T> implements ListInterface<T>, Serializable {
 
     @Override
     public boolean add(T newEntry) {
-        Node newNode = new Node(newEntry);	// create the new node
+        Node newNode = new Node(newEntry); // Create the new node
 
-        if (isEmpty()) {
-            firstNode = newNode;
-        } else {                        // add to end of nonempty list
-            Node currentNode = firstNode;	// traverse linked list with p pointing to the current node
-            while (currentNode.next != null) { // while have not reached the last node
-                currentNode = currentNode.next;
+        // Directly handle both empty and non-empty cases with a single assignment block
+        Node lastNode = firstNode;  // Set lastNode to the first node
+
+        // If the list is empty, assign the first node immediately
+        if (lastNode == null) {
+            firstNode = newNode;    // The new node becomes the first node
+        } else {
+            // Traverse the list by moving `lastNode` to its next node until the last node is reached
+            while (lastNode.next != null) {
+                lastNode = lastNode.next;  // Move to the next node
             }
-            currentNode.next = newNode; // make last node reference new node
+            lastNode.next = newNode;       // Attach the new node to the end
         }
 
-        numberOfEntries++;
-        return true;
+        numberOfEntries++; // Increment the to  tal number of entries
+        return true;       // Return true indicating the addition was successful
     }
 
+
     @Override
-    public boolean add(int newPosition, T newEntry) { // OutOfMemoryError possible
-        boolean isSuccessful = true;
-
-        if ((newPosition >= 1) && (newPosition <= numberOfEntries + 1)) {
-            Node newNode = new Node(newEntry);
-
-            if (isEmpty() || (newPosition == 1)) { // case 1: add to beginning of list
-                newNode.next = firstNode;
-                firstNode = newNode;
-            } else {								// case 2: list is not empty and newPosition > 1
-                Node nodeBefore = firstNode;
-                for (int i = 1; i < newPosition - 1; ++i) {
-                    nodeBefore = nodeBefore.next;		// advance nodeBefore to its next node
-                }
-
-                newNode.next = nodeBefore.next;	// make new node point to current node at newPosition
-                nodeBefore.next = newNode;		// make the node before point to the new node
-            }
-
-            numberOfEntries++;
-        } else {
-            isSuccessful = false;
+    public boolean add(int newPosition, T newEntry) {
+        // Validate the new position
+        if (newPosition < 1 || newPosition > numberOfEntries + 1) {
+            return false; // Invalid position
         }
 
-        return isSuccessful;
+        // Create a new node with the new entry
+        Node newNode = new Node(newEntry);
+
+        // Special case: adding at the beginning
+        if (newPosition == 1) {
+            newNode.next = firstNode; // New node points to the current first node
+            firstNode = newNode; // Update the first node to be the new node
+        } else {
+            // Traverse to the node just before the new position
+            Node previousNode = firstNode;
+
+            // Iterate using a counter for a clearer, more distinct approach
+            for (int count = 1; count < newPosition - 1; count++) {
+                previousNode = previousNode.next; // Move to the next node
+            }
+
+            // Insert newNode between previousNode and its next node
+            newNode.next = previousNode.next;
+            previousNode.next = newNode;
+        }
+
+        // Update the number of entries in the list
+        numberOfEntries++;
+        return true;
     }
 
     @Override
