@@ -7,6 +7,7 @@ package boundary;
 import adt.ListInterface;
 import entity.Volunteer;
 import java.util.Scanner;
+import utility.MessageUI;
 import utility.Validator;
 
 /**
@@ -35,7 +36,7 @@ public class VolunteerManagementUI {
     }
     
     public void listAllVolunteers(String outputStr) {
-        System.out.println("\nList of Volunteer:\n" + outputStr);
+        System.out.println("\nList of Volunteer:\nID, Type, Name, Phone Number, Email, Event Assigned \n" + outputStr);
     }
   
     public String inputVolunteerID() {
@@ -162,14 +163,29 @@ public class VolunteerManagementUI {
    }
     
     public void displayFilteredVolunteers(ListInterface<Volunteer> volunteers) {
+        
         if (volunteers.isEmpty()) {
             System.out.println("No matching volunteers found.");
         } else {
+            System.out.println("************************************************************************************************************************************");
+            System.out.printf("|%-15s| %-20s| %-15s| %-25s| %-20s| %-25s|\n",
+                                "Volunteer ID", "Volunteer Type", "Volunteer Name","Volunteer Phone Number" ,"Volunteer Email", "Event Assigned");
+            System.out.println("************************************************************************************************************************************");  
             for (int i = 1; i <= volunteers.getNumberOfEntries(); i++) {
-                System.out.println(volunteers.getEntry(i));
+                Volunteer volunteer = volunteers.getEntry(i);
+                System.out.printf("|%-15s| %-20s| %-15s| %-25s| %-20s| %-25s|\n",
+                        volunteer.getVolunteerID(),
+                        volunteer.getVolunteerType(),
+                        volunteer.getVolunteerName(),
+                        volunteer.getVolunteerPhoneNum(),
+                        volunteer.getVolunteerEmail(),
+                        volunteer.getEventAssigned());
             }
         }
+        System.out.println("************************************************************************************************************************************");
+        MessageUI.pressAnyKeyToContinue();
     }
+        
     
     public void listVolunteer(Volunteer volunteer) {
         System.out.println("***Profile***\nVolunteer ID: " + volunteer.getVolunteerID() + "\nName: " + volunteer.getVolunteerName() + "\nType: " + volunteer.getVolunteerType() + "\nPhone Number: " + volunteer.getVolunteerPhoneNum() + "\nEmail: " + volunteer.getVolunteerEmail() + "\nEvent Assigned: " + volunteer.getEventAssigned() +  "\n**********");
@@ -179,7 +195,7 @@ public class VolunteerManagementUI {
         System.out.println("Event(s) under volunteer ID " + volunteer.getVolunteerID() + ": " + volunteer.getEventAssigned());
     }
     
-    public void generateSummaryReport(int actRegCount, int actSupCount, int actLogCount, int actCrcCount, int shareRegCount, int shareSupCount, int shareLogCount, int shareCrcCount, int togetherRegCount, int togetherSupCount, int togetherLogCount, int togetherCrcCount, int actTotal, int shareTotal, int togetherTotal, int totalVolunteer) {
+    public void generateSummaryReport(int actRegCount, int actSupCount, int actLogCount, int actCrcCount, int shareRegCount, int shareSupCount, int shareLogCount, int shareCrcCount, int togetherRegCount, int togetherSupCount, int togetherLogCount, int togetherCrcCount, int actTotal, int shareTotal, int togetherTotal, int totalVolunteer, int totalReg, int totalSup, int totalLog, int totalCrc) {
         
         
         System.out.printf("%75s", "Summary report for Number of Volunteer in Event\n");
@@ -193,6 +209,10 @@ public class VolunteerManagementUI {
         System.out.printf("| %-25s | %-12d | %-12d | %-12d | %-15d | %-6s |\n","Together for Change", togetherRegCount, togetherSupCount, togetherLogCount, togetherCrcCount, togetherTotal);
         System.out.println(" ---------------------------------------------------------------------------------------------------");
         
+        System.out.println("\nTotal Number of Registration Volunteer: " + totalReg);
+        System.out.println("\nTotal Number of Support Volunteer: " + totalSup);
+        System.out.println("\nTotal Number of Logistic Volunteer: " + totalLog);
+        System.out.println("\nTotal Number of Crowd Control Volunteer: " + totalCrc);
         System.out.println("\nTotal Number of Volunteer: " + totalVolunteer);
     }
 }
