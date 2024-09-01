@@ -109,5 +109,3 @@ To run the system in NetBeans, run src/control/driver.java
 8. Press 8 to generate summary report
 9. Press 0 to return main menu
 
-Concept Diagram:
-https://drive.google.com/file/d/14g2J-Z4WPtv32z96vGCbCwnrIpY9u_b5/view?usp=sharing
