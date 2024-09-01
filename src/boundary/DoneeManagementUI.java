@@ -30,7 +30,7 @@ public class DoneeManagementUI {
                 System.out.println("6. Remove Donee");
                 System.out.println("7. Generate Summary Report");
                 System.out.println("8. Generate Detail Report");
-                System.out.println("0. Quit");
+                System.out.println("0. Back to Main Menu");
                 System.out.print("Enter choice(0-8): ");
                 int choice = scanner.nextInt();
                 scanner.nextLine();
