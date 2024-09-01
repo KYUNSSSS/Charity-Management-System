@@ -91,7 +91,7 @@ public class VolunteerManagementUI {
     
     public String inputVolunteerEmail() {
         while(true) {
-            System.out.print("Enter Volunteer Email: ");
+            System.out.print("Enter Volunteer Email(eg:Example#gmail.com): ");
             String email = scanner.nextLine();
             
             if (Validator.isValidEmail(email)) {
@@ -104,7 +104,7 @@ public class VolunteerManagementUI {
 
     public int inputPhoneNum() {
         while(true) {
-            System.out.print("Enter Phone Number: ");
+            System.out.print("Enter Phone Number(eg: 0123456789): ");
             String phone = scanner.nextLine();
             
             if (Validator.isValidPhoneNumber(phone)) {
@@ -153,16 +153,28 @@ public class VolunteerManagementUI {
         System.out.println("Volunteer Details Registered.");
         return new Volunteer("V000", type, name, phone, email, eventAssigned);
   }
+  
     public int getFilterChoice() {
-        while(true) {
             System.out.println("Filter by: ");
             System.out.println("1. Volunteer Type");
             System.out.println("2. Event");
-            System.out.print("Enter your choice: ");
-            int choice = scanner.nextInt();
-            scanner.nextLine();
-            return choice;
-        }
+            String choice = "";
+            do {
+                System.out.print("Enter your choice(1/2): ");
+
+                try {
+                    String choices = scanner.nextLine();
+                    choice = choices;
+                    if (!choice.equals("1") && !choice.equals("2")) {
+                        System.err.println("Invalid choice.");
+                    }
+
+                } catch (Exception ex) {
+                    System.err.println("Digit only.");
+                }
+
+            } while (!choice.equals("1") && !choice.equals("2"));
+        return Integer.parseInt(choice);
    }
     
     public void displayFilteredVolunteers(ListInterface<Volunteer> volunteers) {
