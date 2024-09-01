@@ -16,7 +16,7 @@ import utility.*;
  * @author Ng Yin Xuan
  */
 public class DonorManagement {
-    
+
     private ListInterface<Donor> donorList = new LinkedList<>();
     private ListInterface<Donation> donationList = new LinkedList<>();
     private DonorDAO donorDAO = new DonorDAO();
@@ -36,22 +36,45 @@ public class DonorManagement {
 
         for (int i = 1; i <= donorList.getNumberOfEntries(); i++) {
             Donor donor = donorList.getEntry(i);
-            donorMap.put(donor.getDonorID(), donor);
-            donorDonations.put(donor.getDonorID(), new LinkedList<>());
+            String donorID = donor.getDonorID();
+
+            // Check if the donorID already exists in the donorMap
+            if (!donorMap.containsKey(donorID)) {
+                donorMap.put(donorID, donor);
+                donorDonations.put(donorID, new LinkedList<>());
+            } else {
+                System.out.println("Duplicate donor found: " + donorID + ", skipping...");
+            }
         }
 
-        for (int i = 1; i <= donorDonations.capacity(); i++) {
-            Donor donor = donorList.getEntry(i);
-            if (donor != null) {
-                Donation donation = donationList.getEntry(i);
+//        System.out.println("\n\nAAA");
+//        for (int i = 1; i <= donorDonations.capacity(); i++) {
+////            System.out.println(donorDonations.getKey(i));
+//            Donor donor = donorList.getEntry(i);
+//            if (donor != null) {
+//                Donation donation = donationList.getEntry(i);
+//
+//                if (donation == null) {
+//                    continue;
+//                }
+//                String donorID = donation.getDonorID();
+//                if (donorDonations.containsKey(donorID)) {
+//                    donorDonations.get(donorID).add(donation); //get the donation list from the key and add donation
+//                }
+//            }
+//        }
+        for (int i = 1; i <= donationList.getNumberOfEntries(); i++) {
+            Donation donation = donationList.getEntry(i);
 
-                if (donation == null) {
-                    continue;
-                }
-                String donorID = donation.getDonorID();
-                if (donorDonations.containsKey(donorID)) {
-                    donorDonations.get(donorID).add(donation); //get the donation list from the key and add donation
-                }
+            if (donation == null) {
+                continue;
+            }
+
+            String donorID = donation.getDonorID();
+            if (donorDonations.containsKey(donorID)) {
+                donorDonations.get(donorID).add(donation); // Add donation to the correct donor's list
+            } else {
+                System.err.println("Warning: Donor with ID " + donorID + " not found in donorDonations.");
             }
         }
     }
@@ -199,7 +222,7 @@ public class DonorManagement {
         System.out.println(header);
         System.out.println("=".repeat(header.length()));
 
-        for (int i = 1; i <= donorDonations.capacity(); i++) {
+        for (int i = 0; i < donorDonations.capacity(); i++) {
             String donorID = donorDonations.getKey(i);
 
             if (donorID == null) {
@@ -234,20 +257,20 @@ public class DonorManagement {
                     // Format the donation details under the donor
                     if (donation.getItemCategory().equals("Cash")) {
                         donationRow = String.format("%-10s %-20s %-15s %-20s %-10s %-15s %-10s %-15s %-10s %-10.2f %-15s",
-                            "", "", "", "", "", "", // Empty for donor details
-                            donation.getDonationID(),
-                            donation.getItemCategory(),
-                            donation.getItem(),
-                            donation.getCashAmount(),
-                            donation.getDonationDate().toString());
+                                "", "", "", "", "", "", // Empty for donor details
+                                donation.getDonationID(),
+                                donation.getItemCategory(),
+                                donation.getItem(),
+                                donation.getCashAmount(),
+                                donation.getDonationDate().toString());
                     } else {
                         donationRow = String.format("%-10s %-20s %-15s %-20s %-10s %-15s %-10s %-15s %-10s %-10s %-15s",
-                            "", "", "", "", "", "", // Empty for donor details
-                            donation.getDonationID(),
-                            donation.getItemCategory(),
-                            donation.getItem(),
-                            donation.getAmount(),
-                            donation.getDonationDate().toString());
+                                "", "", "", "", "", "", // Empty for donor details
+                                donation.getDonationID(),
+                                donation.getItemCategory(),
+                                donation.getItem(),
+                                donation.getAmount(),
+                                donation.getDonationDate().toString());
                     }
                     System.out.println(donationRow);
                 }
