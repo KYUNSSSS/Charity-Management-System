@@ -184,6 +184,7 @@ public class DonationDistribution {
             tempDAO.saveTotals(itemTotals, cashTotal);
 
             System.out.println("Distribution with ID " + distributionID + " has been updated successfully.");
+            distributeUI.listDistribute(newDistribution);
         } else {
             System.out.println("Distribution with ID " + distributionID + " not found.");
         }
