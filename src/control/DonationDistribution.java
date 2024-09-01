@@ -20,13 +20,12 @@ public class DonationDistribution {
 
     private ListInterface<Donation> donationList = new LinkedList<>();
     private DonationDAO donationDAO = new DonationDAO();
-
     private ListInterface<Donee> doneeList = new LinkedList<>();
     private ListInterface<Distribution> distributeList = new LinkedList<>();
     private ListInterface<KeyValuePair> doneeLocationList = new LinkedList<>(); // Use LinkedList of KeyValuePair
-    private HashMap<String, Distribution> distributeMap = new HashMap<>();
-    private HashMap<String, Double> categoryTotals = new HashMap<>();
-    private HashMap<String, Double> itemTotals = new HashMap<>();
+    private MapInterface<String, Distribution> distributeMap = new HashMap<>();
+    private MapInterface<String, Double> categoryTotals = new HashMap<>();
+    private MapInterface<String, Double> itemTotals = new HashMap<>();
     private DoneeDAO doneeDAO = new DoneeDAO();
     private TempDAO tempDAO = new TempDAO();
     private DistributionDAO distributeDAO = new DistributionDAO();
@@ -57,7 +56,6 @@ public class DonationDistribution {
         }
         doneeList = doneeDAO.retrieveFromFile();
         distributeList = distributeDAO.retrieveFromFile();
-        
         donationList = donationDAO.loadDonationsFromFile();
         
         loadDoneeLocations();
@@ -66,35 +64,49 @@ public class DonationDistribution {
             distributeMap.put(distribution.getDistributionID(), distribution); // Populate HashMap
             updateLastDistributionNumber(distribution.getDistributionID());
         }
-
-        double cashTotal = 0.0;
+        
+        // Initialize item totals from the donation list
         for (int i = 1; i <= donationList.getNumberOfEntries(); i++) {
-
-            double amount = 0.0;
-
-            Donation donation = donationList.getEntry(i);            
+            Donation donation = donationList.getEntry(i);
             String category = donation.getItemCategory();
             String item = donation.getItem();
-            if (category.equalsIgnoreCase("Cash")) {
-                amount = donation.getCashAmount();
-            }else {
-                amount = donation.getAmount();
-            }
-            String key = (category + ": " + item).toUpperCase(); //Cash : cash
-            // Aggregate the totals for each key
-            if (itemTotals.containsKey(key)) {
-                double currentTotal = itemTotals.get(key);
-                itemTotals.put(key, currentTotal + amount);
-            } else {
-                itemTotals.put(key, amount);
-            }
+            double amount = category.equalsIgnoreCase("Cash") ? donation.getCashAmount() : donation.getAmount();
 
+            String key = (category + ": " + item).toUpperCase(); // Cash : cash
+
+            // Aggregate the totals for each key
+            itemTotals.put(key, itemTotals.getOrDefault(key, 0.0) + amount);
         }
-        tempDAO.saveTotals(itemTotals, cashTotal);
+
+        // Subtract distributed totals from the donation totals
+        for (int i = 1; i <= distributeList.getNumberOfEntries(); i++) {
+            Distribution distribution = distributeList.getEntry(i);
+            String category = distribution.getCategory();
+            String item = distribution.getItemName();
+            double amount = distribution.getAmount();
+            int quantity = distribution.getQuantity(); 
+            String key = (category + ": " + item).toUpperCase();
+
+            // Handle cash category separately
+            if (category.equalsIgnoreCase("Cash")) {
+                itemTotals.put(key, itemTotals.getOrDefault(key, 0.0) - amount);
+            } else {
+                // Subtract the quantity for non-cash items
+                if (itemTotals.containsKey(key)) {
+                    double currentTotal = itemTotals.get(key);
+                    itemTotals.put(key, currentTotal - quantity); // Subtract the quantity
+                } else {
+                    System.out.println("Error: Distribution item not found in donation totals.");
+                }
+                distribution.setAmount(0.0);
+            }
+        }
+        double remainingCashTotal = itemTotals.getOrDefault("CASH: CASH", 0.0);
+        tempDAO.saveTotals(itemTotals, remainingCashTotal);
     }
 
     public void runDonationDistribution() {
-        int choice = 0;
+        int choice = -1;
         do {
             choice = distributeUI.getMenuChoice();
             switch (choice) {
@@ -107,7 +119,6 @@ public class DonationDistribution {
                     break;
                 case 2:
                     updateDistribute();
-                    //distributeDAO.retrieveFromFile();
                     break;
                 case 3:
                     removeDistribute();
@@ -121,6 +132,7 @@ public class DonationDistribution {
                     break;
                 default:
                     MessageUI.displayInvalidChoiceMessage();
+                    choice = -1;
             }
         } while (choice != 0);
     }
@@ -171,7 +183,7 @@ public class DonationDistribution {
             System.out.println("Distribution with ID " + distributionID + " not found.");
         }
     }
-
+    
     private void loadDoneeLocations() {
         for (int i = 1; i <= doneeList.getNumberOfEntries(); i++) {
             Donee donee = doneeList.getEntry(i);
@@ -208,7 +220,7 @@ public class DonationDistribution {
     }
 
     public void trackDistribute() {
-        int choices = 0;
+        int choices = -1;
         do {
             choices = distributeUI.getTrackMenuChoice();
             switch (choices) {
@@ -232,9 +244,9 @@ public class DonationDistribution {
                     break;
                 default:
                     MessageUI.displayInvalidChoiceMessage();
+                    choices = -1;
             }
         } while (choices != 0);
-
     }
 
     private void trackByCriteria(String criteria, String type) {
@@ -296,13 +308,13 @@ public class DonationDistribution {
                 hasMatchingRecords = true;
 
                 if (includeDoneeID) {
-                    result.append(String.format("%-15s%-25s%-20s%-15s%-15s%-25s%-5s\n",
+                    result.append(String.format("%-18s%-25s%-15s%-15s%-15s%-25s%-5s\n",
                             dist.getItemName(), dist.getCategory(), dist.getQuantity(), dist.getAmount(),
                             dist.getStatus(), dist.getDistributionDate(), dist.getDoneeID()));
                 } else {
-                    result.append(String.format("%-15s%-25s%-20s%-15s%-15s%-25s%-5s\n",
+                    result.append(String.format("%-18s%-25s%-15s%-15s%-15s%-25s%-5s\n",
                             dist.getItemName(), dist.getCategory(), dist.getQuantity(), dist.getAmount(),
-                            dist.getStatus(), dist.getDistributionDate(), getDoneeLocationByID(dist.getDoneeID())));
+                            dist.getStatus(), dist.getDistributionDate(), getDoneeLocationByID(dist.getDoneeID()).toUpperCase()));
                 }
             }
         }
@@ -543,13 +555,11 @@ public class DonationDistribution {
             // Create the key for the item category and name
             String key = category + ": " + itemName;
 
-            // Ensure the item key exists in itemTotals
             if (!itemTotals.containsKey(key)) {
                 itemTotals.put(key, 0.0);
             }
             double availableQuantity = itemTotals.get(key);
 
-            // Validate input quantity and deduct from the available total
             do {
                 quantity = distributeUI.inputQuantity();
                 if (quantity > availableQuantity) {
@@ -557,9 +567,8 @@ public class DonationDistribution {
                 }
             } while (quantity > availableQuantity);
 
-            // Deduct the distributed quantity from the available total
             availableQuantity -= quantity;
-            itemTotals.put(key, availableQuantity);  // Update the item total in the map
+            itemTotals.put(key, availableQuantity);  
             tempDAO.saveTotals(itemTotals, availableQuantity);
         }
 
