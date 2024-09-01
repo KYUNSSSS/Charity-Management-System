@@ -204,7 +204,7 @@ public class DonationDistributionUI {
         return location.toUpperCase();
     }
      
-     public void listDistribute(Distribution distribution) {
+    public void listDistribute(Distribution distribution) {
         System.out.println("\n\n************* Distribution Details **************\nDistribution ID: " + distribution.getDistributionID() + "\nCategory: " + distribution.getCategory() + "\nItem: " + distribution.getItemName() + "\nQuantity: " + distribution.getQuantity() + "\nAmount: " + distribution.getAmount() + "\nDonee ID: " + distribution.getDoneeID() + "\nStatus: "+ distribution.getStatus() + "\nDistribution Date:  " + distribution.getDistributionDate() + "\n****************************************************\n\n");
     }
 
