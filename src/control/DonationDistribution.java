@@ -110,7 +110,8 @@ public class DonationDistribution {
             choice = distributeUI.getMenuChoice();
             switch (choice) {
                 case 0:
-                    MessageUI.displayExitMessage();
+                   driver driver = new driver();
+                    driver.runDriver();
                     break;
                 case 1:
                     addNewDistribute();
