@@ -73,8 +73,6 @@ public class DonationDistribution {
             double amount = category.equalsIgnoreCase("Cash") ? donation.getCashAmount() : donation.getAmount();
 
             String key = (category + ": " + item).toUpperCase(); // Cash : cash
-
-            // Aggregate the totals for each key
             itemTotals.put(key, itemTotals.getOrDefault(key, 0.0) + amount);
         }
 
@@ -87,18 +85,19 @@ public class DonationDistribution {
             int quantity = distribution.getQuantity(); 
             String key = (category + ": " + item).toUpperCase();
 
-            // Handle cash category separately
             if (category.equalsIgnoreCase("Cash")) {
+                distribution.setQuantity(0);
                 itemTotals.put(key, itemTotals.getOrDefault(key, 0.0) - amount);
             } else {
                 // Subtract the quantity for non-cash items
                 if (itemTotals.containsKey(key)) {
                     double currentTotal = itemTotals.get(key);
-                    itemTotals.put(key, currentTotal - quantity); // Subtract the quantity
+                    distribution.setAmount(0);
+                    itemTotals.put(key, currentTotal - quantity); 
                 } else {
                     System.out.println("Error: Distribution item not found in donation totals.");
                 }
-                distribution.setAmount(0.0);
+                distribution.setAmount(0);
             }
         }
         double remainingCashTotal = itemTotals.getOrDefault("CASH: CASH", 0.0);
@@ -154,32 +153,36 @@ public class DonationDistribution {
 
         if (index != -1) {
             Distribution distributionToRemove = distributeList.getEntry(index);
+            updateItemTotals(distributionToRemove, distributionToRemove.getAmount(), false);
 
-            updateItemTotals(distributionToRemove, false); // false indicates removal
             distributeList.remove(index);
             distributeMap.remove(distributionID);
             distributeDAO.saveToFile(getAllDistribute());
-            tempDAO.saveTotals(itemTotals, itemTotals.getOrDefault("CASH: CASH", 0.0));
+            double cashTotal = itemTotals.getOrDefault("CASH: CASH", 0.0);
+            tempDAO.saveTotals(itemTotals, cashTotal);
 
             System.out.println("Distribution with ID " + distributionID + " has been removed successfully.");
         } else {
             System.out.println("Distribution with ID " + distributionID + " not found.");
         }
     }
-    
+
     public void updateDistribute() {
         String distributionID = distributeUI.inputDistributionID();
         int index = findDistributionIndexById(distributionID);
 
         if (index != -1) {
             Distribution oldDistribution = distributeList.getEntry(index);
+            updateItemTotals(oldDistribution, oldDistribution.getAmount(), false);
             Distribution newDistribution = inputDistributionDetails();
-            updateItemTotals(oldDistribution, false); // false indicates removing the old distribution
-            updateItemTotals(newDistribution, true); // true indicates adding the new distribution
+            updateItemTotals(newDistribution, newDistribution.getAmount(), true);
+
             distributeList.replace(index, newDistribution);
             distributeMap.put(newDistribution.getDistributionID(), newDistribution);
+
             distributeDAO.saveToFile(getAllDistribute());
-            tempDAO.saveTotals(itemTotals, itemTotals.getOrDefault("CASH: CASH", 0.0));
+            double cashTotal = itemTotals.getOrDefault("CASH: CASH", 0.0);
+            tempDAO.saveTotals(itemTotals, cashTotal);
 
             System.out.println("Distribution with ID " + distributionID + " has been updated successfully.");
         } else {
@@ -187,28 +190,44 @@ public class DonationDistribution {
         }
     }
 
-    private void updateItemTotals(Distribution distribution, boolean isAdding) {
+    private void updateItemTotals(Distribution distribution, double oldAmount, boolean isAdding) {
         String category = distribution.getCategory();
         String itemName = distribution.getItemName();
-        double amount = distribution.getAmount();
-        int quantity = distribution.getQuantity();
+        double amount = distribution.getAmount(); // New amount (only relevant for cash)
+        int quantity = distribution.getQuantity(); // For items (only relevant for non-cash items)
         String key = category + ": " + itemName;
 
         if (category.equalsIgnoreCase("cash")) {
+            quantity = 0; 
             double currentTotal = itemTotals.getOrDefault("CASH: CASH", 0.0);
+
             if (isAdding) {
-                itemTotals.put("CASH: CASH", currentTotal - amount);
+                currentTotal = currentTotal + amount - oldAmount;
             } else {
-                itemTotals.put("CASH: CASH", currentTotal + amount);
+                currentTotal += oldAmount;
             }
-        } else {
+            itemTotals.put("CASH: CASH", currentTotal);
+        }else {
+            amount = 0; 
             double currentTotal = itemTotals.getOrDefault(key, 0.0);
+            
+            currentTotal += distribution.getQuantity();
+            itemTotals.put(key, currentTotal);
+
             if (isAdding) {
-                itemTotals.put(key, currentTotal - quantity);
-            } else {
-                itemTotals.put(key, currentTotal + quantity);
+                currentTotal = currentTotal - quantity;
             }
+            
+            if (currentTotal < 0) {
+                System.out.println("Error: Insufficient quantity for " + key + ". Cannot update.");
+                return; 
+            }
+
+            itemTotals.put(key, currentTotal);
         }
+
+        double cashTotal = itemTotals.getOrDefault("CASH: CASH", 0.0);
+        tempDAO.saveTotals(itemTotals, cashTotal);
     }
 
     private int findDistributionIndexById(String distributionID) {
