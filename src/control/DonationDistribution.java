@@ -114,6 +114,7 @@ public class DonationDistribution {
                     break;
                 case 1:
                     addNewDistribute();
+                    MessageUI.pressAnyKeyToContinue();
                     break;
                 case 2:
                     updateDistribute();
@@ -125,9 +126,11 @@ public class DonationDistribution {
                     break;
                 case 4:
                     trackDistribute();
+                    MessageUI.pressAnyKeyToContinue();
                     break;
                 case 5:
                     generateReport();
+                    MessageUI.pressAnyKeyToContinue();
                     break;
                 default:
                     MessageUI.displayInvalidChoiceMessage();
@@ -184,9 +187,11 @@ public class DonationDistribution {
             tempDAO.saveTotals(itemTotals, cashTotal);
 
             System.out.println("Distribution with ID " + distributionID + " has been updated successfully.");
+            distributeUI.listDistribute(newDistribution);
         } else {
             System.out.println("Distribution with ID " + distributionID + " not found.");
         }
+        
     }
 
     private void updateItemTotals(Distribution distribution, double oldAmount, boolean isAdding) {
