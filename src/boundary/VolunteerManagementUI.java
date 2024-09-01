@@ -73,13 +73,12 @@ public class VolunteerManagementUI {
     
     public String inputVolunteerType() {
         while(true) {
-            System.out.println("""
+            System.out.print("""
                          Reg - Registration
                          Sup - Support
                          Log - Logistic
                          Crc - Crowd Control
-                         Enter Volunteer Type(Eg: Reg/Sup/Log/Crc): 
-                         """);
+                         Enter Volunteer Type(Eg: Reg/Sup/Log/Crc): """);
             String type = scanner.nextLine();
             if(type.equalsIgnoreCase("Reg")) {
                 type = "Registration";
@@ -115,7 +114,7 @@ public class VolunteerManagementUI {
     
     public String inputVolunteerEmail() {
         while(true) {
-            System.out.print("Enter Volunteer Email(eg:Example#gmail.com): ");
+            System.out.print("Enter Volunteer Email(eg:Example@gmail.com): ");
             String email = scanner.nextLine();
             
             if (Validator.isValidEmail(email)) {
@@ -221,7 +220,7 @@ public class VolunteerManagementUI {
                         volunteer.getEventAssigned());
             }
         }
-        System.out.println("************************************************************************************************************************************");
+        System.out.println("------------------------------------------------------------------------------------------------------------------------------------");
         MessageUI.pressAnyKeyToContinue();
     }
         
