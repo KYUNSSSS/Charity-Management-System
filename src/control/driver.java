@@ -16,7 +16,7 @@ public class driver {
     private driverUI driverUI = new driverUI();
     private DoneeManagement donee = new DoneeManagement();
     private DonorManagement donor = new DonorManagement();
-    private DonationManagement donation = new DonationManagement();
+    private DonationManagementUI donation = new DonationManagementUI();
     private DonationDistribution distribution = new DonationDistribution();
     private VolunteerManagement volunteer = new VolunteerManagement();
 

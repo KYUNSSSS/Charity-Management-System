@@ -204,6 +204,3 @@ public class DonationDistributionUI {
         System.out.println(report.toString());
     }
 }
-
-
-
