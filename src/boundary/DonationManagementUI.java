@@ -62,7 +62,9 @@ public class DonationManagementUI {
                     getReportChoice();
                     break;
                 case 0 :
+                    driver driver = new driver();
                     MessageUI.displayExitMessage();
+                    driver.runDriver();
                     break;
                 default :
                     System.err.println("Invalid choice. Please select an option between 0 and 9.");
@@ -81,7 +83,7 @@ public class DonationManagementUI {
         System.out.println("7. List Donations");
         System.out.println("8. Filter donations");
         System.out.println("9. Generate Donation Reports");
-        System.out.println("0. Back to Main Page");
+        System.out.println("0. Exit");
         int choice = -1;
         while (choice < 0 || choice > 9) {
             System.out.print("Enter choice (0-9) : ");
