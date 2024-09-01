@@ -108,17 +108,17 @@ public void saveToFile(String volunteerList) {
             if (tempFile.renameTo(originalFile)) {
                 System.out.println("Volunteer updated successfully.");
             } else {
-                System.out.println("Failed to rename the temporary file.");
+                System.out.println(" ");
             }
         } else {
-            System.out.println("Failed to delete the original file.");
+            System.out.println(" ");
         }
         
         // Replace the original file with the updated file
         if (tempFile.renameTo(originalFile)) {
             System.out.println("Volunteer updated successfully.");
         } else {
-            System.out.println("Failed to replace the original file.");
+            System.out.println(" ");
         }
    }
 }
