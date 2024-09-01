@@ -15,7 +15,7 @@ import utility.Validator;
 
 /**
  *
- * @author Yunshen
+ * @author Kow Yun Shen
  */
 public class DoneeManagementUI {
 
@@ -148,11 +148,12 @@ public class DoneeManagementUI {
 
     public int getFilterChoice() {
 
-        System.out.println("*****Filter by***** ");
+        System.out.println("*************Filter by***************");
         System.out.println("1. Donee Type");
         System.out.println("2. Date Range By Donee ID");
         System.out.println("3. Donation Amount Range By Donee ID");
         System.out.println("4. Donee Location");
+        System.out.println("*************************************");
         String choice = "";
         do {
             System.out.print("Enter your choice(1-4): ");
@@ -250,7 +251,7 @@ public class DoneeManagementUI {
                         donee.getDoneeEmail(),
                         donee.getDoneeLocation());
             }
-            System.out.println("********************************************************************************************");
+            System.out.println("*******************************************************************************************");
         }
         MessageUI.pressAnyKeyToContinue();
     }
@@ -304,7 +305,7 @@ public class DoneeManagementUI {
     }
 
     public void updateDonee(Donee donee) {
-        System.out.println("Donee Found!");
+        System.out.println("\nDonee Found!");
         listDonee(donee);
         String choice = "";
         do {
@@ -346,9 +347,16 @@ public class DoneeManagementUI {
                 MessageUI.displayInvalidChoiceMessage();
         }
     }
+    public void DoneeDonationHeader(){
+        System.out.println("*********************************************************************************************************");
+        System.out.printf("%-15s %-20s %-15s %-10s %-10s %-10s %-20s\n",
+                    "Distribution ID", "Item Name", "Category",
+                    "Quantity", "Amount", "Status", "Distribution Date");
+        System.out.println("*********************************************************************************************************");
+    }
 
     public void listDonee(Donee donee) {
-        System.out.println("***Profile***\nDonee ID: " + donee.getDoneeID() + "\n1.Name: " + donee.getDoneeName() + "\n2.Type: " + donee.getDoneeType() + "\n3.Phone Number: " + donee.getDoneePhoneNum() + "\n4.Email: " + donee.getDoneeEmail() + "\n5.Location: " + donee.getDoneeLocation() + "\n*************");
+        System.out.println("\n*******Profile*******\nDonee ID: " + donee.getDoneeID() + "\n1.Name: " + donee.getDoneeName() + "\n2.Type: " + donee.getDoneeType() + "\n3.Phone Number: " + donee.getDoneePhoneNum() + "\n4.Email: " + donee.getDoneeEmail() + "\n5.Location: " + donee.getDoneeLocation() + "\n*********************");
     }
 
 }

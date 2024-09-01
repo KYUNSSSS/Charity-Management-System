@@ -16,33 +16,55 @@ public class DonationDistributionUI {
     Scanner scanner = new Scanner(System.in);
     
     public int getMenuChoice() {
-        System.out.println("\n********** DONATION DISTRIBUTION **********");
-        System.out.println("1. Add New Donation Distribution");
-        System.out.println("2. Update Donation Distribution Details");
-        System.out.println("3. Remove Donation Distribution");
-        System.out.println("4. Monitor Distributed Items");
-        System.out.println("5. Generate Summary Report");
-        System.out.println("0. Quit");
-        System.out.print("Enter your choice (0-5): ");
-        int choice = scanner.nextInt();
-        scanner.nextLine(); 
-        System.out.println();
-        return choice;
+        int num = 6;
+        boolean loop = true;
+        while (loop) {
+            try {
+                System.out.println("\n********** DONATION DISTRIBUTION **********");
+                System.out.println("1. Add New Donation Distribution");
+                System.out.println("2. Update Donation Distribution Details");
+                System.out.println("3. Remove Donation Distribution");
+                System.out.println("4. Monitor Distributed Items");
+                System.out.println("5. Generate Summary Report");
+                System.out.println("0. Quit");
+                System.out.print("Enter your choice (0-5): ");
+                int choice = scanner.nextInt();
+                scanner.nextLine();
+                System.out.println();
+                num = choice;
+                loop = false;
+            } catch (Exception ex) {
+                System.err.println("Digit only.");
+                scanner.nextLine();
+            }
+        }
+        return num;
     }
     
     public int getTrackMenuChoice() {
-        System.out.println("\n****** TRACK DISTRIBUTION ******");
-        System.out.println("1. Track by Donee ID");
-        System.out.println("2. Track by Distribution Date");
-        System.out.println("3. Track by Category");
-        System.out.println("4. Track by Status");
-        System.out.println("5. Track by Location");
-        System.out.println("0. Back to Main Menu");
-        System.out.print("Enter your choice (0-5): ");
-        int choices = scanner.nextInt();
-        scanner.nextLine(); 
-        System.out.println();
-        return choices;
+        int num = 6;
+        boolean loop = true;
+        while (loop) {
+            try {
+                System.out.println("\n****** TRACK DISTRIBUTION ******");
+                System.out.println("1. Track by Donee ID");
+                System.out.println("2. Track by Distribution Date");
+                System.out.println("3. Track by Category");
+                System.out.println("4. Track by Status");
+                System.out.println("5. Track by Location");
+                System.out.println("0. Back to Main Menu");
+                System.out.print("Enter your choice (0-5): ");
+                int choice = scanner.nextInt();
+                scanner.nextLine();
+                System.out.println();
+                num = choice;
+                loop = false;
+            } catch (Exception ex) {
+                System.err.println("Digit only.");
+                scanner.nextLine();
+            }
+        }
+        return num;
     }
     
     public void listAllDistribute(String outputStr) {
@@ -51,13 +73,13 @@ public class DonationDistributionUI {
     
     public String inputDistributionID() {
         while (true) {
-            System.out.print("Enter Distribution ID: ");
-            String id = scanner.nextLine().toUpperCase();
-            
+            System.out.print("Enter Distribution ID (DDXXX): ");
+            String id = scanner.nextLine();
+
             if (Validator.isValidID(id)) {
-            } else {
-                System.out.println("\nInvalid Input. Please enter a valid Distribution ID without symbols. [Eg. A001].");
+                return id.toUpperCase();
             }
+            System.out.println("\nInvalid Input. Please enter a valid Donee ID without symbols. [Eg. DD001].");
         }
     }
 
@@ -113,18 +135,20 @@ public class DonationDistributionUI {
     public String inputStatus() {
         String status;
         while (true) {
-            System.out.print("Enter Distribution Status (Pending, Delivered, Received): ");
+            System.out.print("Enter Distribution Status, whether Pending-P, Delivered-D or Received-R: ");
             status = scanner.nextLine().trim(); 
 
-            if (status.equalsIgnoreCase("Pending") || 
-                status.equalsIgnoreCase("Delivered") || 
-                status.equalsIgnoreCase("Received")) {
-                break;
-            } else {
-                System.out.println("\nInvalid Status. Please enter one of the following: Pending, Delivered, Received.");
+            switch (status.toUpperCase()) {
+                case "P":
+                    return "PENDING";
+                case "D":
+                    return "DELIVERED";
+                case "R":
+                    return "RECEIVED";
+                default:
+                    System.out.println("\nInvalid Status. Please enter one of the following: P, D, R.");
             }
         }
-        return status.toUpperCase();
     }
     
     public LocalDate inputDistributionDate() {
@@ -149,9 +173,9 @@ public class DonationDistributionUI {
         header.append(title).append("\n");
         header.append("===============================================================================================================================\n");
         if (includeDoneeID) {
-            header.append(String.format("%-15s%-25s%-20s%-15s%-15s%-25s%-5s\n", "Item", "Category", "Quantity", "Amount", "Status", "Distribution Date", "Donee ID"));
+            header.append(String.format("%-18s%-25s%-15s%-15s%-15s%-25s%-5s\n", "Item", "Category", "Quantity", "Amount [RM]", "Status", "Distribution Date", "Donee ID"));
         } else {
-            header.append(String.format("%-15s%-25s%-20s%-15s%-15s%-25s%-5s\n", "Item", "Category", "Quantity", "Amount", "Status", "Distribution Date", "Location"));
+            header.append(String.format("%-18s%-25s%-15s%-15s%-15s%-25s%-5s\n", "Item", "Category", "Quantity", "Amount [RM]", "Status", "Distribution Date", "Location"));
         }
         header.append("===============================================================================================================================\n");
         return header.toString();
@@ -159,7 +183,7 @@ public class DonationDistributionUI {
 
     public double inputAmount() {
         while (true) {
-            System.out.print("Enter Amount (must be a positive integer): ");
+            System.out.print("Enter Cash Amount: ");
             String input = scanner.nextLine().trim();
 
             if (Validator.isValidPositiveInteger(input)) {
@@ -170,14 +194,14 @@ public class DonationDistributionUI {
         }
     }
     
-     public String inputLocation() {
+    public String inputLocation() {
         String location;
         do {
             System.out.print("Enter location: ");
             location = scanner.nextLine().toUpperCase().trim(); 
         } while (!Validator.isAlphabetic(location)); 
 
-        return location;
+        return location.toUpperCase();
     }
      
      public void listDistribute(Distribution distribution) {

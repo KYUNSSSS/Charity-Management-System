@@ -8,6 +8,7 @@ import control.DonationManagement;
 import entity.*;
 import utility.*;
 import adt.*; 
+import control.driver;
 import dao.*;
 
 import java.util.Scanner;
@@ -21,22 +22,55 @@ import java.util.List;
 public class DonationManagementUI {
 
     Scanner scanner = new Scanner(System.in);
-    private DonationManagement controller;
+    private DonationManagement controller =  new DonationManagement();
     private DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");    
-
-    
-    // Constructor that takes DonationManagement as a parameter
-    public DonationManagementUI(DonationManagement controller) {
-        this.controller = controller;
-    }
-    // ANSI escape code for green text
     String greenText = "\u001B[32m";
-
-    // ANSI escape code to reset to default color
     String resetText = "\u001B[0m";
-    
 //All declaration
 //------------------------------------------------------------------------------------
+    
+    public void runDonationManagement() {
+        int choice;
+        do {
+            choice = getMenuChoice();
+            switch (choice) {
+                case 1 :
+                    addDonation();
+                    break;
+                case 2 :
+                    removeDonation();
+                    break;
+                case 3 :
+                    searchDonationById();
+                    break;
+                case 4 :
+                    amendDonationDetails();
+                    break;
+                case 5 :
+                    trackDonation();
+                    break;
+                case 6 :
+                    listDonationsByDonors();
+                    break;
+                case 7 :
+                    listDonations();
+                    break;
+                case 8 :
+                    handleFilterChoice();
+                    break;
+                case 9 :
+                    getReportChoice();
+                    break;
+                case 0 :
+                    driver driver = new driver();
+                    MessageUI.displayExitMessage();
+                    driver.runDriver();
+                    break;
+                default :
+                    System.err.println("Invalid choice. Please select an option between 0 and 9.");
+            }
+        } while (choice != 0);
+    }
     
     public int getMenuChoice() {
         System.out.println("*****Donation Management System Menu*****");
@@ -84,32 +118,33 @@ public class DonationManagementUI {
                     break;
                 }
             }
-            
             switch (choice) {
-                case 1 ->
+                case 1 :
                     itemCategory = "Clothing";
-                case 2 ->
+                    break;
+                case 2 :
                     itemCategory = "Food and Beverage";
-                case 3 ->
+                    break;
+                case 3 :
                     itemCategory = "Books";
-                case 4 ->
+                    break;
+                case 4 :
                     itemCategory = "Electronic Devices";
-                case 5 ->
+                    break;
+                case 5 :
                     itemCategory = "Cash";
-                default ->
+                    break;
+                default :
                     MessageUI.displayInvalidChoiceMessage();
             }
         } 
-
         return itemCategory;
     }
     
     public boolean isValidDonorID(String input) {
-        // Regular expression for DNT followed by exactly 5 digits
         String regex = "DNR\\d{5}";
         return input.matches(regex);
     }
-
     
     private int getValidIntInput(String prompt) {
         int value = -1;
@@ -122,10 +157,10 @@ public class DonationManagementUI {
                 }
             } catch (InputMismatchException e) {
                 System.err.println("Invalid input. Please enter a valid integer.");
-                scanner.next(); // Clear the invalid input
+                scanner.next();
             }
         }
-        scanner.nextLine(); // Clear the newline character
+        scanner.nextLine();
         return value;
     }
     
@@ -185,14 +220,28 @@ public class DonationManagementUI {
     }
     
     private String getCategoryByChoice(String choice) {
-        return switch (choice) {
-            case "1" -> "Clothing";
-            case "2" -> "Food and Beverage";
-            case "3" -> "Books";
-            case "4" -> "Electronic Devices";
-            case "5" -> "Cash";
-            default -> "";
-        };
+        String itemCategory = "";
+         switch (choice) {
+            case "1" :
+                itemCategory = "Clothing";
+                break;
+            case "2" : 
+                itemCategory = "Food and Beverage";
+                break;
+            case "3" :
+                itemCategory = "Books";
+                break;
+            case "4" :
+                itemCategory ="Electronic Devices";
+                break;
+            case "5" :
+                itemCategory = "Cash";
+                break;
+            default : 
+                itemCategory = "";
+                break;
+        }
+        return itemCategory;
     }
 
     private List<String> getAvailableCategories() {
@@ -278,8 +327,6 @@ public class DonationManagementUI {
             System.out.println("Donation Date   : " + donation.getDonationDate());
             System.out.println("Category        : " + donation.getItemCategory());
             System.out.println("Items           : " + donation.getItem());
-
-            // Display the amount based on the type of donation
             if (donation.getItemCategory().equalsIgnoreCase("Cash")) {
                 System.out.println("Amount (Cash)   : RM " + String.format("%.2f", donation.getCashAmount()));
             } else {
@@ -294,7 +341,6 @@ public class DonationManagementUI {
         System.out.println(greenText + "Press any key to continue..." + resetText);
         scanner.nextLine();
     }
-    
 //All method
 //------------------------------------------------------------------------------- 
     private ListInterface<Donor> loadDonorData() {
@@ -305,7 +351,7 @@ public class DonationManagementUI {
     public void addDonation() {
         ListInterface<Donor> donorList = loadDonorData();
         String donorID2="";
-        System.out.println("*****Add Donation*****");
+        System.out.println("***** Add Donation *****");
 
         LocalDate donationDate = LocalDate.now();
         System.out.println("Date        : " + donationDate);
@@ -322,27 +368,21 @@ public class DonationManagementUI {
                   System.out.println("Enter valid id.");      
             }
         }
-
         String itemCategory = DonationItemCategory();
         String itemsInput = getItemInput(itemCategory);
-
-        double amount = 0.0; // Initialize amount
-
-        // Determine if the category is cash and handle accordingly
+        double amount = 0.0;
         if (itemCategory.equalsIgnoreCase("Cash")) {
-            // For cash donations, amount is a double
             amount = getValidDoubleInput("Enter Cash Amount : ");
         } else {
-            // For non-cash donations, amount is an integer
             int nonCashAmount = getValidIntInput("Enter Quantity : ");
-            amount = nonCashAmount; // Or use another approach based on your logic
+            amount = nonCashAmount;
         }
-
         boolean success = controller.addDonation(donationID, donorID2, itemCategory, itemsInput, amount, donationDate);
         System.out.println(success ? greenText + "Donation added successfully!" + resetText : "Failed to add donation.");
         System.out.println(greenText + "Press any key to continue..." + resetText);
         scanner.nextLine();
     }
+    
     private boolean isDonorIDValid(String donorID, ListInterface<Donor> donorList) {
         for (int i = 1; i <= donorList.getNumberOfEntries(); i++) {
             if (donorList.getEntry(i).getDonorID().equalsIgnoreCase(donorID)) {
@@ -353,15 +393,12 @@ public class DonationManagementUI {
     }
 
     public void removeDonation() {
-        System.out.println("*****Remove Donation*****");
-
+        System.out.println("***** Remove Donation *****");
         System.out.print("Enter Donation ID: ");
         String donationID = scanner.nextLine();
-
         Donation donation = controller.getDonationById(donationID);
         if (donation != null) {
             System.out.println("Donation ID : " + donation.getDonationID());
-
             boolean validInput = false;
             while (!validInput) {
                 System.out.print("Confirmation for remove (Y/N): ");
@@ -390,7 +427,6 @@ public class DonationManagementUI {
         System.out.println("***** Search Donation *****");
         System.out.print("Enter Donation ID: ");
         String donationID = scanner.nextLine();
-
         Donation donation = controller.getDonationById(donationID);
         if (donation != null) {
             System.out.println("Donation Date   : " + donation.getDonationDate());
@@ -398,8 +434,6 @@ public class DonationManagementUI {
             System.out.println("Donor ID        : " + donation.getDonorID());
             System.out.println("Donation Type   : " + donation.getItemCategory());
             System.out.println("Items           : " + donation.getItem());
-
-            // Handle amount display based on donation type
             String amountDisplay = "";
             if (donation.getItemCategory().equalsIgnoreCase("Cash")) {
                 amountDisplay = String.format("%.2f", donation.getCashAmount()); // Format as currency
@@ -416,7 +450,6 @@ public class DonationManagementUI {
         scanner.nextLine();
     }
 
-
     public void amendDonationDetails() {
         System.out.println("***** Amend Donation Details *****");
 
@@ -428,10 +461,7 @@ public class DonationManagementUI {
             System.err.println("Donation ID not found.");
             return;
         }
-
         System.out.println("Leave blank, input not match and press Enter default to keep the current value.");
-
-        // Display and select new Donor ID
         System.out.print("Enter new Donor ID : ");
         String newDonorID = scanner.nextLine();
         if (!newDonorID.isEmpty()) {
@@ -439,8 +469,6 @@ public class DonationManagementUI {
                 donation.setDonorID(newDonorID);
             }
         }
-
-        // Display and select new Item Category
         System.out.println("Available Item Categories:");
         List<String> categories = getAvailableCategories(); // Method to get available categories
         for (int i = 0; i < categories.size(); i++) {
@@ -455,7 +483,6 @@ public class DonationManagementUI {
                 donation.setItemCategory(newCategory);
             }
         }
-        
         if(donation.getItemCategory().equalsIgnoreCase("Cash")){
             donation.setItem("Cash");
         }else{
@@ -469,8 +496,6 @@ public class DonationManagementUI {
                 }
             }
         }
-        
-        // Handle amount or quantity based on category
         if (newCategory.equalsIgnoreCase("Cash")) {
             System.out.println("Current Amount : " + donation.getCashAmount());
             System.out.print("Enter new Amount : ");
@@ -492,23 +517,19 @@ public class DonationManagementUI {
                 }
             }
         }
-
         System.out.println(greenText + "Donation details updated successfully!" + resetText);
         System.out.println(greenText + "Press any key to continue..." + resetText);
         scanner.nextLine();
     }
-
     
     public void trackDonation() {
         System.out.println("*****Track Donated Items in Categories*****");
         String itemCategory = DonationItemCategory();
 
         if (itemCategory.equals("Cash")) {
-            // Track cash donations
             double totalCashAmount = controller.trackTotalCashDonations();
             System.out.println("Total cash donations: RM " + totalCashAmount);
         } else {
-            // Track non-cash donations
             LinkedList<String> items = controller.trackDonationByCategory(itemCategory);
             System.out.println("Tracking items for category: " + itemCategory);
             if (items.getNumberOfEntries() > 0) {
@@ -521,48 +542,38 @@ public class DonationManagementUI {
                 System.err.println("No items found in category " + itemCategory);
             }
         }
-
+        System.out.println(greenText + "Press any key to continue..." + resetText);
+        scanner.nextLine();
+    }
+    
+    public void listDonationsByDonors() {
+        System.out.println("***** List Donation by Different Donor *****");
+        System.out.print("Enter Donor ID: ");
+        String donorID = scanner.nextLine();
+        LinkedList<Donation> donations = controller.listDonationsByDonor(donorID);
+        if (donations != null && donations.getNumberOfEntries() > 0) {
+            for (int i = 1; i <= donations.getNumberOfEntries(); i++) {
+                Donation donation = donations.getEntry(i);
+                System.out.println("Donation Date   : " + donation.getDonationDate());
+                System.out.println("Donation ID     : " + donation.getDonationID());
+                System.out.println("Donation Type   : " + donation.getItemCategory());
+                System.out.println("Items           : " + donation.getItem());
+                if (donation.getItemCategory().equalsIgnoreCase("Cash")) {
+                    System.out.println("Cash Amount     : " + donation.getCashAmount());
+                } else {
+                    System.out.println("Amount          : " + donation.getAmount());
+                }
+                System.out.println("-----------------------------------------");
+            }
+        } else {
+            System.err.println("No donations found for the specified donor.");
+        }
         System.out.println(greenText + "Press any key to continue..." + resetText);
         scanner.nextLine();
     }
 
-    
-    public void listDonationsByDonors() {
-            System.out.println("***** List Donation by Different Donor *****");
-
-            // Assuming the controller can list donations by donor
-            System.out.print("Enter Donor ID: ");
-            String donorID = scanner.nextLine();
-
-            LinkedList<Donation> donations = controller.listDonationsByDonor(donorID);
-            if (donations != null && donations.getNumberOfEntries() > 0) {
-                for (int i = 1; i <= donations.getNumberOfEntries(); i++) {
-                    Donation donation = donations.getEntry(i);
-                    System.out.println("Donation Date   : " + donation.getDonationDate());
-                    System.out.println("Donation ID     : " + donation.getDonationID());
-                    System.out.println("Donation Type   : " + donation.getItemCategory());
-                    System.out.println("Items           : " + donation.getItem());
-
-                    // Display the amount based on donation type
-                    if (donation.getItemCategory().equalsIgnoreCase("Cash")) {
-                        System.out.println("Cash Amount     : " + donation.getCashAmount());
-                    } else {
-                        System.out.println("Amount          : " + donation.getAmount());
-                    }
-
-                    System.out.println("-----------------------------------------");
-                }
-            } else {
-                System.err.println("No donations found for the specified donor.");
-            }
-            System.out.println(greenText + "Press any key to continue..." + resetText);
-            scanner.nextLine();
-        }
-
-
     public void listDonations() {
         System.out.println("***** List All Donations *****");
-
         LinkedList<Donation> donations = controller.listDonations();
         if (donations != null && donations.getNumberOfEntries() > 0) {
             for (int i = 1; i <= donations.getNumberOfEntries(); i++) {
@@ -571,14 +582,11 @@ public class DonationManagementUI {
                 System.out.println("Donor ID        : " + donation.getDonorID());
                 System.out.println("Donation Type   : " + donation.getItemCategory());
                 System.out.println("Items           : " + donation.getItem());
-
-                // Display the amount based on donation type
                 if (donation.getItemCategory().equalsIgnoreCase("Cash")) {
                     System.out.println("Amount (Cash)   : " + donation.getCashAmount());
                 } else {
                     System.out.println("Amount (Non-Cash): " + donation.getAmount());
                 }
-
                 System.out.println("-----------------------------------------");
             }
         } else {
@@ -588,13 +596,34 @@ public class DonationManagementUI {
         scanner.nextLine();
     }
     
+        public void handleFilterChoice() {
+        int choice;
+        do {
+            choice = displayFilterOptions();
+            switch (choice) {
+                case 1:
+                    filterByDateRange();
+                    break;
+                case 2:
+                    filterByDonationAmountRange();
+                    break;
+                case 3:
+                    filterByDateAndAmountRange();
+                    break;
+                case 0:
+                    runDonationManagement();
+                    break;
+                default:
+                    System.err.println("Invalid choice. Please enter a number between 0 and 3.");
+            }
+        } while (choice != 0);
+    }
+    
     public void filterByDateRange() {
         LocalDate startDate = getValidDateInput("Enter start date (dd-MM-yyyy): ");
         LocalDate endDate = getValidDateInput("Enter end date (dd-MM-yyyy): ");
-        
         ListInterface<Donation> donations = controller.listDonations();
         Filter<Donation> filter = new Filter<>();
-        
         ListInterface<Donation> filtered = filter.filterByDateRange(donations, startDate, endDate);
         System.out.println("Filtered by Date Range : " + startDate + " until " + endDate);
         displayDonations(filtered);
@@ -635,6 +664,28 @@ public class DonationManagementUI {
         scanner.nextLine();
     }
     
+    public void getReportChoice() {
+        int choice;
+        do {
+            choice = displayReportChoice();
+            switch (choice) {
+                case 1 :
+                    System.out.println(controller.generateReport());
+                    enterToContinue();
+                    break;
+                case 2 :
+                    System.out.println(controller.generateDetailedReport());
+                    enterToContinue();
+                    break;
+                case 3 :
+                    runDonationManagement();
+                    break;
+                default :
+                    System.err.println("Invalid choice. Please select an option between 1 and 3.");
+            }
+        } while (choice != 0);
+    }
+    
     public int displayReportChoice(){
         System.out.println("***** Report Generation *****");
         System.out.println("1. Generate Total Report");
@@ -648,5 +699,12 @@ public class DonationManagementUI {
             }
         }
         return choice;
+    }
+    
+    public static void main(String[] args) {
+        DonationManagementUI ui = new DonationManagementUI();
+        driver driver = new driver();
+        ui.runDonationManagement();
+        driver.runDriver();
     }
 }
