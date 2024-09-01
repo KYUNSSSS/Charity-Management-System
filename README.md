@@ -61,7 +61,7 @@ To run the system in NetBeans, run src/control/driver.java
 
 #### Donation Management Subsystem
 1. Press 1 to add a donation
-2. Press 2 to remove a daontion
+2. Press 2 to remove a danation
 3. Press 3 to search donation by id
 4. Press 4 to amend donation details
 5. Press 5 to track donation
@@ -77,6 +77,19 @@ To run the system in NetBeans, run src/control/driver.java
       </br> 9.2 Press 2 to generate report with details
       </br> 9.3 Press 3 to reutrn to donation management menu
 10. Press 0 to return to main memu
+
+#### Donation Distribution Subsystem
+1. Press 1 to add a distribution
+2. Press 2 to remove a distribution
+3. Press 3 to update a distribution
+4. Press 4 to track a distribution
+    </br> 4.1 Press 1 to track donee id
+    </br> 4.2 Press 2 to track distribution date
+    </br> 4.3 Press 3 to track category
+    </br> 4.4 Press 4 to track status
+    </br> 4.5 Press 5 to track location
+6. Press 5 to generate summary report
+7. Press 0 to return main menu
 
 
 Concept Diagram:
