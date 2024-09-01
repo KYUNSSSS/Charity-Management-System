@@ -51,13 +51,13 @@ public class DonationDistributionUI {
     
     public String inputDistributionID() {
         while (true) {
-            System.out.print("Enter Distribution ID: ");
-            String id = scanner.nextLine().toUpperCase();
-            
+            System.out.print("Enter Distribution ID (DDXXX): ");
+            String id = scanner.nextLine();
+
             if (Validator.isValidID(id)) {
-            } else {
-                System.out.println("\nInvalid Input. Please enter a valid Distribution ID without symbols. [Eg. A001].");
+                return id.toUpperCase();
             }
+            System.out.println("\nInvalid Input. Please enter a valid Donee ID without symbols. [Eg. DD001].");
         }
     }
 
@@ -204,6 +204,3 @@ public class DonationDistributionUI {
         System.out.println(report.toString());
     }
 }
-
-
-
