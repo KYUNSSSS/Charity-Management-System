@@ -77,7 +77,7 @@ public class DonationManagement {
         return null;
     }
 
-    public void amendDonationDetails(String donationID, String newDonorID, String newItemCategory, String newItem, Double newAmount) {
+    public void amendDonationDetails(String donationID, String newDonorID, String newItemCategory, String newItem, double newAmount, int newQuantity) {
         Donation donation = getDonationById(donationID);
         if (donation == null) {
             System.err.println("Donation not found.");
@@ -92,13 +92,13 @@ public class DonationManagement {
         if (newItem != null && !newItem.isEmpty()) {
             donation.setItem(newItem);
         }
-        if (newAmount != null) {
-            if (newItemCategory.equalsIgnoreCase("Cash")) {
-                donation.setCashAmount(newAmount);
-            } else {
-                donation.setAmount(newAmount.intValue()); 
-            }
+         
+        if (newItemCategory.equalsIgnoreCase("Cash")) {
+            donation.setCashAmount(newAmount);
+        } else {
+            donation.setAmount(newQuantity); 
         }
+        
         donationDAO.saveDonationListToFile(donationList);
     }
 
