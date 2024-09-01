@@ -105,9 +105,12 @@ public class VolunteerManagementUI {
     public int inputPhoneNum() {
         while(true) {
             System.out.print("Enter Phone Number: ");
-            int phone = scanner.nextInt();
-            scanner.nextLine();
-            return phone;        
+            String phone = scanner.nextLine();
+            
+            if (Validator.isValidPhoneNumber(phone)) {
+                return Integer.parseInt(phone);
+            }
+            System.out.println("Please enter a valid phone number.");       
         }
     }
 
