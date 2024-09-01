@@ -1,14 +1,10 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package control;
-
 import adt.*;
 import entity.*;
 import boundary.DonorManagementUI;
 import dao.*;
 import java.time.LocalDate;
+import java.util.Comparator;
 import utility.*;
 
 /**
@@ -16,7 +12,7 @@ import utility.*;
  * @author Ng Yin Xuan
  */
 public class DonorManagement {
-    
+
     private ListInterface<Donor> donorList = new LinkedList<>();
     private ListInterface<Donation> donationList = new LinkedList<>();
     private DonorDAO donorDAO = new DonorDAO();
@@ -36,27 +32,35 @@ public class DonorManagement {
 
         for (int i = 1; i <= donorList.getNumberOfEntries(); i++) {
             Donor donor = donorList.getEntry(i);
-            donorMap.put(donor.getDonorID(), donor);
-            donorDonations.put(donor.getDonorID(), new LinkedList<>());
+            String donorID = donor.getDonorID();
+
+            // Check if the donorID already exists in the donorMap
+            if (!donorMap.containsKey(donorID)) {
+                donorMap.put(donorID, donor);
+                donorDonations.put(donorID, new LinkedList<>());
+            } else {
+                System.out.println("Duplicate donor found: " + donorID + ", skipping...");
+            }
         }
 
-        for (int i = 1; i <= donorDonations.capacity(); i++) {
-            Donor donor = donorList.getEntry(i);
-            if (donor != null) {
-                Donation donation = donationList.getEntry(i);
+        for (int i = 1; i <= donationList.getNumberOfEntries(); i++) {
+            Donation donation = donationList.getEntry(i);
 
-                if (donation == null) {
-                    continue;
-                }
-                String donorID = donation.getDonorID();
-                if (donorDonations.containsKey(donorID)) {
-                    donorDonations.get(donorID).add(donation); //get the donation list from the key and add donation
-                }
+            if (donation == null) {
+                continue;
+            }
+
+            String donorID = donation.getDonorID();
+            if (donorDonations.containsKey(donorID)) {
+                donorDonations.get(donorID).add(donation); // Add donation to the correct donor's list
+            } else {
+                System.err.println("Warning: Donor with ID " + donorID + " not found in donorDonations.");
             }
         }
     }
 
     public void runDonorManagement() {
+        donorList.sort(donorIDComparator);
         int choice = 0;
         do {
             choice = donorUI.getMenuChoice();
@@ -190,7 +194,7 @@ public class DonorManagement {
 
     public void listDonorsWithDonations() {
         // Define table headers
-        String header = String.format("%-10s %-20s %-15s %-20s %-10s %-15s %-10s %-15s %-10s %-10s %-15s",
+        String header = String.format("%-10s %-20s %-15s %-20s %-10s %-15s %-10s %-20s %-15s %-10s %-15s",
                 "DonorID", "Name", "Contact No", "Email",
                 "Type", "Entity Type", "DonationID", "Donation Type", "Item", "Amount", "Donation Date");
 
@@ -199,20 +203,8 @@ public class DonorManagement {
         System.out.println(header);
         System.out.println("=".repeat(header.length()));
 
-        for (int i = 1; i <= donorDonations.capacity(); i++) {
-            String donorID = donorDonations.getKey(i);
-
-            if (donorID == null) {
-                continue; // Skip to the next iteration
-            }
-
-            Donor donor = donorMap.get(donorID);
-
-            // Check if the donor is null
-            if (donor == null) {
-                System.out.println("Warning: Donor not found for donorID " + donorID);
-                continue; // Skip to the next iteration
-            }
+        for (int i = 1; i <= donorList.getNumberOfEntries(); i++) {
+            Donor donor = donorList.getEntry(i);
 
             // Display the donor details once
             String donorRow = String.format("%-10s %-20s %-15s %-20s %-10s %-15s",
@@ -224,7 +216,7 @@ public class DonorManagement {
                     donor.getEntityType());
             System.out.println(donorRow);
 
-            ListInterface<Donation> donations = donorDonations.get(donorID);
+            ListInterface<Donation> donations = donorDonations.get(donor.getDonorID());
             // Display all donations for this donor
             if (!donations.isEmpty()) {
                 for (int j = 1; j <= donations.getNumberOfEntries(); j++) {
@@ -233,21 +225,21 @@ public class DonorManagement {
 
                     // Format the donation details under the donor
                     if (donation.getItemCategory().equals("Cash")) {
-                        donationRow = String.format("%-10s %-20s %-15s %-20s %-10s %-15s %-10s %-15s %-10s %-10.2f %-15s",
-                            "", "", "", "", "", "", // Empty for donor details
-                            donation.getDonationID(),
-                            donation.getItemCategory(),
-                            donation.getItem(),
-                            donation.getCashAmount(),
-                            donation.getDonationDate().toString());
+                        donationRow = String.format("%-10s %-20s %-15s %-20s %-10s %-15s %-10s %-20s %-15s %-10.2f %-15s",
+                                "", "", "", "", "", "", // Empty for donor details
+                                donation.getDonationID(),
+                                donation.getItemCategory(),
+                                donation.getItem(),
+                                donation.getCashAmount(),
+                                donation.getDonationDate().toString());
                     } else {
-                        donationRow = String.format("%-10s %-20s %-15s %-20s %-10s %-15s %-10s %-15s %-10s %-10s %-15s",
-                            "", "", "", "", "", "", // Empty for donor details
-                            donation.getDonationID(),
-                            donation.getItemCategory(),
-                            donation.getItem(),
-                            donation.getAmount(),
-                            donation.getDonationDate().toString());
+                        donationRow = String.format("%-10s %-20s %-15s %-20s %-10s %-15s %-10s %-20s %-15s %-10s %-15s",
+                                "", "", "", "", "", "", // Empty for donor details
+                                donation.getDonationID(),
+                                donation.getItemCategory(),
+                                donation.getItem(),
+                                donation.getAmount(),
+                                donation.getDonationDate().toString());
                     }
                     System.out.println(donationRow);
                 }
@@ -459,20 +451,9 @@ public class DonorManagement {
         MapInterface<String, Integer> cashCounts = new HashMap<>();
         MapInterface<String, Integer> itemCounts = new HashMap<>();
 
-        // Iterate over all donors in the donorDonations map
-        for (int i = 1; i <= donorDonations.capacity(); i++) {
-            String donorID = donorDonations.getKey(i);
-
-            if (donorID == null) {
-                continue;
-            }
-
-            Donor donor = donorMap.get(donorID);
-
-            if (donor == null) {
-                System.out.println("Warning: Donor not found for donorID " + donorID);
-                continue;
-            }
+        for (int i = 1; i <= donorList.getNumberOfEntries(); i++) {
+            Donor donor = donorList.getEntry(i);
+            String donorID = donor.getDonorID();
 
             ListInterface<Donation> donations = donorDonations.get(donorID);
             int donationCount = donations.getNumberOfEntries();
@@ -533,6 +514,14 @@ public class DonorManagement {
         }
         return String.format("DNR%05d", nextID); // Format as DNR00001, DNR00002, etc.
     }
+
+    // Comparator to sort donors by donorID
+    Comparator<Donor> donorIDComparator = new Comparator<Donor>() {
+        @Override
+        public int compare(Donor d1, Donor d2) {
+            return d1.getDonorID().compareTo(d2.getDonorID());
+        }
+    };
 
     public static void main(String[] args) {
         DonorManagement DonorManagement = new DonorManagement();

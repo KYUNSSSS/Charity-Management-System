@@ -1,12 +1,11 @@
 package entity;
 
 import java.io.Serializable;
-import java.time.LocalDate;
-import java.util.Date;
+
 
 /**
  *
- * @author Kat Tan
+ * @author Kow Yun Shen
  */
 public class Donee implements Serializable{
   private String doneeID;
