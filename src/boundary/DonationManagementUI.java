@@ -1,6 +1,6 @@
 /**
  *
- * @author haojuan
+ * @author Loh Hao Juan
  */
 package boundary;
 
