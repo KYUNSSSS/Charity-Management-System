@@ -195,7 +195,7 @@ public class DoneeManagement {
             double totalCash = 0;
             for (int i = 1; i <= donations.getNumberOfEntries(); i++) {
                 Distribution donation = donations.getEntry(i);
-                System.out.printf("%-15s %-20s %-15s %-10d %-10.2f %-10s %-20s\n",
+                System.out.printf("%-15s %-25s %-25s %-10d %-10.2f %-10s %-20s\n",
                         donation.getDistributionID(),
                         donation.getItemName(),
                         donation.getCategory(),
@@ -207,7 +207,7 @@ public class DoneeManagement {
                 totalGoods += donation.getQuantity();
                 totalCash += donation.getAmount();
             }
-            System.out.println("*********************************************************************************************************");
+            System.out.println("***********************************************************************************************************************");
             System.out.println("Total Donations: " + totalDonations);
             System.out.println("Total Donated Goods: " + totalGoods);
             System.out.println("Total Donated Cash: " + String.format("%.2f", totalCash));

@@ -255,16 +255,16 @@ public class DoneeManagementUI {
         if (donations.isEmpty()) {
             System.out.println("No matching donees found.");
         } else {
-            System.out.println("*******************************************************************************************************");
-            System.out.printf("%-15s %-20s %-15s %-10s %-10s %-10s %-20s\n",
+            System.out.println("**********************************************************************************************************************");
+            System.out.printf("%-15s %-25s %-25s %-10s %-10s %-10s %-20s\n",
                     "Distribution ID", "Item Name", "Category",
                     "Quantity", "Amount", "Status", "Distribution Date");
-            System.out.println("*******************************************************************************************************");
+            System.out.println("**********************************************************************************************************************");
 
             for (int i = 1; i <= donations.getNumberOfEntries(); i++) {
                 Distribution donation = donations.getEntry(i);
 
-                System.out.printf("%-15s %-20s %-15s %-10d %-10.2f %-10s %-20s\n",
+                System.out.printf("%-15s %-25s %-25s %-10d %-10.2f %-10s %-20s\n",
                         donation.getDistributionID(),
                         donation.getItemName(),
                         donation.getCategory(),
@@ -275,7 +275,7 @@ public class DoneeManagementUI {
 
             }
         }
-        System.out.println("*******************************************************************************************************");
+        System.out.println("**********************************************************************************************************************");
         MessageUI.pressAnyKeyToContinue();
     }
 
@@ -343,11 +343,11 @@ public class DoneeManagementUI {
         }
     }
     public void DoneeDonationHeader(){
-        System.out.println("*********************************************************************************************************");
-        System.out.printf("%-15s %-20s %-15s %-10s %-10s %-10s %-20s\n",
+        System.out.println("***********************************************************************************************************************");
+        System.out.printf("%-15s %-25s %-25s %-10s %-10s %-10s %-20s\n",
                     "Distribution ID", "Item Name", "Category",
                     "Quantity", "Amount", "Status", "Distribution Date");
-        System.out.println("*********************************************************************************************************");
+        System.out.println("***********************************************************************************************************************");
     }
 
     public void listDonee(Donee donee) {
