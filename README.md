@@ -75,7 +75,7 @@ To run the system in NetBeans, run src/control/driver.java
 9. Press 9 to generate summary report
       </br> 9.1 Press 1 to generate report with categories
       </br> 9.2 Press 2 to generate report with details
-      </br> 9.3 Press 3 to reutrn to donation management menu
+      </br> 9.3 Press 3 to return to donation management menu
 10. Press 0 to return to main memu
 
 #### Donation Distribution Subsystem
@@ -91,6 +91,23 @@ To run the system in NetBeans, run src/control/driver.java
 6. Press 5 to generate summary report
 7. Press 0 to return main menu
 
+### Volunteer Management System
+1. Press 1 to add new volunteer
+2. Press 2 to remove a volunteer
+      </br> 2.1 enter volunteer id
+3. Press 3 to search for a volunteer's details
+      </br> 3.1 enter volunteer id
+4. Press 4 to assign event to volunteer
+      </br> 4.1 Enter volunteer id
+      </br> 4.2 choose from 1/2/3 to assign event
+5. Press 5 to search events under volunteer
+      </br> 5.1 Enter volunteer id
+6. Press 6 to list all volunteers
+7. Press 7 to filter volunteer based on criteria
+      </br> 7.1 Press 1 to filter volunteer based on volunteer type
+      </br> 7.2 Press 2 to filter volunteer based on event assigned
+8. Press 8 to generate summary report
+9. Press 0 to return main menu
 
 Concept Diagram:
 https://drive.google.com/file/d/14g2J-Z4WPtv32z96vGCbCwnrIpY9u_b5/view?usp=sharing
