@@ -22,16 +22,16 @@ public class DonationManagement {
     private double cashTotal = 0.0;
     private Donation donation;
 
-    public DonationManagement(DonationManagementUI ui) {
-        this.ui = ui;
-        this.donationList = donationDAO.loadDonationsFromFile(); // Load donations from file on initialization
-    }
+//    public DonationManagement() {
+////        this.ui = ui;
+//        this.donationList = donationDAO.loadDonationsFromFile(); // Load donations from file on initialization
+//    }
 
     public DonationManagement() {
         this.donationList = donationDAO.loadDonationsFromFile();
     }
 
-    public void setUI(DonationManagementUI ui) {
+    public void DonationManagement(DonationManagementUI ui) {
         this.ui = ui;
     }
 
@@ -406,9 +406,9 @@ public class DonationManagement {
 
     public static void main(String[] args) {
         DonationManagement controller = new DonationManagement();
-        DonationManagementUI ui = new DonationManagementUI(controller);
+//        DonationManagementUI ui = new DonationManagementUI(controller);
         driver driver = new driver();
-        controller.setUI(ui);
+//        controller.setUI(ui);
         controller.runDonationManagement();
         driver.runDriver();
     }
