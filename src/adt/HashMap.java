@@ -24,12 +24,16 @@ public class HashMap<K, V> implements MapInterface<K, V> {
     @Override
     public V put(K key, V value) {
         int index = getIndex(key);
-        for (MapEntry<K, V> entry = table[index]; entry != null; entry = entry.next) {
-            if (entry.key.equals(key)) {
-                V oldValue = entry.value;
-                entry.value = value;
+        MapEntry<K, V> current = table[index];
+
+        // Traverse the chain to find if the key already exists
+        while (current != null) {
+            if (current.key.equals(key)) {
+                V oldValue = current.value;
+                current.value = value;
                 return oldValue;
             }
+            current = current.next;
         }
 
         table[index] = new MapEntry<>(key, value, table[index]);
@@ -114,8 +118,17 @@ public class HashMap<K, V> implements MapInterface<K, V> {
 
     @Override
     public K getKey(int index) {
-        MapEntry<K, V> entry = getEntry(index);
-        return (entry != null) ? entry.key : null;
+        int count = 0;
+        for (MapEntry<K, V> entry : table) {
+            while (entry != null) {
+                if (count == index) {
+                    return entry.key;
+                }
+                entry = entry.next;
+                count++;
+            }
+        }
+        return null; // Return null if the index is out of bounds
     }
 
     public static class MapEntry<K, V> {
@@ -130,13 +143,13 @@ public class HashMap<K, V> implements MapInterface<K, V> {
             this.next = next;
         }
     }
-    
+
     @Override
     public V getOrDefault(K key, V defaultValue) {
         V value = get(key);
         return (value != null) ? value : defaultValue;
     }
-    
+
     @Override
     public void clear() {
         for (int i = 0; i < table.length; i++) {
@@ -162,4 +175,3 @@ public class HashMap<K, V> implements MapInterface<K, V> {
         return keys;
     }
 }
-
