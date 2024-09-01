@@ -115,14 +115,14 @@ public class DonationDistribution {
                     break;
                 case 1:
                     addNewDistribute();
-                    distributeUI.listAllDistribute(getAllDistribute());
                     break;
                 case 2:
                     updateDistribute();
+                    MessageUI.pressAnyKeyToContinue();
                     break;
                 case 3:
                     removeDistribute();
-                    distributeUI.listAllDistribute(getAllDistribute());
+                    MessageUI.pressAnyKeyToContinue();
                     break;
                 case 4:
                     trackDistribute();
@@ -147,41 +147,78 @@ public class DonationDistribution {
         distributeMap.put(newDistribute.getDistributionID(), newDistribute);
         distributeDAO.saveToFile(getAllDistribute());
     }
-
+    
     public void removeDistribute() {
         String distributionID = distributeUI.inputDistributionID();
-        boolean isRemoved = false;
+        int index = findDistributionIndexById(distributionID);
 
-        for (int i = 1; i <= distributeList.getNumberOfEntries(); i++) {
-            Distribution currentDistribution = distributeList.getEntry(i);
+        if (index != -1) {
+            Distribution distributionToRemove = distributeList.getEntry(index);
 
-            if (currentDistribution.getDistributionID().equals(distributionID)) {
-                distributeList.remove(i);
-                isRemoved = true;
-                break;
-            }
-        }
-
-        if (isRemoved) {
+            updateItemTotals(distributionToRemove, false); // false indicates removal
+            distributeList.remove(index);
+            distributeMap.remove(distributionID);
             distributeDAO.saveToFile(getAllDistribute());
-            System.out.println("Distribution removed successfully.");
+            tempDAO.saveTotals(itemTotals, itemTotals.getOrDefault("CASH: CASH", 0.0));
+
+            System.out.println("Distribution with ID " + distributionID + " has been removed successfully.");
         } else {
-            System.out.println("Distribution ID not found.");
+            System.out.println("Distribution with ID " + distributionID + " not found.");
         }
     }
-
+    
     public void updateDistribute() {
         String distributionID = distributeUI.inputDistributionID();
         int index = findDistributionIndexById(distributionID);
+
         if (index != -1) {
-            Distribution updatedDistribute = inputDistributionDetails();
-            distributeList.replace(index, updatedDistribute);
+            Distribution oldDistribution = distributeList.getEntry(index);
+            Distribution newDistribution = inputDistributionDetails();
+            updateItemTotals(oldDistribution, false); // false indicates removing the old distribution
+            updateItemTotals(newDistribution, true); // true indicates adding the new distribution
+            distributeList.replace(index, newDistribution);
+            distributeMap.put(newDistribution.getDistributionID(), newDistribution);
             distributeDAO.saveToFile(getAllDistribute());
+            tempDAO.saveTotals(itemTotals, itemTotals.getOrDefault("CASH: CASH", 0.0));
 
             System.out.println("Distribution with ID " + distributionID + " has been updated successfully.");
         } else {
             System.out.println("Distribution with ID " + distributionID + " not found.");
         }
+    }
+
+    private void updateItemTotals(Distribution distribution, boolean isAdding) {
+        String category = distribution.getCategory();
+        String itemName = distribution.getItemName();
+        double amount = distribution.getAmount();
+        int quantity = distribution.getQuantity();
+        String key = category + ": " + itemName;
+
+        if (category.equalsIgnoreCase("cash")) {
+            double currentTotal = itemTotals.getOrDefault("CASH: CASH", 0.0);
+            if (isAdding) {
+                itemTotals.put("CASH: CASH", currentTotal - amount);
+            } else {
+                itemTotals.put("CASH: CASH", currentTotal + amount);
+            }
+        } else {
+            double currentTotal = itemTotals.getOrDefault(key, 0.0);
+            if (isAdding) {
+                itemTotals.put(key, currentTotal - quantity);
+            } else {
+                itemTotals.put(key, currentTotal + quantity);
+            }
+        }
+    }
+
+    private int findDistributionIndexById(String distributionID) {
+        for (int i = 1; i <= distributeList.getNumberOfEntries(); i++) {
+            Distribution currentDistribute = distributeList.getEntry(i);
+            if (currentDistribute.getDistributionID().equalsIgnoreCase(distributionID)) {
+                return i;
+            }
+        }
+        return -1;
     }
     
     private void loadDoneeLocations() {
@@ -207,16 +244,6 @@ public class DonationDistribution {
             }
         }
         return "Unknown";
-    }
-
-    private int findDistributionIndexById(String distributionID) {
-        for (int i = 1; i <= distributeList.getNumberOfEntries(); i++) {
-            Distribution currentDistribute = distributeList.getEntry(i);
-            if (currentDistribute.getDistributionID().equalsIgnoreCase(distributionID)) {
-                return i;
-            }
-        }
-        return -1;
     }
 
     public void trackDistribute() {
