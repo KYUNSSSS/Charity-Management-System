@@ -9,7 +9,7 @@ import entity.*;
 import boundary.*;
 import dao.*;
 import java.io.*;
-import utility.MessageUI;
+import utility.*;
 import java.time.LocalDate;
 
 /**
@@ -105,7 +105,7 @@ public class DonationDistribution {
     }
 
     public void runDonationDistribution() {
-        int choice = -1;
+        int choice = 0;
         do {
             choice = distributeUI.getMenuChoice();
             switch (choice) {
@@ -131,7 +131,6 @@ public class DonationDistribution {
                     break;
                 default:
                     MessageUI.displayInvalidChoiceMessage();
-                    choice = -1;
             }
         } while (choice != 0);
     }
@@ -266,10 +265,10 @@ public class DonationDistribution {
     }
 
     public void trackDistribute() {
-        int choices = -1;
+        int choice = 0;
         do {
-            choices = distributeUI.getTrackMenuChoice();
-            switch (choices) {
+            choice = distributeUI.getTrackMenuChoice();
+            switch (choice) {
                 case 0:
                     MessageUI.displayExitMessage();
                     break;
@@ -290,9 +289,8 @@ public class DonationDistribution {
                     break;
                 default:
                     MessageUI.displayInvalidChoiceMessage();
-                    choices = -1;
             }
-        } while (choices != 0);
+        } while (choice != 0);
     }
 
     private void trackByCriteria(String criteria, String type) {
