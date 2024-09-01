@@ -174,6 +174,7 @@ public class DonationDistribution {
             Distribution oldDistribution = distributeList.getEntry(index);
             updateItemTotals(oldDistribution, oldDistribution.getAmount(), false);
             Distribution newDistribution = inputDistributionDetails();
+            newDistribution.setDistributionID(distributionID);
             updateItemTotals(newDistribution, newDistribution.getAmount(), true);
 
             distributeList.replace(index, newDistribution);
