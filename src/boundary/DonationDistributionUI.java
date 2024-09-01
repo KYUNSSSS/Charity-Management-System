@@ -113,18 +113,20 @@ public class DonationDistributionUI {
     public String inputStatus() {
         String status;
         while (true) {
-            System.out.print("Enter Distribution Status (Pending, Delivered, Received): ");
+            System.out.print("Enter Distribution Status, whether Pending-P, Delivered-D or Received-R: ");
             status = scanner.nextLine().trim(); 
 
-            if (status.equalsIgnoreCase("Pending") || 
-                status.equalsIgnoreCase("Delivered") || 
-                status.equalsIgnoreCase("Received")) {
-                break;
-            } else {
-                System.out.println("\nInvalid Status. Please enter one of the following: Pending, Delivered, Received.");
+            switch (status.toUpperCase()) {
+                case "P":
+                    return "PENDING";
+                case "D":
+                    return "DELIVERED";
+                case "R":
+                    return "RECEIVED";
+                default:
+                    System.out.println("\nInvalid Status. Please enter one of the following: P, D, R.");
             }
         }
-        return status.toUpperCase();
     }
     
     public LocalDate inputDistributionDate() {
@@ -149,9 +151,9 @@ public class DonationDistributionUI {
         header.append(title).append("\n");
         header.append("===============================================================================================================================\n");
         if (includeDoneeID) {
-            header.append(String.format("%-15s%-25s%-20s%-15s%-15s%-25s%-5s\n", "Item", "Category", "Quantity", "Amount", "Status", "Distribution Date", "Donee ID"));
+            header.append(String.format("%-18s%-25s%-15s%-15s%-15s%-25s%-5s\n", "Item", "Category", "Quantity", "Amount [RM]", "Status", "Distribution Date", "Donee ID"));
         } else {
-            header.append(String.format("%-15s%-25s%-20s%-15s%-15s%-25s%-5s\n", "Item", "Category", "Quantity", "Amount", "Status", "Distribution Date", "Location"));
+            header.append(String.format("%-18s%-25s%-15s%-15s%-15s%-25s%-5s\n", "Item", "Category", "Quantity", "Amount [RM]", "Status", "Distribution Date", "Location"));
         }
         header.append("===============================================================================================================================\n");
         return header.toString();
@@ -159,7 +161,7 @@ public class DonationDistributionUI {
 
     public double inputAmount() {
         while (true) {
-            System.out.print("Enter Amount (must be a positive integer): ");
+            System.out.print("Enter Cash Amount: ");
             String input = scanner.nextLine().trim();
 
             if (Validator.isValidPositiveInteger(input)) {
@@ -170,14 +172,14 @@ public class DonationDistributionUI {
         }
     }
     
-     public String inputLocation() {
+    public String inputLocation() {
         String location;
         do {
             System.out.print("Enter location: ");
             location = scanner.nextLine().toUpperCase().trim(); 
         } while (!Validator.isAlphabetic(location)); 
 
-        return location;
+        return location.toUpperCase();
     }
      
      public void listDistribute(Distribution distribution) {
@@ -202,3 +204,6 @@ public class DonationDistributionUI {
         System.out.println(report.toString());
     }
 }
+
+
+
