@@ -106,37 +106,33 @@ public class DonationManagementUI {
         System.out.println("5. Cash");
         int choice = 0;
         while (choice < 1 || choice > 5){
-            while (true) {
-                System.out.print("Enter choice : ");
-                try {
-                    choice = Integer.parseInt(scanner.nextLine());
-                } catch (NumberFormatException e) {
-                    System.err.println("Invalid input. Please enter a number between 1 and 5.");
+            System.out.print("Enter choice : ");
+            String newChoice = scanner.nextLine();
+            if (Validator.isValidPositiveInteger(String.valueOf(newChoice))) {
+                choice = Integer.parseInt(newChoice);
+                switch (choice) {
+                    case 1 :
+                        itemCategory = "Clothing";
+                        break;
+                    case 2 :
+                        itemCategory = "Food and Beverage";
+                        break;
+                    case 3 :
+                        itemCategory = "Books";
+                        break;
+                    case 4 :
+                        itemCategory = "Electronic Devices";
+                        break;
+                    case 5 :
+                        itemCategory = "Cash";
+                        break;
+                    default :
+                        MessageUI.displayInvalidChoiceMessage();
                 }
-                
-                if (Validator.isValidPositiveInteger(String.valueOf(choice))) {
-                    break;
-                }
+            }else{
+                System.err.println("Invalid input. Please enter a number between 1 and 5.");
             }
-            switch (choice) {
-                case 1 :
-                    itemCategory = "Clothing";
-                    break;
-                case 2 :
-                    itemCategory = "Food and Beverage";
-                    break;
-                case 3 :
-                    itemCategory = "Books";
-                    break;
-                case 4 :
-                    itemCategory = "Electronic Devices";
-                    break;
-                case 5 :
-                    itemCategory = "Cash";
-                    break;
-                default :
-                    MessageUI.displayInvalidChoiceMessage();
-            }
+            
         } 
         return itemCategory;
     }
@@ -148,11 +144,11 @@ public class DonationManagementUI {
     
     private int getValidIntInput(String prompt) {
         int value = -1;
-        while (value < 0) {
+        while (value <= 0) {
             System.out.print(prompt);
             try {
                 value = scanner.nextInt();
-                if (value < 0) {
+                if (value <= 0) {
                     System.err.println("Value must be non-negative. Please try again.");
                 }
             } catch (InputMismatchException e) {
@@ -166,11 +162,11 @@ public class DonationManagementUI {
     
     private double getValidDoubleInput(String prompt) {
         double value = -1;
-        while (value < 0) {
+        while (value <= 0) {
             System.out.print(prompt);
             try {
                 value = scanner.nextDouble();
-                if (value < 0) {
+                if (value <= 0) {
                     System.err.println("Amount must be positive. Please try again.");
                 }
             } catch (InputMismatchException e) {
@@ -207,15 +203,22 @@ public class DonationManagementUI {
 
     private String getCategoryItemInput(String... items) {
         int choice = 0;
-        do {
+          
+        while (choice < 1 || choice > items.length){
             System.out.println("Choose Donation Item : ");
             for (int i = 0; i < items.length; i++) {
                 System.out.println((i + 1) + ". " + items[i]);
             }
             System.out.print("Enter Items (1-" + items.length + ") : ");
-            choice = scanner.nextInt();
-            scanner.nextLine();
-        } while (choice < 1 || choice > items.length);
+            String newChoice = scanner.nextLine();
+            if (Validator.isValidPositiveInteger(String.valueOf(newChoice))) {
+                choice = Integer.parseInt(newChoice);
+                
+            }else{
+                System.err.println("Invalid input. Please enter a number between 1 and 5.");
+            }
+            
+        }
         return items[choice - 1];
     }
     
