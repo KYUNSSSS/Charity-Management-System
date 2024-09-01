@@ -10,6 +10,11 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import utility.*;
 
+/**
+ *
+ * @author Loh Hao Juan
+ */
+
 public class DonationManagement {
 
     private DonationDAO donationDAO = new DonationDAO();
