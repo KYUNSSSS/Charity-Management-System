@@ -56,9 +56,11 @@ To run the system in NetBeans, run src/control/driver.java
       </br> 8.1 Press 1 to filter donation by date range
       </br> 8.2 Press 2 to filter donation by amount range
       </br> 8.3 Press 3 to filter donation by date and amount range
+      </br> 8.4 Press 0 to return to donation management menu
 9. Press 9 to generate summary report
       </br> 9.1 Press 1 to generate report with categories
       </br> 9.2 Press 2 to generate report with details
+      </br> 9.3 Press 3 to reutrn to donation management menu
 10. Press 0 to return to main memu
 
 
