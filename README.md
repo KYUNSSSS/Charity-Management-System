@@ -44,6 +44,21 @@ To run the system in NetBeans, run src/control/driver.java
       </br> 8.2 Press 2 to generate top donors summary report
 11. Press 0 to return to main menu
 
+#### Donee Management Subsystem
+1. Press 1 to add a new donee
+2. Press 2 to update donee details
+3. Press 3 to search donee details
+4. Press 4 to list donee donations
+      </br> 4.1 Enter donee id
+5. Press 5 to filter donor based on criteria
+      </br> 5.1 Press 1 to filter by donee type
+      </br> 5.2 Press 2 to filter by date range by donee id
+      </br> 5.3 Press 3 to filter by donation amount range by donee id
+      </br> 5.4 Press 4 to filter by donee location
+8. Press 7 to generate summary reports
+9. Press 8 to generate detail report
+10. Press 0 to return to main menu
+
 #### Donation Management Subsystem
 1. Press 1 to add a donation
 2. Press 2 to remove a daontion

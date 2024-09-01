@@ -63,11 +63,9 @@ public class VolunteerManagement {
                     break;
                 case 1:
                     addNewVolunteer();
-                    volunteerUI.listAllVolunteers(getAllVolunteer());
                     break;
                 case 2:                    
                     removeVolunteer();
-                    volunteerUI.listAllVolunteers(getAllVolunteer());
                     MessageUI.pressAnyKeyToContinue();
                     break;
                 case 3:
@@ -82,7 +80,7 @@ public class VolunteerManagement {
                     MessageUI.pressAnyKeyToContinue();
                     break;
                 case 6:
-                    volunteerUI.listAllVolunteers(getAllVolunteer());
+                    listAllVolunteers();
                     break;
                 case 7:
                     filterVolunteers();
@@ -156,7 +154,7 @@ public class VolunteerManagement {
     
     public void assignEvents(){
         Scanner scanner = new Scanner(System.in);
-        volunteerUI.listAllVolunteers(getAllVolunteer());
+        listAllVolunteers();
         System.out.print("Enter ID to assign event: ");
         String volunteerID = scanner.nextLine();
         for (int i = 1; i <= volunteerList.getNumberOfEntries(); i++) {
@@ -225,6 +223,10 @@ public class VolunteerManagement {
           outputStr += volunteerList.getEntry(i) + "\n";
         }
         return outputStr;
+    }
+    
+    public void listAllVolunteers() {
+        volunteerUI.displayAllVolunteers(volunteerList);
     }
     
     public void filterVolunteers() {
