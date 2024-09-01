@@ -91,7 +91,7 @@ To run the system in NetBeans, run src/control/driver.java
 6. Press 5 to generate summary report
 7. Press 0 to return main menu
 
-### Volunteer Management System
+#### Volunteer Management System
 1. Press 1 to add new volunteer
 2. Press 2 to remove a volunteer
       </br> 2.1 enter volunteer id
