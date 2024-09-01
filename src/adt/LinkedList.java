@@ -10,6 +10,7 @@ import java.util.Comparator;
  * @author Frank M. Carrano
  * @version 2.0
  * @param <T>
+ * @modifiedBy Team Members
  */
 public class LinkedList<T> implements ListInterface<T>, Serializable {
 
