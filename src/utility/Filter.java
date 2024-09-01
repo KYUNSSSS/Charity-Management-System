@@ -15,7 +15,8 @@ import java.time.LocalDate;
  */
 public class Filter<F> {
 
-    public ListInterface<F> filterByType(ListInterface<F> list, String type) {
+    //Donor and Donee Filter
+    public ListInterface<F> filterByType(ListInterface<F> list, String type) { 
         ListInterface<F> filteredList = new LinkedList<>();
         for (int i = 1; i <= list.getNumberOfEntries(); i++) {
             F types = list.getEntry(i);
@@ -28,13 +29,13 @@ public class Filter<F> {
         return filteredList;
     }
 
-    public ListInterface<Donor> filterByDate(MapInterface<String, Donor> donorMap, MapInterface<String, ListInterface<Donation>> map, LocalDate startDate, LocalDate endDate) {
+    // Donor Filter
+    public ListInterface<Donor> filterByDate(MapInterface<String, Donor> donorMap, MapInterface<String, ListInterface<Donation>> map, LocalDate startDate, LocalDate endDate) { 
         ListInterface<Donor> filteredList = new LinkedList<>();
         for (int i = 1; i <= map.capacity(); i++) {
             String donorID = map.getKey(i);
 
             if (donorID == null) {
-//                System.out.println("Null donorID found at index " + i);
                 continue; // Skip null donorID
             }
 
@@ -61,6 +62,7 @@ public class Filter<F> {
         return filteredList;
     }
 
+    // Donor Filter
     public ListInterface<Donor> filterByAmountRange(MapInterface<String, Donor> donorMap, MapInterface<String, ListInterface<Donation>> map, double minAmount, double maxAmount) {
         ListInterface<Donor> filteredList = new LinkedList<>();
         for (int i = 1; i <= map.capacity(); i++) {
@@ -92,19 +94,7 @@ public class Filter<F> {
         return filteredList;
     }
 
-    public ListInterface<F> filterByDonationItem(ListInterface<F> list, String item) {
-        ListInterface<F> filteredList = new LinkedList<>();
-        for (int i = 1; i <= list.getNumberOfEntries(); i++) {
-//            F entity = list.getEntry(i);
-//            if (entity instanceof Donor && ((Donor) entity).getDonationItem().equalsIgnoreCase(item)) {
-//                filteredList.add(entity);
-//            } else if (entity instanceof Donee && ((Donee) entity).getDonationItem().equalsIgnoreCase(item)) {
-//                filteredList.add(entity);
-//            }
-        }
-        return filteredList;
-    }
-
+    // Donor Filter
     public ListInterface<F> filterByEntityType(ListInterface<F> list, String type) {
         ListInterface<F> filteredList = new LinkedList<>();
         for (int i = 1; i <= list.getNumberOfEntries(); i++) {
@@ -116,6 +106,7 @@ public class Filter<F> {
         return filteredList;
     }
 
+    // Donee Filter
     public ListInterface<F> filterByLocation(ListInterface<F> list, String type) {
         ListInterface<F> filteredList = new LinkedList<>();
         for (int i = 1; i <= list.getNumberOfEntries(); i++) {
@@ -127,6 +118,7 @@ public class Filter<F> {
         return filteredList;
     }
 
+    // Helper method
     private boolean isWithinDateRange(LocalDate date, LocalDate startDate, LocalDate endDate) {
         if (date == null) {
             return false; // Handle null dates appropriately
@@ -137,10 +129,12 @@ public class Filter<F> {
                 && (date.isEqual(endDate) || date.isBefore(endDate));
     }
 
+    // Helper method
     private boolean isWithinAmountRange(double amount, double minAmount, double maxAmount) {
         return amount >= minAmount && amount <= maxAmount;
     }
 
+    // Distribution Filter
     public ListInterface<Distribution> filterByDateAndDoneeID(ListInterface<Distribution> list, LocalDate startDate, LocalDate endDate, String doneeID) {
         ListInterface<Distribution> filteredList = new LinkedList<>();
         for (int i = 1; i <= list.getNumberOfEntries(); i++) {
@@ -153,6 +147,7 @@ public class Filter<F> {
         return filteredList;
     }
 
+    // Distribution Filter
     public ListInterface<F> filterByAmountAndDoneeID(ListInterface<F> list, double minAmount, double maxAmount, String doneeID) {
         ListInterface<F> filteredList = new LinkedList<>();
         for (int i = 1; i <= list.getNumberOfEntries(); i++) {
@@ -167,6 +162,7 @@ public class Filter<F> {
         return filteredList;
     }
 
+    // Donation Filter
     public ListInterface<F> filterByDateRange(ListInterface<F> list, LocalDate startDate, LocalDate endDate) {
         ListInterface<F> filteredList = new LinkedList<>();
         for (int i = 1; i <= list.getNumberOfEntries(); i++) {
@@ -180,6 +176,7 @@ public class Filter<F> {
         return filteredList;
     }
 
+    // Donation Filter
     public ListInterface<F> filterByDonationAmountRange(ListInterface<F> list, double minAmount, double maxAmount) {
         ListInterface<F> filteredList = new LinkedList<>();
         for (int i = 1; i <= list.getNumberOfEntries(); i++) {
@@ -196,6 +193,7 @@ public class Filter<F> {
         return filteredList;
     }
     
+    // Donation Filter
     public ListInterface<F> filterByDateAndAmountRange(ListInterface<F> list, LocalDate startDate, LocalDate endDate, double minAmount, double maxAmount) {
         ListInterface<F> filteredList = new LinkedList<>();
         for (int i = 1; i <= list.getNumberOfEntries(); i++) {
@@ -215,6 +213,7 @@ public class Filter<F> {
         return filteredList;
     }
 
+    // Volunteer Filter
     public ListInterface<F> filterByVolunteerType(ListInterface<F> list, String type) {
         ListInterface<F> filteredList = new LinkedList<>();
         for (int i = 1; i <= list.getNumberOfEntries(); i++) {
@@ -226,6 +225,7 @@ public class Filter<F> {
         return filteredList;
     }
 
+    // Volunteer Filter
     public ListInterface<F> filterByEvent(ListInterface<F> list, String event) {
         ListInterface<F> filteredList = new LinkedList<>();
         for (int i = 1; i <= list.getNumberOfEntries(); i++) {
