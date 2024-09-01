@@ -152,7 +152,7 @@ public class DoneeManagement {
             Donee donee = doneeList.getEntry(i);
             if (donee.getDoneeID().equalsIgnoreCase(doneeID)) {
                 doneeUI.updateDonee(donee); // Prompt user for new details
-                System.out.println("Donee Infomation Updated.");
+                System.out.println("Donee Information Updated.");
                 doneeUI.listDonee(donee);
                 updated = true;
                 break;
