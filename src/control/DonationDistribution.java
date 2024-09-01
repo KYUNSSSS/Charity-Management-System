@@ -17,12 +17,11 @@ import java.time.LocalDate;
  * @author SCSM11
  */
 public class DonationDistribution {
-
     private ListInterface<Donation> donationList = new LinkedList<>();
     private DonationDAO donationDAO = new DonationDAO();
     private ListInterface<Donee> doneeList = new LinkedList<>();
     private ListInterface<Distribution> distributeList = new LinkedList<>();
-    private ListInterface<KeyValuePair> doneeLocationList = new LinkedList<>(); // Use LinkedList of KeyValuePair
+    private ListInterface<KeyValuePair> doneeLocationList = new LinkedList<>(); 
     private MapInterface<String, Distribution> distributeMap = new HashMap<>();
     private MapInterface<String, Double> categoryTotals = new HashMap<>();
     private MapInterface<String, Double> itemTotals = new HashMap<>();
@@ -177,6 +176,7 @@ public class DonationDistribution {
             Distribution oldDistribution = distributeList.getEntry(index);
             updateItemTotals(oldDistribution, oldDistribution.getAmount(), false);
             Distribution newDistribution = inputDistributionDetails();
+            newDistribution.setDistributionID(distributionID);
             updateItemTotals(newDistribution, newDistribution.getAmount(), true);
 
             distributeList.replace(index, newDistribution);
