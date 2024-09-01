@@ -35,8 +35,32 @@ public class VolunteerManagementUI {
         return choice;
     }
     
-    public void listAllVolunteers(String outputStr) {
-        System.out.println("\nList of Volunteer:\nID, Type, Name, Phone Number, Email, Event Assigned \n" + outputStr);
+    public void displayAllVolunteers(ListInterface<Volunteer> volunteerList) {
+        StringBuilder outputStr = new StringBuilder();
+
+        // Define table headers
+        String header = String.format("%-15s %-20s %-15s %-25s %-20s %-25s",
+                "VolunteerID", "Volunteer Type", "Name", "Email", "Phone Number", "Assigned Event");
+
+        // Add header and a line separator to the output string
+        outputStr.append("-".repeat(header.length())).append("\n");
+        outputStr.append(header).append("\n");
+        outputStr.append("-".repeat(header.length())).append("\n");
+
+        // Add each volunteer's details
+        for (int i = 1; i <= volunteerList.getNumberOfEntries(); i++) {
+            Volunteer volunteer = volunteerList.getEntry(i);
+            String donorDetails = String.format("%-15s %-20s %-15s %-25s %-20s %-25s",
+                    volunteer.getVolunteerID(),
+                    volunteer.getVolunteerType(),
+                    volunteer.getVolunteerName(),
+                    volunteer.getVolunteerPhoneNum(),
+                    volunteer.getVolunteerEmail(),
+                    volunteer.getEventAssigned());
+            outputStr.append(donorDetails).append("\n");
+        }
+        outputStr.append("-".repeat(header.length())).append("\n");
+        System.out.println("\nList of Volunteer:\n" + outputStr);
     }
   
     public String inputVolunteerID() {
@@ -182,10 +206,10 @@ public class VolunteerManagementUI {
         if (volunteers.isEmpty()) {
             System.out.println("No matching volunteers found.");
         } else {
-            System.out.println("************************************************************************************************************************************");
+            System.out.println("------------------------------------------------------------------------------------------------------------------------------------");
             System.out.printf("|%-15s| %-20s| %-15s| %-25s| %-20s| %-25s|\n",
                                 "Volunteer ID", "Volunteer Type", "Volunteer Name","Volunteer Phone Number" ,"Volunteer Email", "Event Assigned");
-            System.out.println("************************************************************************************************************************************");  
+            System.out.println("------------------------------------------------------------------------------------------------------------------------------------");  
             for (int i = 1; i <= volunteers.getNumberOfEntries(); i++) {
                 Volunteer volunteer = volunteers.getEntry(i);
                 System.out.printf("|%-15s| %-20s| %-15s| %-25s| %-20s| %-25s|\n",
@@ -203,7 +227,7 @@ public class VolunteerManagementUI {
         
     
     public void listVolunteer(Volunteer volunteer) {
-        System.out.println("***Profile***\nVolunteer ID: " + volunteer.getVolunteerID() + "\nName: " + volunteer.getVolunteerName() + "\nType: " + volunteer.getVolunteerType() + "\nPhone Number: " + volunteer.getVolunteerPhoneNum() + "\nEmail: " + volunteer.getVolunteerEmail() + "\nEvent Assigned: " + volunteer.getEventAssigned() +  "\n**********");
+        System.out.println("\n***Profile***\nVolunteer ID: " + volunteer.getVolunteerID() + "\nName: " + volunteer.getVolunteerName() + "\nType: " + volunteer.getVolunteerType() + "\nPhone Number: " + volunteer.getVolunteerPhoneNum() + "\nEmail: " + volunteer.getVolunteerEmail() + "\nEvent Assigned: " + volunteer.getEventAssigned() +  "\n**********");
     }
     
     public void listEvent(Volunteer volunteer) {
