@@ -13,10 +13,7 @@ import adt.HashMap;
 import java.io.*;
 
 public class TempDAO {
-
     private static final String FILE_NAME = "Totals.txt";
-
-    // Ensure the file is created if it does not exist
     public void createFileIfNotExists() {
         File file = new File(FILE_NAME);
         try {
@@ -30,17 +27,13 @@ public class TempDAO {
         }
     }
 
-    // Save totals to file
     public void saveTotals(MapInterface<String, Double> itemTotals, double cashTotal) {
         createFileIfNotExists(); // Ensure file is created before saving
         File file = new File(FILE_NAME);
 
         try {
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, false))) {
-                // Save total cash donations
-                writer.write("Total cash donations: " + cashTotal + "\n");
-
-                // Save item totals categorized by category and item
+                
                 writer.write("Item totals:\n");
                 for (int i = 0; i < itemTotals.capacity(); i++) {
                     if (itemTotals.getKey(i) == null) {
@@ -58,7 +51,6 @@ public class TempDAO {
         }
     }
 
-    // Load item totals and cash total from file
     public MapInterface<String, Double> loadItemTotals() {
         MapInterface<String, Double> itemTotals = new HashMap<>();
         double cashTotal = 0.0;
@@ -66,9 +58,7 @@ public class TempDAO {
         try (BufferedReader reader = new BufferedReader(new FileReader(FILE_NAME))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                if (line.startsWith("Total cash donations:")) {
-                    cashTotal = Double.parseDouble(line.split(": ")[1]);
-                } else if (line.startsWith("Category:")) {
+                if (line.startsWith("Category:")) {
                     String[] parts = line.split(", ");
                     String category = parts[0].split(": ")[1];
                     String item = parts[1].split(": ")[1];
@@ -79,9 +69,7 @@ public class TempDAO {
                     itemTotals.put(key, total);
                 }
             }
-
-            System.out.println("Loaded totals from file:");
-            System.out.println("Total cash donations: " + cashTotal);
+            
             for (int i = 0; i < itemTotals.capacity(); i++) {
                 if (itemTotals.getKey(i) == null) {
                     continue;
@@ -119,3 +107,4 @@ public class TempDAO {
         return cashTotal;
     }
 }
+
