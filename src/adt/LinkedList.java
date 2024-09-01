@@ -84,89 +84,116 @@ public class LinkedList<T> implements ListInterface<T>, Serializable {
 
     @Override
     public T remove(int givenPosition) {
-        T result = null;                 // return value
+        // Initialize result as null to handle unsuccessful removal
+        T result = null;
 
-        if ((givenPosition >= 1) && (givenPosition <= numberOfEntries)) {
-            if (givenPosition == 1) {      // case 1: remove first entry
-                result = firstNode.data;     // save entry to be removed
-                firstNode = firstNode.next;
-            } else {                         // case 2: givenPosition > 1
-                Node nodeBefore = firstNode;
-                for (int i = 1; i < givenPosition - 1; ++i) {
-                    nodeBefore = nodeBefore.next;		// advance nodeBefore to its next node
+        // Check if the given position is within the valid range
+        if (givenPosition >= 1 && givenPosition <= numberOfEntries) {
+            Node currentNode = firstNode;
+
+            // Case 1: Removing the first node
+            if (givenPosition == 1) {
+                result = currentNode.data; // Save the data of the first node
+                firstNode = currentNode.next; // Update the first node to be the next node
+            } else {
+                // Traverse the list until reaching the node just before the one to be removed
+                for (int i = 1; i < givenPosition - 1; i++) {
+                    currentNode = currentNode.next;
                 }
-                result = nodeBefore.next.data;  // save entry to be removed
-                nodeBefore.next = nodeBefore.next.next;	// make node before point to node after the
-            } 																// one to be deleted (to disconnect node from chain)
+                // Save data of the node that will be removed
+                Node nodeToRemove = currentNode.next;
+                result = nodeToRemove.data;
 
+                // Link current node to the node after the one being removed
+                currentNode.next = nodeToRemove.next;
+            }
+
+            // Decrease the number of entries in the list
             numberOfEntries--;
         }
 
-        return result; // return removed entry, or null if operation fails
-    }
-
-    @Override
-    public boolean replace(int givenPosition, T newEntry) {
-        boolean isSuccessful = true;
-
-        if ((givenPosition >= 1) && (givenPosition <= numberOfEntries)) {
-            Node currentNode = firstNode;
-            for (int i = 0; i < givenPosition - 1; ++i) {
-                currentNode = currentNode.next;		// advance currentNode to next node
-            }
-            currentNode.data = newEntry;	// currentNode is pointing to the node at givenPosition
-        } else {
-            isSuccessful = false;
-        }
-
-        return isSuccessful;
-    }
-
-    @Override
-    public T getEntry(int givenPosition) {
-        T result = null;
-
-        if ((givenPosition >= 1) && (givenPosition <= numberOfEntries)) {
-            Node currentNode = firstNode;
-            for (int i = 0; i < givenPosition - 1; ++i) {
-                currentNode = currentNode.next;		// advance currentNode to next node
-            }
-            result = currentNode.data;	// currentNode is pointing to the node at givenPosition
-        }
-
+        // Return the data of the removed node, or null if the position was invalid
         return result;
     }
 
+
+    @Override
+    public boolean replace(int givenPosition, T newEntry) {
+        // Validate the given position is within bounds
+        if (givenPosition < 1 || givenPosition > numberOfEntries) {
+            return false; // Position is invalid
+        }
+
+        // Directly traverse to the desired position
+        Node currentNode = firstNode;
+        int steps = givenPosition - 1; // Calculate the number of steps needed
+        while (steps-- > 0) {          // Traverse in a single pass
+            currentNode = currentNode.next;
+        }
+
+        // Replace the data of the node at the given position
+        currentNode.data = newEntry;
+        return true; // Indicate successful replacement
+    }
+
+    
+    @Override
+    public T getEntry(int givenPosition) {
+        // Validate if the position is within the valid range
+        if (givenPosition < 1 || givenPosition > numberOfEntries) {
+            return null; // Return null for invalid positions
+        }
+
+        // Traverse directly to the specified position
+        Node currentNode = firstNode;
+        int steps = givenPosition - 1; // Number of steps to move
+        while (steps-- > 0) {          // Efficient traversal to the target node
+            currentNode = currentNode.next;
+        }
+        return currentNode.data; // Return the data at the target position
+    }
+
+
     @Override
     public boolean contains(T anEntry) {
-        boolean found = false;
+        // Start with the first node
         Node currentNode = firstNode;
 
-        while (!found && (currentNode != null)) {
+        // Traverse the list until we find the entry or reach the end
+        while (currentNode != null) {
+            // Check if the current node's data matches the entry
             if (anEntry.equals(currentNode.data)) {
-                found = true;
-            } else {
-                currentNode = currentNode.next;
+                return true; // Return immediately upon finding the entry
             }
+            // Move to the next node
+            currentNode = currentNode.next;
         }
-        return found;
+
+        // If traversal completes without finding, return false
+        return false;
     }
 
-    public T contain(T anEntry) {//searching details
-        boolean found = false;
+
+    @Override
+    public T contain(T anEntry) {
+        // Start with the first node
         Node currentNode = firstNode;
-        T details = null;
 
-        while (!found && (currentNode != null)) {
+        // Traverse the list until we find the entry or reach the end
+        while (currentNode != null) {
+            // Check if the current node's data matches the entry
             if (anEntry.equals(currentNode.data)) {
-                found = true;
-                details = currentNode.data;
-            } else {
-                currentNode = currentNode.next;
+                // Return the found details immediately
+                return currentNode.data;
             }
+            // Move to the next node
+            currentNode = currentNode.next;
         }
-        return details;
+
+        // Return null if the entry is not found
+        return null;
     }
+
 
     @Override
     public int getNumberOfEntries() {
