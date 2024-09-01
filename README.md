@@ -44,6 +44,22 @@ To run the system in NetBeans, run src/control/driver.java
       </br> 8.2 Press 2 to generate top donors summary report
 11. Press 0 to return to main menu
 
+#### Donation Management Subsystem
+1. Press 1 to add a donation
+2. Press 2 to remove a daontion
+3. Press 3 to search donation by id
+4. Press 4 to amend donation details
+5. Press 5 to track donation
+6. Press 6 to list donation by donor
+7. Press 7 to list all donation
+8. Press 8 to filter donation based on criteria
+      </br> 8.1 Press 1 to filter donation by date range
+      </br> 8.2 Press 2 to filter donation by amount range
+      </br> 8.3 Press 3 to filter donation by date and amount range
+9. Press 9 to generate summary report
+      </br> 9.1 Press 1 to generate report with categories
+      </br> 9.2 Press 2 to generate report with details
+10. Press 0 to return to main memu
 
 
 Concept Diagram:
