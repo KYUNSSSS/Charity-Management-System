@@ -10,6 +10,8 @@ import adt.ListInterface;
 import boundary.VolunteerManagementUI;
 import dao.VolunteerDAO;
 import entity.Volunteer;
+import java.io.File;
+import java.io.IOException;
 import java.util.Scanner;
 import utility.Filter;
 import utility.MessageUI;
@@ -25,10 +27,30 @@ public class VolunteerManagement {
     private HashMap<String, Volunteer> volunteerMap = new HashMap<>();
     private Filter<Volunteer> filterVolunteer = new Filter<>();
     
-    private int lastDoneeNumber = 0;
+    private int lastVolunteerNumber = 0;
     
     public VolunteerManagement() {
+        File file = new File("volunteer.txt");
+        if (!file.exists()) {
+            try {
+                if (file.createNewFile()) {
+                    System.out.println("File not found. A new file has been created.");
+                } else {
+                    System.out.println("Failed to create a new file.");
+                    return;
+                }
+            } catch (IOException e) {
+                System.out.println("Error creating new file: " + e.getMessage());
+                e.printStackTrace();
+                return;
+            }
+        }
         volunteerList = volunteerDAO.retrieveFromFile();
+        for (int i = 1; i <= volunteerList.getNumberOfEntries(); i++) {
+            Volunteer volunteer = volunteerList.getEntry(i);
+            volunteerMap.put(volunteer.getVolunteerID(), volunteer); // Populate HashMap
+            updateLastVolunteerNumber(volunteer.getVolunteerID());
+        }
     }
     
     public void runVolunteerManagement() {
@@ -43,7 +65,7 @@ public class VolunteerManagement {
                     addNewVolunteer();
                     volunteerUI.listAllVolunteers(getAllVolunteer());
                     break;
-                case 2:
+                case 2:                    
                     removeVolunteer();
                     volunteerUI.listAllVolunteers(getAllVolunteer());
                     break;
@@ -54,7 +76,7 @@ public class VolunteerManagement {
                     assignEvents();
                     break;
                 case 5:
-                    searchEventVolunteer();
+                    searchEventVolunteer(volunteerList);
                     break;
                 case 6:
                     volunteerUI.listAllVolunteers(getAllVolunteer());
@@ -63,7 +85,8 @@ public class VolunteerManagement {
                     filterVolunteers();
                     break;
                 case 8:
-//                    generateReport();
+                    generateReport();
+                    break;
                 default:
                     MessageUI.displayInvalidChoiceMessage();
             } 
@@ -174,18 +197,23 @@ public class VolunteerManagement {
                     default:
                         break;
                 }
+                System.out.println(volunteer.getVolunteerID()+"\n"+volunteer.getEventAssigned());
+                volunteerDAO.updateVolunteer(volunteer);
                 volunteerUI.listVolunteer(volunteer);
             }
         }
         
     }
     
-    public void searchEventVolunteer() {
+    public void searchEventVolunteer(ListInterface list) {
+        volunteerUI.listAllVolunteers(getAllVolunteer());
         String volunteerID = volunteerUI.inputVolunteerID();
         if (volunteerMap.containsKey(volunteerID)) {
             volunteerUI.listEvent(volunteerMap.get(volunteerID));
-        } else {
-            System.err.println("No event assigned.");
+        } else if(list.getNumberOfEntries() == 0){
+           System.err.print("Volunteer does not exist");
+        } else{
+             System.err.println("No event assigned.");
         }
     }
     
@@ -210,23 +238,90 @@ public class VolunteerManagement {
                 String event = volunteerUI.inputEvent();
                 filteredVolunteers = filterVolunteer.filterByEvent(volunteerList, event);
                 break;
-    //        case 3:
-    //            double minAmount = doneeUI.inputMinAmount();
-    //            double maxAmount = doneeUI.inputMaxAmount();
-    //            filteredDonees = doneeList.filterByAmountRange(minAmount, maxAmount);
-    //            break;
             default:
                 MessageUI.displayInvalidChoiceMessage();
                 return;
         }
-
-//        volunteerUI.displayFilteredVolunteers(filteredVolunteers);
     }
    
+    public void generateReport() {
+        String[] event = {"Acts of Kindness Fund", "Share the Love Project", "Together for Change"};
+        String[] volunteerType = {"Registration", "Support", "Logistic", "Crowd Control"};
+        int actRegCount = 0, actSupCount = 0, actLogCount = 0, actCrcCount = 0;
+        int shareRegCount = 0, shareSupCount = 0, shareLogCount = 0, shareCrcCount = 0;
+        int togetherRegCount = 0, togetherSupCount = 0, togetherLogCount = 0, togetherCrcCount = 0;
+        int actTotal, shareTotal, togetherTotal;
+        int totalVolunteer = volunteerList.getNumberOfEntries();
+        for (int i = 1; i  <= totalVolunteer;i++) {
+           Volunteer volunteer = volunteerList.getEntry(i); 
+            if(volunteer.getVolunteerType().contains(volunteerType[0])) {
+                if(volunteer.getEventAssigned().contains(event[0])) {
+                    actRegCount++;
+                }
+                if(volunteer.getEventAssigned().contains(event[1])) {
+                    shareRegCount++;
+                } 
+                if (volunteer.getEventAssigned().contains(event[2])) {
+                    togetherRegCount++;
+                }
+            }
+            
+            else if(volunteer.getVolunteerType().contains(volunteerType[1])) {
+                if(volunteer.getEventAssigned().contains(event[0])) {
+                    actSupCount++;
+                } 
+                if(volunteer.getEventAssigned().contains(event[1])) {
+                    shareSupCount++;
+                } 
+                
+                if (volunteer.getEventAssigned().contains(event[2])) {
+                    togetherSupCount++;
+                }
+            }
+            
+            else if(volunteer.getVolunteerType().contains(volunteerType[2])) {
+                if(volunteer.getEventAssigned().contains(event[0])) {
+                    actLogCount++;
+                }
+                if(volunteer.getEventAssigned().contains(event[1])) {
+                    shareLogCount++;
+                }
+                if (volunteer.getEventAssigned().contains(event[2])) {
+                    togetherLogCount++;
+                }
+            }
+            
+            else if(volunteer.getVolunteerType().contains(volunteerType[3])) {
+                if(volunteer.getEventAssigned().contains(event[0])) {
+                    actCrcCount++;
+                } 
+                if(volunteer.getEventAssigned().contains(event[1])) {
+                    shareCrcCount++;
+                } 
+                if (volunteer.getEventAssigned().contains(event[2])) {
+                    togetherCrcCount++;
+                }
+            }
+        }
+        actTotal = actRegCount + actSupCount + actLogCount + actCrcCount;
+        shareTotal = shareRegCount + shareSupCount + shareLogCount + shareCrcCount;
+        togetherTotal = togetherRegCount + togetherSupCount + togetherLogCount + togetherCrcCount;
+        
+        volunteerUI.generateSummaryReport(actRegCount, actSupCount, actLogCount, actCrcCount, shareRegCount, shareSupCount, shareLogCount, shareCrcCount, togetherRegCount, togetherSupCount, togetherLogCount, togetherCrcCount, actTotal, shareTotal, togetherTotal, totalVolunteer);
+        
+    }
+    
+    private void updateLastVolunteerNumber(String volunteerID) {
+        String numberPart = volunteerID.substring(1); // Extract the numeric part (e.g., "001" from "V001")
+        int number = Integer.parseInt(numberPart);
+        if (number > lastVolunteerNumber) {
+            lastVolunteerNumber = number;
+        }
+    }
     
     private String generateNextVolunteerID() {
-        lastDoneeNumber++;
-        return String.format("V%03d", lastDoneeNumber); // Format as DE001, DE002, etc.
+        lastVolunteerNumber++;
+        return String.format("V%03d", lastVolunteerNumber); // Format as DE001, DE002, etc.
     }
     
     

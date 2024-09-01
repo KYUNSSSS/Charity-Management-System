@@ -3,6 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package control;
+
 import adt.*;
 import entity.*;
 import boundary.*;
@@ -10,26 +11,35 @@ import dao.*;
 import java.io.*;
 import utility.MessageUI;
 import java.time.LocalDate;
+
 /**
  *
  * @author SCSM11
  */
 public class DonationDistribution {
-    private ListInterface<Donee> doneeList = new LinkedList<>(); 
+
+    private ListInterface<Donation> donationList = new LinkedList<>();
+    private DonationDAO donationDAO = new DonationDAO();
+
+    private ListInterface<Donee> doneeList = new LinkedList<>();
     private ListInterface<Distribution> distributeList = new LinkedList<>();
     private ListInterface<KeyValuePair> doneeLocationList = new LinkedList<>(); // Use LinkedList of KeyValuePair
     private HashMap<String, Distribution> distributeMap = new HashMap<>();
     private HashMap<String, Double> categoryTotals = new HashMap<>();
     private HashMap<String, Double> itemTotals = new HashMap<>();
     private DoneeDAO doneeDAO = new DoneeDAO();
+    private TempDAO tempDAO = new TempDAO();
     private DistributionDAO distributeDAO = new DistributionDAO();
     private DonationDistributionUI distributeUI = new DonationDistributionUI();
     private DonationManagement donation = new DonationManagement();
     private int lastDistributionNumber = 0;
     private int quantity = 0;
     private double amount = 0.0;
-    
-    public DonationDistribution(){
+    private double cashTotal;
+    private double itemTotal;
+
+    public DonationDistribution() {
+        this.tempDAO.createFileIfNotExists();
         File file = new File("DonationDistribution.txt");
         if (!file.exists()) {
             try {
@@ -47,9 +57,42 @@ public class DonationDistribution {
         }
         doneeList = doneeDAO.retrieveFromFile();
         distributeList = distributeDAO.retrieveFromFile();
+        
+        donationList = donationDAO.loadDonationsFromFile();
+        
         loadDoneeLocations();
+        for (int i = 1; i <= distributeList.getNumberOfEntries(); i++) {
+            Distribution distribution = distributeList.getEntry(i);
+            distributeMap.put(distribution.getDistributionID(), distribution); // Populate HashMap
+            updateLastDistributionNumber(distribution.getDistributionID());
+        }
+
+        double cashTotal = 0.0;
+        for (int i = 1; i <= donationList.getNumberOfEntries(); i++) {
+
+            double amount = 0.0;
+
+            Donation donation = donationList.getEntry(i);            
+            String category = donation.getItemCategory();
+            String item = donation.getItem();
+            if (category.equalsIgnoreCase("Cash")) {
+                amount = donation.getCashAmount();
+            }else {
+                amount = donation.getAmount();
+            }
+            String key = (category + ": " + item).toUpperCase(); //Cash : cash
+            // Aggregate the totals for each key
+            if (itemTotals.containsKey(key)) {
+                double currentTotal = itemTotals.get(key);
+                itemTotals.put(key, currentTotal + amount);
+            } else {
+                itemTotals.put(key, amount);
+            }
+
+        }
+        tempDAO.saveTotals(itemTotals, cashTotal);
     }
-    
+
     public void runDonationDistribution() {
         int choice = 0;
         do {
@@ -81,7 +124,7 @@ public class DonationDistribution {
             }
         } while (choice != 0);
     }
-    
+
     public void addNewDistribute() {
         String newDistributionID = generateNextDistributionID();
         Distribution newDistribute = inputDistributionDetails();
@@ -101,20 +144,20 @@ public class DonationDistribution {
             Distribution currentDistribution = distributeList.getEntry(i);
 
             if (currentDistribution.getDistributionID().equals(distributionID)) {
-                distributeList.remove(i); 
+                distributeList.remove(i);
                 isRemoved = true;
-                break; 
+                break;
             }
         }
 
         if (isRemoved) {
             distributeDAO.saveToFile(getAllDistribute());
             System.out.println("Distribution removed successfully.");
-        }else {
+        } else {
             System.out.println("Distribution ID not found.");
         }
     }
-    
+
     public void updateDistribute() {
         String distributionID = distributeUI.inputDistributionID();
         int index = findDistributionIndexById(distributionID);
@@ -124,15 +167,23 @@ public class DonationDistribution {
             distributeDAO.saveToFile(getAllDistribute());
 
             System.out.println("Distribution with ID " + distributionID + " has been updated successfully.");
-        }else {
+        } else {
             System.out.println("Distribution with ID " + distributionID + " not found.");
         }
     }
-    
+
     private void loadDoneeLocations() {
         for (int i = 1; i <= doneeList.getNumberOfEntries(); i++) {
             Donee donee = doneeList.getEntry(i);
             doneeLocationList.add(new KeyValuePair(donee.getDoneeID(), donee.getDoneeLocation()));
+        }
+    }
+    
+    private void updateLastDistributionNumber(String distributionID) {
+        String numberPart = distributionID.substring(2); // Extract the numeric part (e.g., "001" from "DE001")
+        int number = Integer.parseInt(numberPart);
+        if (number > lastDistributionNumber) {
+            lastDistributionNumber = number;
         }
     }
 
@@ -145,17 +196,17 @@ public class DonationDistribution {
         }
         return "Unknown";
     }
-    
+
     private int findDistributionIndexById(String distributionID) {
         for (int i = 1; i <= distributeList.getNumberOfEntries(); i++) {
             Distribution currentDistribute = distributeList.getEntry(i);
             if (currentDistribute.getDistributionID().equalsIgnoreCase(distributionID)) {
-                return i; 
+                return i;
             }
         }
-        return -1; 
+        return -1;
     }
-    
+
     public void trackDistribute() {
         int choices = 0;
         do {
@@ -182,11 +233,11 @@ public class DonationDistribution {
                 default:
                     MessageUI.displayInvalidChoiceMessage();
             }
-        } while (choices != 0); 
-        
+        } while (choices != 0);
+
     }
 
-   private void trackByCriteria(String criteria, String type) {
+    private void trackByCriteria(String criteria, String type) {
         StringBuilder result = new StringBuilder();
         String title = "";
         boolean includeDoneeID = false;
@@ -246,12 +297,12 @@ public class DonationDistribution {
 
                 if (includeDoneeID) {
                     result.append(String.format("%-15s%-25s%-20s%-15s%-15s%-25s%-5s\n",
-                        dist.getItemName(),dist.getCategory(),dist.getQuantity(),dist.getAmount(),
-                        dist.getStatus(),dist.getDistributionDate(),dist.getDoneeID())); 
-                }else {
+                            dist.getItemName(), dist.getCategory(), dist.getQuantity(), dist.getAmount(),
+                            dist.getStatus(), dist.getDistributionDate(), dist.getDoneeID()));
+                } else {
                     result.append(String.format("%-15s%-25s%-20s%-15s%-15s%-25s%-5s\n",
-                        dist.getItemName(), dist.getCategory(), dist.getQuantity(), dist.getAmount(),
-                        dist.getStatus(), dist.getDistributionDate(), getDoneeLocationByID(dist.getDoneeID())));
+                            dist.getItemName(), dist.getCategory(), dist.getQuantity(), dist.getAmount(),
+                            dist.getStatus(), dist.getDistributionDate(), getDoneeLocationByID(dist.getDoneeID())));
                 }
             }
         }
@@ -282,13 +333,13 @@ public class DonationDistribution {
         String status = distributeUI.inputStatus();
         trackByCriteria(status, "Status");
     }
-    
+
     private void trackByLocation() {
         String location = distributeUI.inputLocation();
         trackByCriteria(location, "Location");
     }
-    
-    public void generateReport() {        
+
+    public void generateReport() {
         int totalPendingItems = 0;
         int totalDeliveredItems = 0;
         int totalReceivedItems = 0;
@@ -369,7 +420,7 @@ public class DonationDistribution {
                 highestCashAmount = cashEntry.getValue();
             }
         }
-        
+
         distributeUI.displaySummaryReport(
                 totalPendingItems, totalDeliveredItems, totalReceivedItems,
                 totalPendingCash, totalDeliveredCash, totalReceivedCash,
@@ -398,7 +449,7 @@ public class DonationDistribution {
 
     private void updateLocationCash(ListInterface<KeyValuePair<String, Double>> locationCashCounts, String location, double amount) {
         boolean locationFound = false;
-        
+
         for (int i = 1; i <= locationCashCounts.getNumberOfEntries(); i++) {
             KeyValuePair<String, Double> entry = locationCashCounts.getEntry(i);
             if (entry.getKey().equalsIgnoreCase(location)) {
@@ -411,7 +462,7 @@ public class DonationDistribution {
             locationCashCounts.add(new KeyValuePair<>(location, amount));
         }
     }
-    
+
     private boolean isCategoryValid(String category, LinkedList<Donation> donationList) {
         for (int i = 1; i <= donationList.getNumberOfEntries(); i++) {
             if (donationList.getEntry(i).getItemCategory().equalsIgnoreCase(category)) {
@@ -435,28 +486,27 @@ public class DonationDistribution {
         for (int i = 1; i <= doneeList.getNumberOfEntries(); i++) {
             Donee donee = doneeList.getEntry(i);
             if (donee.getDoneeID().equalsIgnoreCase(doneeID)) {
-                return true; 
+                return true;
             }
         }
-        return false; 
+        return false;
     }
 
-    private ListInterface<Donee> loadDoneeData(){
+    private ListInterface<Donee> loadDoneeData() {
         DoneeDAO doneeDAO = new DoneeDAO();
-        return doneeDAO.retrieveFromFile(); 
+        return doneeDAO.retrieveFromFile();
     }
 
     private LinkedList<Donation> loadDonationData() {
         DonationDAO donationDAO = new DonationDAO();
         return donationDAO.loadDonationsFromFile();
     }
-    
+
     public Distribution inputDistributionDetails() {
         LinkedList<Donation> donationList = loadDonationData();
         ListInterface<Donee> doneeList = loadDoneeData();
-        
-        String category = distributeUI.inputDonationCategories();
 
+        String category = distributeUI.inputDonationCategories();
         while (!isCategoryValid(category, donationList)) {
             System.out.println("\nInvalid Category. Please enter a category that exists in the donation file.");
             category = distributeUI.inputDonationCategories();
@@ -467,32 +517,68 @@ public class DonationDistribution {
             System.out.println("\nInvalid Item. Please enter an item that exists for the selected category in the donation file.");
             itemName = distributeUI.inputItemName();
         }
- 
+
         if (category.equalsIgnoreCase("cash")) {
-            amount = distributeUI.inputAmount(); 
-            quantity = 0; 
+            if (!itemTotals.containsKey("CASH: CASH")) {
+                itemTotals.put("CASH: CASH", 0.0);
+            }
+
+            cashTotal = itemTotals.get("CASH: CASH"); // Retrieve the current cash total
             
+            do {
+                amount = distributeUI.inputAmount();
+                if (cashTotal == 0) {
+                    System.out.print("Insufficient cash available in the donation file. Please waiting for donation.\n\n");
+                   runDonationDistribution();
+                }else if (amount > cashTotal ){
+                   System.out.println("\nError: Insufficient cash available. Please enter a valid amount.");
+                }
+            } while (amount > cashTotal);
+            
+            cashTotal -= amount;
+            itemTotals.put("CASH: CASH", cashTotal);  // Update cash total in the map
+            tempDAO.saveTotals(itemTotals, cashTotal);
+
         } else {
-            quantity = distributeUI.inputQuantity(); 
-            amount = 0; 
+            // Create the key for the item category and name
+            String key = category + ": " + itemName;
+
+            // Ensure the item key exists in itemTotals
+            if (!itemTotals.containsKey(key)) {
+                itemTotals.put(key, 0.0);
+            }
+            double availableQuantity = itemTotals.get(key);
+
+            // Validate input quantity and deduct from the available total
+            do {
+                quantity = distributeUI.inputQuantity();
+                if (quantity > availableQuantity) {
+                    System.out.println("\nError: Insufficient quantity available. Please enter a valid quantity.");
+                }
+            } while (quantity > availableQuantity);
+
+            // Deduct the distributed quantity from the available total
+            availableQuantity -= quantity;
+            itemTotals.put(key, availableQuantity);  // Update the item total in the map
+            tempDAO.saveTotals(itemTotals, availableQuantity);
         }
 
         String doneeID = distributeUI.inputDoneeID();
         while (!isDoneeIDValid(doneeID, doneeList)) {
             System.out.println("\nInvalid ID. Please enter a Donee ID from the donee file.");
-            doneeID = distributeUI.inputDoneeID(); 
-        }
-        
-        String status = distributeUI.inputStatus();
-        
-        LocalDate distributionDate = distributeUI.inputDistributionDate();
-        LocalDate currentDate = LocalDate.now(); // Get current date
-        while (distributionDate.isBefore(currentDate)) {
-            System.out.println("\nInvalid Date. Please enter a valid date.");
-            distributionDate = distributeUI.inputDistributionDate(); 
+            doneeID = distributeUI.inputDoneeID();
         }
 
-        return new Distribution("DD001", category, itemName, quantity, amount, doneeID, status, distributionDate); 
+        String status = distributeUI.inputStatus();
+
+        LocalDate distributionDate = distributeUI.inputDistributionDate();
+        LocalDate currentDate = LocalDate.now(); // Get the current date
+        while (distributionDate.isBefore(currentDate)) {
+            System.out.println("\nInvalid Date. Please enter a valid date.");
+            distributionDate = distributeUI.inputDistributionDate();
+        }
+
+        return new Distribution("DD001", category, itemName, quantity, amount, doneeID, status, distributionDate);
     }
 
     public String getAllDistribute() {
@@ -502,15 +588,15 @@ public class DonationDistribution {
         }
         return outputStr;
     }
-    
+
     private String generateNextDistributionID() {
         lastDistributionNumber++;
-        return String.format("DD%03d", lastDistributionNumber); 
+        return String.format("DD%03d", lastDistributionNumber);
     }
 
     public static void main(String[] args) {
         DonationDistribution distribute = new DonationDistribution();
         distribute.runDonationDistribution();
-        
-  }
+
+    }
 }
