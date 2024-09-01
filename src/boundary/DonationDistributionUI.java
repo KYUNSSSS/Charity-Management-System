@@ -16,33 +16,55 @@ public class DonationDistributionUI {
     Scanner scanner = new Scanner(System.in);
     
     public int getMenuChoice() {
-        System.out.println("\n********** DONATION DISTRIBUTION **********");
-        System.out.println("1. Add New Donation Distribution");
-        System.out.println("2. Update Donation Distribution Details");
-        System.out.println("3. Remove Donation Distribution");
-        System.out.println("4. Monitor Distributed Items");
-        System.out.println("5. Generate Summary Report");
-        System.out.println("0. Quit");
-        System.out.print("Enter your choice (0-5): ");
-        int choice = scanner.nextInt();
-        scanner.nextLine(); 
-        System.out.println();
-        return choice;
+        int num = 6;
+        boolean loop = true;
+        while (loop) {
+            try {
+                System.out.println("\n********** DONATION DISTRIBUTION **********");
+                System.out.println("1. Add New Donation Distribution");
+                System.out.println("2. Update Donation Distribution Details");
+                System.out.println("3. Remove Donation Distribution");
+                System.out.println("4. Monitor Distributed Items");
+                System.out.println("5. Generate Summary Report");
+                System.out.println("0. Quit");
+                System.out.print("Enter your choice (0-5): ");
+                int choice = scanner.nextInt();
+                scanner.nextLine();
+                System.out.println();
+                num = choice;
+                loop = false;
+            } catch (Exception ex) {
+                System.err.println("Digit only.");
+                scanner.nextLine();
+            }
+        }
+        return num;
     }
     
     public int getTrackMenuChoice() {
-        System.out.println("\n****** TRACK DISTRIBUTION ******");
-        System.out.println("1. Track by Donee ID");
-        System.out.println("2. Track by Distribution Date");
-        System.out.println("3. Track by Category");
-        System.out.println("4. Track by Status");
-        System.out.println("5. Track by Location");
-        System.out.println("0. Back to Main Menu");
-        System.out.print("Enter your choice (0-5): ");
-        int choices = scanner.nextInt();
-        scanner.nextLine(); 
-        System.out.println();
-        return choices;
+        int num = 6;
+        boolean loop = true;
+        while (loop) {
+            try {
+                System.out.println("\n****** TRACK DISTRIBUTION ******");
+                System.out.println("1. Track by Donee ID");
+                System.out.println("2. Track by Distribution Date");
+                System.out.println("3. Track by Category");
+                System.out.println("4. Track by Status");
+                System.out.println("5. Track by Location");
+                System.out.println("0. Back to Main Menu");
+                System.out.print("Enter your choice (0-5): ");
+                int choice = scanner.nextInt();
+                scanner.nextLine();
+                System.out.println();
+                num = choice;
+                loop = false;
+            } catch (Exception ex) {
+                System.err.println("Digit only.");
+                scanner.nextLine();
+            }
+        }
+        return num;
     }
     
     public void listAllDistribute(String outputStr) {
