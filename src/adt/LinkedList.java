@@ -1,6 +1,7 @@
 package adt;
 
 import java.io.Serializable;
+import java.util.Comparator;
 
 /**
  * LinkedList.java A class that implements the ADT List using a chain of nodes,
@@ -211,6 +212,78 @@ public class LinkedList<T> implements ListInterface<T>, Serializable {
             index++;
         }
         return -1; // Not found
+    }
+    
+    // Sort method using comparator
+    @Override
+    public void sort(Comparator<T> comparator) {
+        if (numberOfEntries <= 1) {
+            return; // No need to sort if list is empty or has only one element
+        }
+
+        firstNode = mergeSort(firstNode, comparator);
+    }
+
+    // Helper method for merge sort
+    private Node mergeSort(Node head, Comparator<T> comparator) {
+        if (head == null || head.next == null) {
+            return head;
+        }
+
+        // Split the list into two halves
+        Node middle = getMiddle(head);
+        Node nextOfMiddle = middle.next;
+        middle.next = null;
+
+        Node left = mergeSort(head, comparator);
+        Node right = mergeSort(nextOfMiddle, comparator);
+
+        // Merge the sorted halves
+        return merge(left, right, comparator);
+    }
+
+    // Find the middle of the list
+    private Node getMiddle(Node head) {
+        if (head == null) {
+            return head;
+        }
+
+        Node slow = head;
+        Node fast = head.next;
+
+        while (fast != null) {
+            fast = fast.next;
+            if (fast != null) {
+                slow = slow.next;
+                fast = fast.next;
+            }
+        }
+        return slow;
+    }
+
+    // Merge two sorted lists
+    private Node merge(Node left, Node right, Comparator<T> comparator) {
+        Node dummy = new Node(null);
+        Node tail = dummy;
+
+        while (left != null && right != null) {
+            if (comparator.compare(left.data, right.data) <= 0) {
+                tail.next = left;
+                left = left.next;
+            } else {
+                tail.next = right;
+                right = right.next;
+            }
+            tail = tail.next;
+        }
+
+        if (left != null) {
+            tail.next = left;
+        } else {
+            tail.next = right;
+        }
+
+        return dummy.next;
     }
 
     private class Node {

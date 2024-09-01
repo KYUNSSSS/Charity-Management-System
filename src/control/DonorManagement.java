@@ -9,6 +9,7 @@ import entity.*;
 import boundary.DonorManagementUI;
 import dao.*;
 import java.time.LocalDate;
+import java.util.Comparator;
 import utility.*;
 
 /**
@@ -47,22 +48,6 @@ public class DonorManagement {
             }
         }
 
-//        System.out.println("\n\nAAA");
-//        for (int i = 1; i <= donorDonations.capacity(); i++) {
-////            System.out.println(donorDonations.getKey(i));
-//            Donor donor = donorList.getEntry(i);
-//            if (donor != null) {
-//                Donation donation = donationList.getEntry(i);
-//
-//                if (donation == null) {
-//                    continue;
-//                }
-//                String donorID = donation.getDonorID();
-//                if (donorDonations.containsKey(donorID)) {
-//                    donorDonations.get(donorID).add(donation); //get the donation list from the key and add donation
-//                }
-//            }
-//        }
         for (int i = 1; i <= donationList.getNumberOfEntries(); i++) {
             Donation donation = donationList.getEntry(i);
 
@@ -80,6 +65,7 @@ public class DonorManagement {
     }
 
     public void runDonorManagement() {
+        donorList.sort(donorIDComparator);
         int choice = 0;
         do {
             choice = donorUI.getMenuChoice();
@@ -213,7 +199,7 @@ public class DonorManagement {
 
     public void listDonorsWithDonations() {
         // Define table headers
-        String header = String.format("%-10s %-20s %-15s %-20s %-10s %-15s %-10s %-15s %-10s %-10s %-15s",
+        String header = String.format("%-10s %-20s %-15s %-20s %-10s %-15s %-10s %-20s %-15s %-10s %-15s",
                 "DonorID", "Name", "Contact No", "Email",
                 "Type", "Entity Type", "DonationID", "Donation Type", "Item", "Amount", "Donation Date");
 
@@ -222,20 +208,8 @@ public class DonorManagement {
         System.out.println(header);
         System.out.println("=".repeat(header.length()));
 
-        for (int i = 0; i < donorDonations.capacity(); i++) {
-            String donorID = donorDonations.getKey(i);
-
-            if (donorID == null) {
-                continue; // Skip to the next iteration
-            }
-
-            Donor donor = donorMap.get(donorID);
-
-            // Check if the donor is null
-            if (donor == null) {
-                System.out.println("Warning: Donor not found for donorID " + donorID);
-                continue; // Skip to the next iteration
-            }
+        for (int i = 1; i <= donorList.getNumberOfEntries(); i++) {
+            Donor donor = donorList.getEntry(i);
 
             // Display the donor details once
             String donorRow = String.format("%-10s %-20s %-15s %-20s %-10s %-15s",
@@ -247,7 +221,7 @@ public class DonorManagement {
                     donor.getEntityType());
             System.out.println(donorRow);
 
-            ListInterface<Donation> donations = donorDonations.get(donorID);
+            ListInterface<Donation> donations = donorDonations.get(donor.getDonorID());
             // Display all donations for this donor
             if (!donations.isEmpty()) {
                 for (int j = 1; j <= donations.getNumberOfEntries(); j++) {
@@ -256,7 +230,7 @@ public class DonorManagement {
 
                     // Format the donation details under the donor
                     if (donation.getItemCategory().equals("Cash")) {
-                        donationRow = String.format("%-10s %-20s %-15s %-20s %-10s %-15s %-10s %-15s %-10s %-10.2f %-15s",
+                        donationRow = String.format("%-10s %-20s %-15s %-20s %-10s %-15s %-10s %-20s %-15s %-10.2f %-15s",
                                 "", "", "", "", "", "", // Empty for donor details
                                 donation.getDonationID(),
                                 donation.getItemCategory(),
@@ -264,7 +238,7 @@ public class DonorManagement {
                                 donation.getCashAmount(),
                                 donation.getDonationDate().toString());
                     } else {
-                        donationRow = String.format("%-10s %-20s %-15s %-20s %-10s %-15s %-10s %-15s %-10s %-10s %-15s",
+                        donationRow = String.format("%-10s %-20s %-15s %-20s %-10s %-15s %-10s %-20s %-15s %-10s %-15s",
                                 "", "", "", "", "", "", // Empty for donor details
                                 donation.getDonationID(),
                                 donation.getItemCategory(),
@@ -482,20 +456,9 @@ public class DonorManagement {
         MapInterface<String, Integer> cashCounts = new HashMap<>();
         MapInterface<String, Integer> itemCounts = new HashMap<>();
 
-        // Iterate over all donors in the donorDonations map
-        for (int i = 1; i <= donorDonations.capacity(); i++) {
-            String donorID = donorDonations.getKey(i);
-
-            if (donorID == null) {
-                continue;
-            }
-
-            Donor donor = donorMap.get(donorID);
-
-            if (donor == null) {
-                System.out.println("Warning: Donor not found for donorID " + donorID);
-                continue;
-            }
+        for (int i = 1; i <= donorList.getNumberOfEntries(); i++) {
+            Donor donor = donorList.getEntry(i);
+            String donorID = donor.getDonorID();
 
             ListInterface<Donation> donations = donorDonations.get(donorID);
             int donationCount = donations.getNumberOfEntries();
@@ -556,6 +519,14 @@ public class DonorManagement {
         }
         return String.format("DNR%05d", nextID); // Format as DNR00001, DNR00002, etc.
     }
+
+    // Comparator to sort donors by donorID
+    Comparator<Donor> donorIDComparator = new Comparator<Donor>() {
+        @Override
+        public int compare(Donor d1, Donor d2) {
+            return d1.getDonorID().compareTo(d2.getDonorID());
+        }
+    };
 
     public static void main(String[] args) {
         DonorManagement DonorManagement = new DonorManagement();
