@@ -100,4 +100,8 @@ public class Donation {
                    ? String.format("RM %.2f", cashAmount) 
                    : amount);
     }
+
+    public void setQuantity(int i) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
 }

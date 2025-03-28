@@ -1,0 +1,98 @@
+Donation Date: 2024-09-01
+Donation ID: DNT00001
+Donors ID: dnr00001
+Donation Type: Cash
+Item: Cash
+Amount: 100.00
+-------------------------------------------
+Donation Date: 2024-09-01
+Donation ID: DNT00002
+Donors ID: dnr00002
+Donation Type: Clothing
+Item: Clothes
+Amount: 10
+-------------------------------------------
+Donation Date: 2024-09-01
+Donation ID: DNT00003
+Donors ID: dnr00003
+Donation Type: Food and Beverage
+Item: Noodles
+Amount: 6
+-------------------------------------------
+Donation Date: 2024-09-01
+Donation ID: DNT00004
+Donors ID: DNR00004
+Donation Type: Food and Beverage
+Item: Drinking Water
+Amount: 10
+-------------------------------------------
+Donation Date: 2024-09-01
+Donation ID: DNT00005
+Donors ID: DNR00002
+Donation Type: Clothing
+Item: Pants
+Amount: 5
+-------------------------------------------
+Donation Date: 2024-09-01
+Donation ID: DNT00006
+Donors ID: DNR00002
+Donation Type: Books
+Item: Novel
+Amount: 15
+-------------------------------------------
+Donation Date: 2024-09-01
+Donation ID: DNT00007
+Donors ID: DNR00003
+Donation Type: Electronic Devices
+Item: Computer
+Amount: 7
+-------------------------------------------
+Donation Date: 2024-09-01
+Donation ID: DNT00008
+Donors ID: DNR00002
+Donation Type: Cash
+Item: Cash
+Amount: 200.00
+-------------------------------------------
+Donation Date: 2024-09-01
+Donation ID: DNT00009
+Donors ID: DNR00001
+Donation Type: Food and Beverage
+Item: Rice
+Amount: 13
+-------------------------------------------
+Donation Date: 2024-09-01
+Donation ID: DNT00010
+Donors ID: dnr00001
+Donation Type: Clothing
+Item: Shoes
+Amount: 3
+-------------------------------------------
+Donation Date: 2024-09-01
+Donation ID: DNT00011
+Donors ID: DNR00003
+Donation Type: Clothing
+Item: Pants
+Amount: 4
+-------------------------------------------
+Donation Date: 2024-09-01
+Donation ID: DNT00012
+Donors ID: DNR00004
+Donation Type: Food and Beverage
+Item: Vegetable
+Amount: 5
+-------------------------------------------
+Donation Date: 2024-09-01
+Donation ID: DNT00013
+Donors ID: DNR00003
+Donation Type: Electronic Devices
+Item: Refrigerator
+Amount: 2
+-------------------------------------------
+Donation Date: 2024-09-01
+Donation ID: DNT00014
+Donors ID: DNR00004
+Donation Type: Cash
+Item: Cash
+Amount: 50.00
+-------------------------------------------

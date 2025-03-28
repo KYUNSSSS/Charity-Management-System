@@ -1,0 +1,4 @@
+DNR00001  , ALI            , 12958673       , ali@gmail.com  , Government, Organisation   
+DNR00002  , ABU            , 12356375       , abu@gmail.com  , Private   , Individual     
+DNR00003  , Megan          , 123456745      , megan@gmail.com, Public    , Individual     
+DNR00004  , DAVID         , 123426574      , david@gmail.com, Government, Organisation   

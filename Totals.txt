@@ -1,0 +1,12 @@
+Item totals:
+Category: ELECTRONIC DEVICES, Item: REFRIGERATOR, Total: 0.0
+Category: FOOD AND BEVERAGE, Item: VEGETABLE, Total: 5.0
+Category: BOOKS, Item: NOVEL, Total: 10.0
+Category: CASH, Item: CASH, Total: 67.0
+Category: ELECTRONIC DEVICES, Item: COMPUTER, Total: 4.0
+Category: FOOD AND BEVERAGE, Item: RICE, Total: 11.0
+Category: CLOTHING, Item: SHOES, Total: 0.0
+Category: CLOTHING, Item: CLOTHES, Total: 10.0
+Category: FOOD AND BEVERAGE, Item: NOODLES, Total: 3.0
+Category: CLOTHING, Item: PANTS, Total: 5.0
+Category: FOOD AND BEVERAGE, Item: DRINKING WATER, Total: 6.0
